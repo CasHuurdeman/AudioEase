@@ -83,12 +83,19 @@ void AudioPluginAudioProcessor::changeProgramName (int index, const juce::String
     juce::ignoreUnused (index, newName);
 }
 
-//==============================================================================
+
+//========================== PREPARE AND PROCESS FUNCTIONS ================================
+
 void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
+    juce::ignoreUnused (samplesPerBlock);
+
+    m_sineVector.resize(getTotalNumOutputChannels());
+    for (auto& sine : m_sineVector) {
+        sine.prepare(sampleRate);
+    }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -121,9 +128,8 @@ bool AudioPluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layou
   #endif
 }
 
-void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                              juce::MidiBuffer& midiMessages)
-{
+void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages){
+
     juce::ignoreUnused (midiMessages);
 
     juce::ScopedNoDenormals noDenormals;
@@ -136,24 +142,18 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
         buffer.clear (i, 0, buffer.getNumSamples());
+    }
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-        juce::ignoreUnused (channelData);
-        // ..do something to the data...
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+
+        auto* output = buffer.getWritePointer(channel);
+        m_sineVector[channel].process(output, buffer.getNumSamples());
     }
 }
 
-//==============================================================================
+//========================= USER INTERFACE PART ==================================
 bool AudioPluginAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
@@ -164,7 +164,7 @@ juce::AudioProcessorEditor* AudioPluginAudioProcessor::createEditor()
     return new AudioPluginAudioProcessorEditor (*this);
 }
 
-//==============================================================================
+//========================= SAVE AND LOAD SETTINGS ================================
 void AudioPluginAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.

@@ -1,0 +1,5 @@
+fields in a Class: m_field
+Class met hoofdletter en constructors ook
+de rest begint met kleine letters, ook objecten
+
+getters en setters header only
