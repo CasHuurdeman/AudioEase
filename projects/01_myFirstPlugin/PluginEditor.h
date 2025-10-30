@@ -14,6 +14,12 @@ public:
     void resized() override;
 
 private:
+
+    juce::Slider m_frequencySlider;
+    juce::TextButton m_bypassButton;
+    juce::Label m_frequencyLabel { "FrequencyLabel", "Frequency"};
+
+
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     AudioPluginAudioProcessor& processorRef;
