@@ -10,7 +10,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), m_apvts(*this, nullptr, "Parameters", createParameters())
 {
 }
 
@@ -146,8 +146,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+    float freq = m_apvts.getRawParameterValue("FREQUENCY")->load();
 
+
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+        m_sineVector[channel].setFrequency(freq);
         auto* output = buffer.getWritePointer(channel);
         m_sineVector[channel].process(output, buffer.getNumSamples());
     }
@@ -186,3 +189,12 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new AudioPluginAudioProcessor();
 }
+
+
+juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameters() {
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FREQUENCY","Frequency", 20.0f, 20000.0f, 220.0f ));
+
+    return {parameters.begin(), parameters.end()};
+}
+

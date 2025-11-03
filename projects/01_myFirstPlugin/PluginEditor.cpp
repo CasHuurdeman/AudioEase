@@ -7,10 +7,11 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 {
     juce::ignoreUnused (processorRef);
 
+    m_freqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "FREQUENCY", m_frequencySlider);
+
     //enums in Slider class
     m_frequencySlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
     m_frequencySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, true, 100, 50);
-    m_frequencySlider.setRange(0.0f, 1.0f, 0.01f);
     addAndMakeVisible(m_frequencySlider);
 
     m_bypassButton.setButtonText("Bypassed");

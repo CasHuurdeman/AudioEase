@@ -21,7 +21,7 @@ public:
     void setFrequency(const float frequency) { m_frequency = frequency; }
 
 private:
-    float m_amplitude = 0.0f;
+    float m_amplitude = 0.4f;
     float m_frequency = 440.0f;
     float m_sampleRate = 0.0f;
     float m_timeIncrement = 0.0f;
