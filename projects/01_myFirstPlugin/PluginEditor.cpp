@@ -8,6 +8,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     juce::ignoreUnused (processorRef);
 
     m_freqSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "FREQUENCY", m_frequencySlider);
+    m_bypassButtonAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "BYPASS", m_bypassButton);
 
     //enums in Slider class
     m_frequencySlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);

@@ -50,6 +50,9 @@ private:
     std::vector<Sine> m_sineVector;
     juce::AudioProcessorValueTreeState m_apvts;
 
+    std::atomic<float>* m_freq;
+    std::atomic<float>* m_bypassed;
+
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 
     //==============================================================================

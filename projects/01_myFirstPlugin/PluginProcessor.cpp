@@ -92,6 +92,11 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (samplesPerBlock);
 
+    //Put the raw parameter values in the variables
+    m_freq = m_apvts.getRawParameterValue("FREQUENCY");
+    m_bypassed = m_apvts.getRawParameterValue("BYPASS");
+
+    //Find the amount of channels and prepare the sines
     m_sineVector.resize(getTotalNumOutputChannels());
     for (auto& sine : m_sineVector) {
         sine.prepare(sampleRate);
@@ -146,11 +151,15 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-    float freq = m_apvts.getRawParameterValue("FREQUENCY")->load();
-
+    //Load the raw parameter values
+    const float freq = m_freq->load();
+    const bool bypassed = static_cast<bool>(m_bypassed->load());
 
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
+        //setters
         m_sineVector[channel].setFrequency(freq);
+        m_sineVector[channel].setAmplitude(bypassed ? 0.0f : 0.3f);
+
         auto* output = buffer.getWritePointer(channel);
         m_sineVector[channel].process(output, buffer.getNumSamples());
     }
@@ -193,8 +202,14 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameters() {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FREQUENCY","Frequency", 20.0f, 20000.0f, 220.0f ));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "FREQUENCY",
+        "Frequency",
+        20.0f,
+        20000.0f,
+        220.0f ));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BYPASS", "Bypass", true));
 
     return {parameters.begin(), parameters.end()};
 }
-
