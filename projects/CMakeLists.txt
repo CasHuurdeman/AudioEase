@@ -1,2 +1,3 @@
-add_subdirectory(00_cmakeTest)
-add_subdirectory(01_myFirstPlugin)
+#add_subdirectory(00_cmakeTest)
+#add_subdirectory(01_myFirstPlugin)
+add_subdirectory(02_audioInOut)
