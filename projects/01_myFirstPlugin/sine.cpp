@@ -17,9 +17,13 @@ void Sine::prepare(double sampleRate) {
     //juce werkt met doouble samplerate, maar in de process functie willen we met float samplerate werken
     m_sampleRate =  static_cast<float>(sampleRate);
     m_timeIncrement = 1.0f / m_sampleRate;
+
+    m_smoothedFreq.reset(sampleRate, 0.05f);
+    m_smoothedFreq.setCurrentAndTargetValue(getFrequency());
 }
 
 void Sine::process (float* output, const int numSamples){
+    // float frequency = m_smoothedFreq;
 
     for (int sample = 0; sample < numSamples; ++sample) {
         output[sample] = m_amplitude * sin(m_twoPi * m_frequency * m_currentTime);

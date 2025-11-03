@@ -17,11 +17,10 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_freqSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> m_bypassButtonAttachment;
+
     juce::Slider m_frequencySlider;
     juce::TextButton m_bypassButton;
     juce::Label m_frequencyLabel { "FrequencyLabel", "Frequency"};
-
-
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
