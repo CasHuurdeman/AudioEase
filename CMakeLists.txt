@@ -3,4 +3,5 @@ project(AudioEase LANGUAGES CXX)
 
 add_subdirectory(JUCE)
 add_subdirectory(projects)
+add_subdirectory(library)
 #add_subdirectory(test)
