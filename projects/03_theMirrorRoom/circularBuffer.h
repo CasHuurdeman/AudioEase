@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include <juce_audio_basics/buffers/juce_AudioSampleBuffer.h>
+#include <juce_audio_processors/juce_audio_processors.h>
 
 class CircularBuffer
 {
@@ -13,19 +13,15 @@ public:
   CircularBuffer(float samplesDelay, int bufferSize);
   ~CircularBuffer();
 
-  //TODO - why cant I use auto
-  //Writes to m_buffer
-  void write(juce::AudioBuffer<float> inputBuffer);
-  //writes to outputBuffer
+  void write(float input);
   float read();
-  //TODO - Is this needed?, maybe not for this particular one
 //  float readWithoutIncrement();
   void wrap(int& head);
   void initReadHead();
 
   //getters and setters
-  int getBufferSize() { return m_bufferSize; }
-  int getSamplesDelay() { return m_samplesDelay; }
+  int getBufferSize() const { return m_bufferSize; }
+  float getSamplesDelay() const { return m_samplesDelay; }
 
   //Make a setBufferSize only if needed
   void setSamplesDelay(float samplesDelay);

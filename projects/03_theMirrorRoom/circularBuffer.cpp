@@ -13,7 +13,8 @@ CircularBuffer::CircularBuffer(float samplesDelay)
   std::cout << "CircularBuffer - constructor" << std::endl;
 
     m_samplesDelay = samplesDelay;
-    m_bufferSize = ceil(samplesDelay);
+	//The plus one is so that calling write before read doesn't matter anymore, so not necessarily needed
+    m_bufferSize = static_cast<int>(ceil(samplesDelay)) + 1;
 
     //Allocate memory for m_buffer
     m_buffer = new float[m_bufferSize];
@@ -53,40 +54,25 @@ CircularBuffer::~CircularBuffer()
 //the read is sample based so the delay can be time-varying
 float CircularBuffer::read()
 {
-	int value = m_buffer[m_readHead];
+	float value = m_buffer[m_readHead];
     m_readHead++;
     wrap(m_readHead);
 
-    int nextValue = m_buffer[m_readHead];
+    float nextValue = m_buffer[m_readHead];
 
-    float output = Interpolation::linMap(m_sampleOffset, value, nextValue);
+	float output = Interpolation::linMap(m_sampleOffset, value, nextValue);
+	// std::cout << "Value: " << value << " nextValue: " << nextValue << " output: " << output << " sampleOffset: " << m_sampleOffset << std::endl;
     return output;
 }
 
 
-//This write function writes inputBuffers away to a circularBuffer with memcpy
-// because of memcpy we need to check how much space we have left before the end of the buffer
-// if there is not enough space left, we first write what we can, after that put writeHead on 0 and write the rest away
-void CircularBuffer::write(juce::AudioBuffer<float> inputBuffer)
+//write function
+void CircularBuffer::write(float input)
 {
-   int bufferIndexesLeft = m_bufferSize - m_writeHead;
-   int inputBufferNumSamples = inputBuffer.getNumSamples();
-
-   if(inputBuffer.getNumSamples() < bufferIndexesLeft)
-   {
-     std::memcpy(&m_buffer[m_writeHead], inputBuffer.getReadPointer(0), inputBufferNumSamples * sizeof(float));
-     m_writeHead += inputBufferNumSamples;
-   }
-   else
-   {
-   	 int samplesLeftToWrite = inputBufferNumSamples - bufferIndexesLeft;
-
-     std::memcpy(&m_buffer[m_writeHead], inputBuffer.getReadPointer(0), bufferIndexesLeft * sizeof(float));
-     //the writeHead should be on 0 now
-     m_writeHead = 0;
-     std::memcpy(&m_buffer[m_writeHead], inputBuffer.getReadPointer(0, bufferIndexesLeft), samplesLeftToWrite * sizeof(float));
-     m_writeHead = samplesLeftToWrite;
-   }
+    m_buffer[m_writeHead] = input;
+	//TODO - kunnen deze twee samen worden genomen?
+	m_writeHead++;
+	wrap(m_writeHead);
 }
 
 void CircularBuffer::wrap(int& head)
@@ -106,7 +92,7 @@ void CircularBuffer::initReadHead()
     else
     {
         m_readHead = m_writeHead - static_cast<int>(m_samplesDelay) + m_bufferSize;
-        m_sampleOffset = m_samplesDelay - m_readHead;
+        m_sampleOffset = m_samplesDelay - static_cast<int>(m_samplesDelay);
     	//readHead gets changed--> so wrap
         wrap(m_readHead);
     }
