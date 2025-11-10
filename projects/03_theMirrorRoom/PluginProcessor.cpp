@@ -91,11 +91,10 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
-    //FIXME - gekke geluiden
     m_delayVector.resize(getTotalNumOutputChannels());
     for (int i = 0; i < getTotalNumOutputChannels(); i++)
     {
-        m_delayVector[i] = new Delay(sampleRate*4, 0.0f);
+        m_delayVector[i] = new Delay(sampleRate+0.3, 0.5f);
     }
 }
 

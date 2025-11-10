@@ -24,6 +24,9 @@ Delay::~Delay()
 
 float Delay::process(float input)
 {
+    //Bypass
+    if (m_bypassOn == true) { return input; }
+
     float output = m_circularBuffer->read();
     m_circularBuffer->write(output * m_feedback + input);
     return output;
