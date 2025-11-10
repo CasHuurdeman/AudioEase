@@ -10,7 +10,7 @@
 //=========================CONSTRUCTORS AND DESTRUCTORS=====================
 CircularBuffer::CircularBuffer(float samplesDelay)
 {
-  std::cout << "CircularBuffer - constructor" << std::endl;
+  // std::cout << "CircularBuffer - constructor" << std::endl;
 
     m_samplesDelay = samplesDelay;
 	//The plus one is so that calling write before read doesn't matter anymore, so not necessarily needed
@@ -28,7 +28,7 @@ CircularBuffer::CircularBuffer(float samplesDelay)
 
 CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
 {
-	std::cout << "CircularBuffer - constructor" << std::endl;
+	// std::cout << "CircularBuffer - constructor" << std::endl;
         
     m_samplesDelay = samplesDelay;
     m_bufferSize = bufferSize;
@@ -45,7 +45,7 @@ CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
 
 CircularBuffer::~CircularBuffer()
 {
-	std::cout << "CircularBuffer - destructor" << std::endl;
+	// std::cout << "CircularBuffer - destructor" << std::endl;
     delete [] m_buffer;
     m_buffer = nullptr;
 }
@@ -55,8 +55,7 @@ CircularBuffer::~CircularBuffer()
 float CircularBuffer::read()
 {
 	float value = m_buffer[m_readHead];
-    m_readHead++;
-    wrap(m_readHead);
+    wrap(++m_readHead);
 
     float nextValue = m_buffer[m_readHead];
 
@@ -70,9 +69,7 @@ float CircularBuffer::read()
 void CircularBuffer::write(float input)
 {
     m_buffer[m_writeHead] = input;
-	//TODO - kunnen deze twee samen worden genomen?
-	m_writeHead++;
-	wrap(m_writeHead);
+	wrap(++m_writeHead);
 }
 
 void CircularBuffer::wrap(int& head)

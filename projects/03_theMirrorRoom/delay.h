@@ -5,8 +5,6 @@
 #pragma once
 #include "circularBuffer.h"
 
-//TODO - wil ik weer een effect base class?
-   //-> bypass, dry/wet (meh), prepare?; nee, maar hoe wil ik het met de bypass doen?
 class Delay {
 public:
    Delay() = default;
@@ -28,7 +26,6 @@ public:
 private:
    CircularBuffer* m_circularBuffer;
 
-   //heb ik dit uberhaupt nodig in de delay class?
    bool m_bypassOn = false;
    float m_feedback = 0.0f;
 };
