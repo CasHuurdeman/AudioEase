@@ -10,6 +10,7 @@ Grid::Grid()
 //  std::cout << "Grid - constructor" << std::endl;
   createRoom();
   calculateMirrorSources();
+  calculateReflections();
 }
 
 Grid::~Grid()

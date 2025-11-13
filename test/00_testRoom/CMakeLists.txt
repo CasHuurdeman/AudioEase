@@ -8,6 +8,9 @@ juce_add_console_app(00_testRoom
     PRODUCT_NAME "Console App Example")
 
 target_sources(00_testRoom PRIVATE
+        reflectionManager.cpp
+        circularBuffer.cpp
+        delay.cpp
         grid.cpp
         main.cpp)
 
@@ -20,6 +23,7 @@ target_compile_definitions(00_testRoom
 
 target_link_libraries(00_testRoom
     PRIVATE
+        myLibrary
         # ConsoleAppData            # If you'd created a binary data target, you'd link to it here
         juce::juce_core
     PUBLIC

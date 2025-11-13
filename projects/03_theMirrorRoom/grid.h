@@ -20,6 +20,8 @@ public:
     void createWalls();
 
     std::vector<std::array<float, 2>>& getReflections() { return m_reflections;}
+    //numMirrorSources is the same as numReflections
+    int getNumReflections() { return m_numMirrorSources; }
 
     float square(float value) { return value*value; }
 

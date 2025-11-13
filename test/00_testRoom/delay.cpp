@@ -35,7 +35,7 @@ float Delay::process(float input)
 
 void Delay::setFeedback(float feedback)
 {
-    if (0 <= feedback <= 1)
+    if (feedback >= 1 || feedback <= 1)
     {
     m_feedback = feedback;
     }

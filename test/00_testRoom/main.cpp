@@ -1,8 +1,15 @@
 //
 // Created by cashu on 12/11/2025.
 //
-#include "grid.h"
+#include "reflectionManager.h"
 #include <iostream>
+
+int main() {
+  ReflectionManager reflection_manager;
+
+
+  return 0;
+}
 
 // int main(){
 //   Grid grid;
@@ -42,21 +49,3 @@
 //
 //   return 0;
 // }
-
-using namespace std;
-
-// Function that returns a reference to a vector
-vector<int>& f() {
-    // Creating a static vector
-    static vector<int> v = { 1, 2, 3, 4, 5};
-
-    // Returning a vector
-    return v;
-}
-
-int main() {
-
-    for (int i : f())
-        cout << i << " ";
-    return 0;
-}
