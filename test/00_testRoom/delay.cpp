@@ -7,18 +7,21 @@
 
 Delay::Delay(float samplesDelay, float feedback)
 {
+    std::cout << "Delay - constructor" << std::endl;
     m_feedback = feedback;
     m_circularBuffer = new CircularBuffer(samplesDelay);
 }
 
 Delay::Delay(float samplesDelay, float feedback, int bufferSize)
 {
+    std::cout << "Delay - constructor" << std::endl;
     m_feedback = feedback;
     m_circularBuffer = new CircularBuffer(samplesDelay, bufferSize);
 }
 
 Delay::~Delay()
 {
+    std::cout << "Delay - destructor" << std::endl;
     delete m_circularBuffer;
     m_circularBuffer = nullptr;
 };

@@ -7,18 +7,21 @@
 
 Delay::Delay(float samplesDelay, float feedback)
 {
+    std::cout << "Delay - constructor" << std::endl;
     m_feedback = feedback;
     m_circularBuffer = new CircularBuffer(samplesDelay);
 }
 
 Delay::Delay(float samplesDelay, float feedback, int bufferSize)
 {
+    std::cout << "Delay - constructor" << std::endl;
     m_feedback = feedback;
     m_circularBuffer = new CircularBuffer(samplesDelay, bufferSize);
 }
 
 Delay::~Delay()
 {
+    std::cout << "Delay - destructor" << std::endl;
     delete m_circularBuffer;
     m_circularBuffer = nullptr;
 };
@@ -26,7 +29,7 @@ Delay::~Delay()
 float Delay::process(float input)
 {
     //Bypass
-    if (m_bypassOn == true) { return input; }
+    if (m_bypassOn) { return input; }
 
     float output = m_circularBuffer->read();
     m_circularBuffer->write(output * m_feedback + input);
@@ -35,7 +38,7 @@ float Delay::process(float input)
 
 void Delay::setFeedback(float feedback)
 {
-    if (0 <= feedback <= 1)
+    if (feedback >= 1 || feedback <= 1)
     {
     m_feedback = feedback;
     }

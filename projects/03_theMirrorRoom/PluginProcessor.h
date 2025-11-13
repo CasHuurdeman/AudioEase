@@ -2,7 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "delay.h"
-#include "grid.h"
+#include "reflectionManager.h"
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
@@ -48,7 +48,7 @@ private:
     //TODO - dont forget to delete
     std::vector<Delay*> m_delayVector;
 
-    Grid grid;
+    std::vector<ReflectionManager*> m_reflectionManagerVector;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };

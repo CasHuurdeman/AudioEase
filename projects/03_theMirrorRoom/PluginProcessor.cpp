@@ -91,10 +91,10 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
-    m_delayVector.resize(getTotalNumOutputChannels());
+    m_reflectionManagerVector.resize(getTotalNumOutputChannels());
     for (int i = 0; i < getTotalNumOutputChannels(); i++)
     {
-        m_delayVector[i] = new Delay(sampleRate+0.3, 0.0f);
+        m_reflectionManagerVector[i] = new ReflectionManager();
     }
 }
 
@@ -151,7 +151,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
         //samplewise
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-            output[sample] = m_delayVector[channel]->process(input[sample]);
+            output[sample] = m_reflectionManagerVector[channel]->process(input[sample]);
         }
     }
 }

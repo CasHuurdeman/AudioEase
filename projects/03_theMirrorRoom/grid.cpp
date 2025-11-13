@@ -8,6 +8,11 @@
 Grid::Grid()
 {
 //  std::cout << "Grid - constructor" << std::endl;
+
+  //calculate amplitude from source to receiver
+  float distance = sqrt(square(m_source[0]) + square(m_source[1]));
+  m_sourceAmplitude = 1 / pow(distance, 1.5f);
+
   createRoom();
   calculateMirrorSources();
   calculateReflections();
@@ -22,13 +27,12 @@ void Grid::calculateReflections()
 {
   //m_roomCorners <- deze heb ik nu helemaal niet nodig, later wil ik wel checken of ik door muren ga en door welke
   // --> kruisen van 2 lijnen
-  m_mirrorSources;
 
   //c = sound of speed in m/s @20 deg celcius
   float c = 343.0f;
 
-  m_reflections.resize(m_numMirrorSoures);
-  for (int i = 0; i < m_numMirrorSoures; i++)
+  m_reflections.resize(m_numMirrorSources);
+  for (int i = 0; i < m_numMirrorSources; i++)
   {
     //first calculate the distance receiver(@{0,0}) - mirrorSource
     float distance = sqrt(square(m_mirrorSources[i][0]) + square(m_mirrorSources[i][1]));
@@ -38,7 +42,7 @@ void Grid::calculateReflections()
     float delayTime = distance / c * 1000;
     m_reflections[i][0] = delayTime;
     m_reflections[i][1] = amplitude;
-    std::cout << "DelayTimes: " << m_reflections[i][0] << "\nAmplitudes: " << m_reflections[i][1] << std::endl;
+    // std::cout << "DelayTimes: " << m_reflections[i][0] << "\nAmplitudes: " << m_reflections[i][1] << std::endl;
   }
 }
 
@@ -102,7 +106,7 @@ void Grid::calculateMirrorSources()
   m_mirrorSources[2] = mirrorSource1T;
   m_mirrorSources[3] = mirrorSource1B;
 
-  m_numMirrorSoures = m_mirrorSources.size();
+  m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
 //  //Print the coordinates
 //  std::cout << "{";
 //  for (int i = 0; i < 4; i++)

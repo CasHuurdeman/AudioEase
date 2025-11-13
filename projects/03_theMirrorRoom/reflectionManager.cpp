@@ -5,7 +5,7 @@
 #include "reflectionManager.h"
 #include <iostream>
 #include "delay.h"
-
+//TODO - als ik er nu twee aanroep worden dezelfde dingen ook twee keer berekend. Dit is in pricipe niet erg straks als ik met twee oren/speakers ga werken, tenzij ik dat in de class zelf wil regelen
 ReflectionManager::ReflectionManager()
 {
     std::cout << "ReflectionManager - constructor" << std::endl;
@@ -20,16 +20,21 @@ ReflectionManager::~ReflectionManager()
 
 float ReflectionManager::process(float input)
 {
+    if(m_bypassOn){ return input; }
 
+    float output = input;
+    for(int i = 0; i < grid.getNumReflections(); i++)
+    {
+      output += m_delays[i]->process(input) * grid.getReflections()[i][1] / grid.getSourceAmplitude();
+    }
+    return output;
 }
 
 void ReflectionManager::createDelays()
 {
+      m_delays.resize(grid.getNumReflections());
       for(int i = 0; i < grid.getNumReflections(); i++)
       {
-          std::cout << "ref: " << grid.getReflections()[i][0] << std::endl;
-//        Delay delay(grid.getReflections()[i][0], 0);
-//        m_delays.push_back(delay);
+        m_delays[i] = new Delay(grid.getReflections()[i][0], 0);;
       }
-
 }

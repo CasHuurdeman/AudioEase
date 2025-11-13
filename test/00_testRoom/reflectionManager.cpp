@@ -27,9 +27,9 @@ void ReflectionManager::createDelays()
 {
       for(int i = 0; i < grid.getNumReflections(); i++)
       {
-          std::cout << "ref: " << grid.getReflections()[i][0] << std::endl;
-//        Delay delay(grid.getReflections()[i][0], 0);
-//        m_delays.push_back(delay);
+          // std::cout << "ref: " << grid.getReflections()[i][0] << std::endl;
+        Delay delay(grid.getReflections()[i][0], 0);
+        m_delays.push_back(delay);
       }
 
 }

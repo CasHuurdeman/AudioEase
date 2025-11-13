@@ -20,7 +20,7 @@ public:
 
 private:
   Grid grid;
-  std::vector<Delay> m_delays;
+  std::vector<Delay*> m_delays;
 
   bool m_bypassOn = false;
 };
