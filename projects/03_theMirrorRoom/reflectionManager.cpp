@@ -25,6 +25,8 @@ float ReflectionManager::process(float input)
     float output = input;
     for(int i = 0; i < grid.getNumReflections(); i++)
     {
+        // /grid.getSourceAmplitude -> To normalise the reflections for the input
+        // (the same effect as input * grid.getSourceAmplitude() and then gaining everything up)
       output += m_delays[i]->process(input) * grid.getReflections()[i][1] / grid.getSourceAmplitude();
     }
     return output;
@@ -37,4 +39,9 @@ void ReflectionManager::createDelays()
       {
         m_delays[i] = new Delay(grid.getReflections()[i][0], 0);;
       }
+}
+
+void ReflectionManager::setBypass(bool bypassOn)
+{
+    m_bypassOn = bypassOn;
 }

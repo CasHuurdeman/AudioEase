@@ -10,11 +10,11 @@
 //=========================CONSTRUCTORS AND DESTRUCTORS=====================
 CircularBuffer::CircularBuffer(float samplesDelay)
 {
-  std::cout << "CircularBuffer - constructor" << std::endl;
+  // std::cout << "CircularBuffer - constructor" << std::endl;
 
-    m_samplesDelay = samplesDelay;
 	//The plus one is so that calling write before read doesn't matter anymore, so not necessarily needed
     m_bufferSize = static_cast<int>(ceil(samplesDelay)) + 1;
+    m_samplesDelay = samplesDelay;
 
     //Allocate memory for m_buffer
     m_buffer = new float[m_bufferSize];
@@ -84,9 +84,9 @@ void CircularBuffer::initReadHead()
 {
   	if(m_samplesDelay > m_bufferSize)
   	{
-          std::cout << "CircularBuffer::initReadHead; Error: samplesDelay is bigger than bufferSize" << std::endl;
+  		std::cout << "CircularBuffer::initReadHead; Error: samplesDelay is bigger than bufferSize" << std::endl;
   	}
-    else
+	else
     {
         m_readHead = m_writeHead - static_cast<int>(m_samplesDelay) + m_bufferSize;
         m_sampleOffset = m_samplesDelay - static_cast<int>(m_samplesDelay);

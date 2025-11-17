@@ -1,5 +1,7 @@
 project(03_theMirrorRoom  VERSION 0.0.1)
 
+set(CMAKE_CXX_STANDARD 20)
+
 juce_add_plugin(03_theMirrorRoom
         # VERSION ...                               # Set this if the plugin version is different to the project version
         # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
