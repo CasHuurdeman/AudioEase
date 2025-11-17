@@ -13,6 +13,9 @@ Grid::Grid()
   float distance = sqrt(square(m_source[0]) + square(m_source[1]));
   m_sourceAmplitude = 1 / pow(distance, 1.5f);
 
+  // std::cout << "Distance: " << distance << std::endl;
+  // std::cout << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
+
   createRoom();
   calculateMirrorSources();
   calculateReflections();
@@ -42,13 +45,14 @@ void Grid::calculateReflections()
     float delayTime = distance / c * 1000;
     m_reflections[i][0] = delayTime;
     m_reflections[i][1] = amplitude;
-    // std::cout << "DelayTimes: " << m_reflections[i][0] << "\nAmplitudes: " << m_reflections[i][1] << std::endl;
+
+    // std::cout << "DelayTime" << i << ": " << m_reflections[i][0] << "\nAmplitude" << i << ": " << m_reflections[i][1] << "\nDistance" << i << ": " << distance << "\n" << std::endl;
   }
 }
 
 enum Room
 {
-  topL = 0, topR, bottomR, bottomL, X = 0, Y = 0
+  topL = 0, topR, bottomR, bottomL, X = 0, Y = 1
 };
 
 //TODO - will I work with vectors or coordinates? --> I think coordinates
@@ -80,7 +84,7 @@ void Grid::createRoom()
   //   }
   // std::cout << "}" << std::endl;
 }
-
+//FIXME - hier gaat iets mis, de Y waarde van de Source heeft geen invloed
 void Grid::calculateMirrorSources()
 {
 
@@ -93,11 +97,11 @@ void Grid::calculateMirrorSources()
   std::array<float, 2> mirrorSource1L{source1LX, source1LY};
 
   float source1TX = m_source[X];
-  float source1TY = m_roomHeight - m_source[X];
+  float source1TY = m_roomHeight - m_source[Y];
   std::array<float, 2> mirrorSource1T{source1TX, source1TY};
 
   float source1BX = m_source[X];
-  float source1BY = -m_roomHeight - m_source[X];
+  float source1BY = -m_roomHeight - m_source[Y];
   std::array<float, 2> mirrorSource1B{source1BX, source1BY};
 
   m_mirrorSources.resize(4);
@@ -107,22 +111,22 @@ void Grid::calculateMirrorSources()
   m_mirrorSources[3] = mirrorSource1B;
 
   m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
-//  //Print the coordinates
-//  std::cout << "{";
-//  for (int i = 0; i < 4; i++)
-//  {
-//    std::cout << "{";
-//
-//    for (int j = 0; j < 2; j++)
-//    {
-//      std::cout << m_mirrorSources[i][j];
-//      if (j==0){std::cout << ", ";}
-//    }
-//
-//    if (i != 3){std::cout << "}, ";}
-//    else std::cout << "}";
-//  }
-//  std::cout << "}" << std::endl;
+  // // Print the coordinates
+  //  std::cout << "Mirror Sources: {";
+  //  for (int i = 0; i < 4; i++)
+  //  {
+  //    std::cout << "{";
+  //
+  //    for (int j = 0; j < 2; j++)
+  //    {
+  //      std::cout << m_mirrorSources[i][j];
+  //      if (j==0){std::cout << ", ";}
+  //    }
+  //
+  //    if (i != 3){std::cout << "}, ";}
+  //    else std::cout << "}";
+  //  }
+  //  std::cout << "}\n" << std::endl;
 }
 
 

@@ -41,7 +41,7 @@ private:
 
   //TODO - make a vector out of this and make it so that there can be multiple sources and receivers
   //these are the coordinates (in meters) of the source and receiver
-  float m_source[2] = {30.0f, 30.0f};
+  float m_source[2] = {10.0f, 40.0f};
   float m_receiver[2] = {0.0f, 0.0f};
   std::vector< std::array<float, 2> > m_mirrorSources;
 
