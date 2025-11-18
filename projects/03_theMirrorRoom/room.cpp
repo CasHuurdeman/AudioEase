@@ -2,47 +2,46 @@
 // Created by cashu on 11/11/2025.
 //
 
-#include "grid.h"
+#include "room.h"
 #include <iostream>
 
-Grid::Grid()
+Room::Room()
 {
-//  std::cout << "Grid - constructor" << std::endl;
+//  std::cout << "Room - constructor" << std::endl;
 
   //calculate amplitude from source to receiver
-  float distance = sqrt(square(m_source[0]) + square(m_source[1]));
+  float distance = calculateDistance(m_source, m_receiver, std::size(m_source), std::size(m_receiver));
   m_sourceAmplitude = 1 / pow(distance, 1.5f);
 
-  // std::cout << "Distance: " << distance << std::endl;
-  // std::cout << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
+  // std::cout << "Distance: " << distance << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
 
   createRoom();
   calculateMirrorSources();
   calculateReflections();
 }
 
-Grid::~Grid()
+Room::~Room()
 {
-//	std::cout << "Grid - destructor" << std::endl;
+//	std::cout << "Room - destructor" << std::endl;
 }
 
-void Grid::calculateReflections()
+void Room::calculateReflections()
 {
-  //m_roomCorners <- deze heb ik nu helemaal niet nodig, later wil ik wel checken of ik door muren ga en door welke
-  // --> kruisen van 2 lijnen
-
   //c = sound of speed in m/s @20 deg celcius
   float c = 343.0f;
 
   m_reflections.resize(m_numMirrorSources);
+  
   for (int i = 0; i < m_numMirrorSources; i++)
   {
-    //first calculate the distance receiver(@{0,0}) - mirrorSource
-    float distance = sqrt(square(m_mirrorSources[i][0]) + square(m_mirrorSources[i][1]));
-
+    //Calculate distance from receiver to mirrorSources
+    float distance = calculateDistance(m_mirrorSources[i].data(), m_receiver,
+      std::size(m_mirrorSources[i]), std::size(m_receiver));
+    
     //amplitude according to Richard Moore (Elements of computer music p370)
-	float amplitude = 1 / pow(distance, 1.5f);
+	  float amplitude = 1 / pow(distance, 1.5f);
     float delayTime = distance / c * 1000;
+
     m_reflections[i][0] = delayTime;
     m_reflections[i][1] = amplitude;
 
@@ -50,22 +49,16 @@ void Grid::calculateReflections()
   }
 }
 
-enum Room
-{
-  topL = 0, topR, bottomR, bottomL, X = 0, Y = 1
-};
-
-//TODO - will I work with vectors or coordinates? --> I think coordinates
-void Grid::createRoom()
+void Room::createRoom()
 {
   //topLeft
-  m_roomCorners[topL] =  {-m_roomWidth/2.0f, m_roomHeight/2.0f};
+  m_roomCorners[topL] =  {-roomDimensions[X]/2.0f, roomDimensions[Y]/2.0f};
   //topRight
-  m_roomCorners[topR] =  {m_roomWidth/2.0f, m_roomHeight/2.0f};
+  m_roomCorners[topR] =  {roomDimensions[X]/2.0f, roomDimensions[Y]/2.0f};
   //bottomRight
-  m_roomCorners[bottomR] =  {m_roomWidth/2.0f, -m_roomHeight/2.0f};
+  m_roomCorners[bottomR] =  {roomDimensions[X]/2.0f, -roomDimensions[Y]/2.0f};
   //bottomLeft
-  m_roomCorners[bottomL] =  {-m_roomWidth/2.0f, -m_roomHeight/2.0f};
+  m_roomCorners[bottomL] =  {-roomDimensions[X]/2.0f, -roomDimensions[Y]/2.0f};
 
   // //Print the coordinates
   // std::cout << "{";
@@ -84,24 +77,24 @@ void Grid::createRoom()
   //   }
   // std::cout << "}" << std::endl;
 }
-//FIXME - hier gaat iets mis, de Y waarde van de Source heeft geen invloed
-void Grid::calculateMirrorSources()
+
+void Room::calculateMirrorSources()
 {
 
-  float source1RX = m_roomWidth - m_source[X];
+  float source1RX = roomDimensions[X] - m_source[X];
   float source1RY = m_source[Y];
   std::array<float, 2> mirrorSource1R{source1RX, source1RY};
 
-  float source1LX = -m_roomWidth - m_source[X];
+  float source1LX = -roomDimensions[X] - m_source[X];
   float source1LY = m_source[Y];
   std::array<float, 2> mirrorSource1L{source1LX, source1LY};
 
   float source1TX = m_source[X];
-  float source1TY = m_roomHeight - m_source[Y];
+  float source1TY = roomDimensions[Y] - m_source[Y];
   std::array<float, 2> mirrorSource1T{source1TX, source1TY};
 
   float source1BX = m_source[X];
-  float source1BY = -m_roomHeight - m_source[Y];
+  float source1BY = -roomDimensions[Y] - m_source[Y];
   std::array<float, 2> mirrorSource1B{source1BX, source1BY};
 
   m_mirrorSources.resize(4);
@@ -129,4 +122,18 @@ void Grid::calculateMirrorSources()
   //  std::cout << "}\n" << std::endl;
 }
 
+float Room::calculateDistance(float coordinatesA[], float coordinatesB[], int sizeA, int sizeB) {
+  //manage array sizes
+  int arraySize;
+  if (sizeA < sizeB) arraySize = sizeA;
+  else arraySize = sizeB;
+
+  float value = 0;
+  for (int i = 0; i < arraySize; i++)
+  {
+    value += square(coordinatesA[i] - coordinatesB[i]);
+  }
+
+  return sqrt(value);
+}
 

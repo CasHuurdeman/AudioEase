@@ -8,7 +8,6 @@
 #include "writeToFile.h"
 #include <iostream>
 
-
 int main()
 {
     WriteToFile fileWriter(SOURCE_DIR);
@@ -21,7 +20,6 @@ int main()
     {
         fileWriter.writeToFile(reflectionManager.process(pulse.givePulse()));
     }
-
 
     return 0;
 }

@@ -23,7 +23,7 @@ juce_add_plugin(03_theMirrorRoom
 target_sources(03_theMirrorRoom  PRIVATE
         circularBuffer.cpp
         delay.cpp
-        grid.cpp
+        room.cpp
         reflectionManager.cpp
         PluginEditor.cpp
         PluginProcessor.cpp

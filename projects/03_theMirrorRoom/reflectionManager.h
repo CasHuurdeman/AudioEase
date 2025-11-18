@@ -4,7 +4,7 @@
 
 #pragma once
 #include <vector>
-#include "grid.h"
+#include "room.h"
 #include "delay.h"
 
 class ReflectionManager {
@@ -19,7 +19,7 @@ public:
   void setBypass(bool bypassOn);
 
 private:
-  Grid grid;
+  Room room;
   std::vector<Delay*> m_delays;
 
   bool m_bypassOn = false;

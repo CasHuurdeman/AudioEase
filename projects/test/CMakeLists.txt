@@ -15,7 +15,7 @@ target_sources(test PRIVATE
         ${DIR}/reflectionManager.cpp
         ${DIR}/circularBuffer.cpp
         ${DIR}/delay.cpp
-        ${DIR}/grid.cpp
+        ${DIR}/room.cpp
         main.cpp)
 
 
