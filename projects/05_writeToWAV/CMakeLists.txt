@@ -11,11 +11,6 @@ juce_add_console_app(05_writeToWAV
 set(DIR ../03_theMirrorRoom)
 
 target_sources(05_writeToWAV PRIVATE
-
-#        ${DIR}/reflectionManager.cpp
-#        ${DIR}/circularBuffer.cpp
-#        ${DIR}/delay.cpp
-#        ${DIR}/grid.cpp
         main.cpp
 )
 
