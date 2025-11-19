@@ -13,7 +13,7 @@ public:
     ~Room();
 
     void calculateReflections();
-    void calculateMirrorSources();
+    void calculateMirrorSources(int diagonalOrder);
     //createRoom(float x, float y, float z), doe met alle functies?
     void createRoom();
     //TODO - is this the way to go -> yes, maybe even remove createRoom()
@@ -25,18 +25,17 @@ public:
     std::vector<std::array<float, 2>>& getReflections() { return m_reflections;}
 
 
-    float calculateDistance(float coordinatesA[], float coordinatesB[], int sizeA, int sizeB);
+    float calculateDistance(float coordinatesA[], float coordinatesB[], size_t sizeA, size_t sizeB);
     float square(float value) { return value*value; }
 
 private:
-  //Array with coordinates of the corners
-  std::array< std::array<float,2> ,4> m_roomCorners;
-  std::array< float, 3> m_roomDimensions = {200.0f, 200.0f, 0.0f};
+    //Todo - get this outa here and to constructor?
+  std::array< float, 3> m_roomDimensions = {15.0f, 15.0f, 0.0f};
 
   //TODO - Only 1 receiver and 1 source now
   //these are the coordinates (in meters) of the source and receiver
   float m_receiver[3] = {2.0f, 0.0f, 0.0f};
-  float m_source[3] = {10.0f, 40.0f, 0.0f};
+  float m_source[3] = {6.0f, 5.0f, 0.0f};
   std::vector< std::array<float, 2> > m_mirrorSources;
 
   //TODO - do I want this here or do I want it as a return of calculateReflections
@@ -45,9 +44,8 @@ private:
 
   float m_sourceAmplitude = 0.0f;
   int m_numMirrorSources = 0;
-  int m_maxOrder = 1;
-  //Do we need this?
-  int m_numDimensions = 2;
+
+  float m_soundSpeed = 343.0f;  //in m/s @20 deg celcius
 
   enum coordinateIndex { topL = 0, topR, bottomR, bottomL, X = 0, Y = 1 };
 };
