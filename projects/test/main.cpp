@@ -8,6 +8,7 @@
 #include "writeToFile.h"
 #include <iostream>
 
+
 int main()
 {
     WriteToFile fileWriter(SOURCE_DIR);
