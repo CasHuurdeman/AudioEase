@@ -3,24 +3,28 @@
 //
 // including code from https://www.youtube.com/watch?v=mYBr-Yb70Z4
 //
-#include "../03_theMirrorRoom/reflectionManager.h"
-#include "pulse.h"
-#include "writeToFile.h"
 #include <iostream>
+#include <cmath>
+#include "../04_tappedDelay/circularBuffer.h"
 
 
 int main()
 {
-    WriteToFile fileWriter(SOURCE_DIR);
+  CircularBuffer circBuffer{10};
+  circBuffer.addReadHead(10);
 
-
-    ReflectionManager reflectionManager;
-    Pulse pulse;
-
-    for (int i = 0; i < 4800; i++)
-    {
-        fileWriter.writeToFile(reflectionManager.process(pulse.givePulse()));
+  for(int i = 0; i < 5; i++)
+  {
+    circBuffer.write(i);
+  }
+float output = 0;
+  for(int i = 0; i < 10; i++)
+  {
+    for (int j = 0; j < 2; j++) {
+       output += circBuffer.read(j);
     }
+      std::cout << output << std::endl;
+  }
 
     return 0;
 }

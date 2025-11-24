@@ -4,7 +4,7 @@
 
 #include "reflectionManager.h"
 #include <iostream>
-#include "delay.h"
+#include "tappedDelay.h"
 //TODO - als ik er nu twee aanroep worden dezelfde dingen ook twee keer berekend. Dit is in pricipe niet erg straks als ik met twee oren/speakers ga werken, tenzij ik dat in de class zelf wil regelen
 // --> GEEF EEN POINTER VAN ROOM MEE IN DE CONSTRUCTOR
 ReflectionManager::ReflectionManager()
@@ -18,28 +18,31 @@ ReflectionManager::~ReflectionManager()
     std::cout << "ReflectionManager - destructor" << std::endl;
 }
 
-
+//TODO - PUT CHANNEL LOOP HERE OR CHANNEL IN FUNCTION CALL
 float ReflectionManager::process(float input)
 {
     if(m_bypassOn){ return input; }
 
     float output = input;
-    for(int i = 0; i < room.getNumReflections(); i++)
+    for(int i = 0; i < m_room.getReceiver(0)->getNumReflections(); i++)
     {
         // /room.getSourceAmplitude -> To normalise the reflections for the input
         // (the same effect as input * room.getSourceAmplitude() and then gaining everything up)
-      output += m_delays[i]->process(input) * room.getReflections()[i][1] / room.getSourceAmplitude();
+      output += m_delays[i]->process(input) * m_room.getReceiver(0)->getReflections()[i][1] / m_room.getReceiver(0)->getSourceAmplitude();
     }
     return output;
 }
 
+//TODO - start with biggest delay, after that make smaller delays
+//TODO - ALSO NEEDS TO BE PER CHANNEL!!!!!
+//FIXME VECTOR UBSCRIPT OUT OF RANGE
 void ReflectionManager::createDelays()
 {
-      m_delays.resize(room.getNumReflections());
-      for(int i = 0; i < room.getNumReflections(); i++)
+      m_delays.resize(m_room.getReceiver(0)->getNumReflections());
+      for(int i = 0; i < m_room.getReceiver(0)->getNumReflections(); i++)
       {
-        m_delays[i] = new Delay(room.getReflections()[i][0], 0);;
-    // std::cout << "Reflections: " << room.getReflections()[i][0]<< std::endl;
+        m_delays[i] = new TappedDelay(m_room.getReceiver(0)->getReflections()[i][0], 0);;
+        // std::cout << "Reflections: " << room.getReflections()[i][0]<< std::endl;
       }
 }
 

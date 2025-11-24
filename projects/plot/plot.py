@@ -16,7 +16,6 @@ np_data = np.array(data)
 # create samples for x axis
 t = np.arange(0, len(data), 1)
 
-#TODO - zet om naar milliseconden ipv samples (macro?)
 # create plot
 fig, ax = plt.subplots()
 ax.plot(t, np_data)

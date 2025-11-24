@@ -1,6 +1,6 @@
-project(03_theMirrorRoom  VERSION 0.0.1)
+project(04_tappedDelay  VERSION 0.0.1)
 
-juce_add_plugin(03_theMirrorRoom
+juce_add_plugin(04_tappedDelay
         # VERSION ...                               # Set this if the plugin version is different to the project version
         # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
         # ICON_SMALL ...
@@ -18,18 +18,18 @@ juce_add_plugin(03_theMirrorRoom
         PRODUCT_NAME "The Mirror Room"         # The name of the final executable, which can differ from the target name
 )
 
-target_sources(03_theMirrorRoom  PRIVATE
+target_sources(04_tappedDelay  PRIVATE
         circularBuffer.cpp
-        delay.cpp
+        tappedDelay.cpp
         PluginEditor.cpp
         PluginProcessor.cpp
 )
 
-target_compile_definitions(03_theMirrorRoom  PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0
-    SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}"
+target_compile_definitions(04_tappedDelay  PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0
+    SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-target_link_libraries(03_theMirrorRoom 
+target_link_libraries(04_tappedDelay 
         PRIVATE
         myLibrary
         juce::juce_core

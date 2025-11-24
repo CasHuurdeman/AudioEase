@@ -5,47 +5,36 @@
 #pragma once
 #include <vector>
 #include <array>
+#include "receiver.h"
 
 //This room is three-dimensional and rectangular, for more dimensions the code should be updated
 class Room {
 public:
+    // Room() = default;
     Room();
     ~Room();
 
-    void calculateReflections();
     void calculateMirrorSources(int diagonalOrder);
-    //createRoom(float x, float y, float z), doe met alle functies?
-    void createRoom();
     //TODO - is this the way to go -> yes, maybe even remove createRoom()
     void createWalls();
+    //createRoom(float x, float y, float z), doe met alle functies?
+    // void createRoom();
 
     //numMirrorSources is the same as numReflections
-    int getNumReflections() const { return m_numMirrorSources; }
-    float getSourceAmplitude() const { return m_sourceAmplitude; }
-    std::vector<std::array<float, 2>>& getReflections() { return m_reflections;}
+    int getNumMirrorSources() const { return m_numMirrorSources; }
+    //TODO - & ????
+    Receiver*& getReceiver(int index) { return m_receiverVector[index]; }
 
-
-    float calculateDistance(float coordinatesA[], float coordinatesB[], size_t sizeA, size_t sizeB);
-    float square(float value) { return value*value; }
-
+    void addReceiver(float X, float Y, float Z);
+    void removeReceiver(int receiverVectorIndex);
 private:
-    //Todo - get this outa here and to constructor?
+  //these are the coordinates (in meters) of the source
+  float m_source[3] = {6.0f, 5.0f, 0.0f};
+  std::vector<Receiver*> m_receiverVector;
   std::array< float, 3> m_roomDimensions = {15.0f, 15.0f, 0.0f};
 
-  //TODO - Only 1 receiver and 1 source now
-  //these are the coordinates (in meters) of the source and receiver
-  float m_receiver[3] = {2.0f, 0.0f, 0.0f};
-  float m_source[3] = {6.0f, 5.0f, 0.0f};
   std::vector< std::array<float, 2> > m_mirrorSources;
-
-  //TODO - do I want this here or do I want it as a return of calculateReflections
-    //0 --> delayTimes, 1--> amplitudes
-  std::vector< std::array< float, 2> > m_reflections;
-
-  float m_sourceAmplitude = 0.0f;
   int m_numMirrorSources = 0;
-
-  float m_soundSpeed = 343.0f;  //in m/s @20 deg celcius
 
   enum coordinateIndex { topL = 0, topR, bottomR, bottomL, X = 0, Y = 1 };
 };
