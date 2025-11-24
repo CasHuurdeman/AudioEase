@@ -3,48 +3,27 @@
 //
 
 #include "room.h"
+
+#include <filesystem>
 #include <iostream>
 
 
-Room::Room()
+Room::Room(/*float xSize, float ySize, float zSize*/)
 {
 //  std::cout << "Room - constructor" << std::endl;
 
-  //calculate amplitude from source to receiver
-  float distance = calculateDistance(m_source, m_receiver, std::size(m_source), std::size(m_receiver));
-  m_sourceAmplitude = 1 / pow(distance, 1.5f);
+  // m_roomDimensions[0] = xSize;
+  // m_roomDimensions[1] = ySize;
+  // m_roomDimensions[2] = zSize;
 
-  // std::cout << "Distance: " << distance << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
-
-  createRoom();
+  // createRoom();
   calculateMirrorSources(7);
-  calculateReflections();
+  addReceiver(0,0,0);
 }
 
 Room::~Room()
 {
 //	std::cout << "Room - destructor" << std::endl;
-}
-
-void Room::calculateReflections()
-{
-  m_reflections.resize(m_numMirrorSources);
-  
-  for (int i = 0; i < m_numMirrorSources; i++)
-  {
-    //Calculate distance from receiver to mirrorSources
-    float distance = calculateDistance(m_mirrorSources[i].data(), m_receiver,
-      std::size(m_mirrorSources[i]), std::size(m_receiver));
-    
-    //amplitude according to Richard Moore (Elements of computer music p370)
-	  float amplitude = 1 / pow(distance, 1.5f);
-    float delayTime = distance / m_soundSpeed * 1000;
-
-    m_reflections[i][0] = delayTime;
-    m_reflections[i][1] = amplitude;
-
-    // std::cout << "DelayTime" << i << ": " << m_reflections[i][0] << "\nAmplitude" << i << ": " << m_reflections[i][1] << "\nDistance" << i << ": " << distance << "\n" << std::endl;
-  }
 }
 
 void Room::calculateMirrorSources(const int diagonalOrder)
@@ -65,9 +44,9 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   }
 
   //Combine all X and Y values to get the coordinates
-  for (float & j : arrX)
+  for (float& j : arrX)
   {
-    for (float & k : arrY)
+    for (float& k : arrY)
     {
       m_mirrorSources.push_back({j, k});
     }
@@ -80,20 +59,40 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
 }
 
-float Room::calculateDistance(float coordinatesA[], float coordinatesB[], size_t sizeA, size_t sizeB) {
-  //manage array sizes
-  int arraySize;
-  if (sizeA < sizeB) arraySize = sizeA;
-  else arraySize = sizeB;
-
-  float value = 0;
-  for (int i = 0; i < arraySize; i++)
-  {
-    value += square(coordinatesA[i] - coordinatesB[i]);
-  }
-
-  return sqrt(value);
+void Room::addReceiver(float X, float Y, float Z)
+{
+   m_receiverVector.push_back(new Receiver(X, Y, Z));
 }
+
+void Room::removeReceiver(int receiverVectorIndex)
+{
+	if (receiverVectorIndex < m_receiverVector.size())
+	{
+		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
+	}
+
+  delete m_receiverVector[receiverVectorIndex];
+  m_receiverVector[receiverVectorIndex] = nullptr;
+	m_receiverVector.erase(m_receiverVector.begin() + receiverVectorIndex);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //TODO - createRoom() has no need now
 // void Room::createRoom()

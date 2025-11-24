@@ -1,7 +1,6 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "delay.h"
 #include "reflectionManager.h"
 
 //==============================================================================
@@ -46,8 +45,6 @@ public:
 
 private:
     //TODO - dont forget to delete
-    std::vector<Delay*> m_delayVector;
-
     std::vector<ReflectionManager*> m_reflectionManagerVector;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)

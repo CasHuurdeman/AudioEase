@@ -2,5 +2,6 @@
 #add_subdirectory(01_myFirstPlugin)
 #add_subdirectory(02_audioInOut)
 add_subdirectory(03_theMirrorRoom)
-#add_subdirectory(04_delay)
+#add_subdirectory(04_tappedDelay)
 add_subdirectory(test)
+add_subdirectory(plot)

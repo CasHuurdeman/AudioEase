@@ -22,8 +22,9 @@ juce_add_plugin(03_theMirrorRoom
 
 target_sources(03_theMirrorRoom  PRIVATE
         circularBuffer.cpp
-        delay.cpp
+        tappedDelay.cpp
         room.cpp
+        receiver.cpp
         reflectionManager.cpp
         PluginEditor.cpp
         PluginProcessor.cpp

@@ -5,7 +5,7 @@
 #pragma once
 #include <vector>
 #include "room.h"
-#include "delay.h"
+#include "tappedDelay.h"
 
 class ReflectionManager {
 public:
@@ -19,8 +19,8 @@ public:
   void setBypass(bool bypassOn);
 
 private:
-  Room room;
-  std::vector<Delay*> m_delays;
+  Room m_room;
+  std::vector<TappedDelay*> m_delays;
 
   bool m_bypassOn = false;
 };
