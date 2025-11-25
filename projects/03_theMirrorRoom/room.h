@@ -20,6 +20,8 @@ public:
     //createRoom(float x, float y, float z), doe met alle functies?
     // void createRoom();
 
+    void prepare(int numChannels);
+
     //numMirrorSources is the same as numReflections
     int getNumMirrorSources() const { return m_numMirrorSources; }
     //TODO - & ????

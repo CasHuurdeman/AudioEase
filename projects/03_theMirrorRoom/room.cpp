@@ -15,17 +15,32 @@ Room::Room(/*float xSize, float ySize, float zSize*/) {
   // m_roomDimensions[2] = zSize;
 
   // createRoom();
-  calculateMirrorSources(7);
-  //TODO - make scalable to numOutPuts
-  addReceiver(0.0f, 0.0f, 0.0f);
-  addReceiver(0.2f, 0.0f, 0.0f);
-  m_receiverVector[0]->calculateReflections(m_source, std::size(m_source), m_mirrorSources, m_numMirrorSources);
+  calculateMirrorSources(5);
 }
 
 Room::~Room()
 {
 	std::cout << "Room - destructor" << std::endl;
 }
+
+void Room::prepare(int numChannels) {
+
+  addReceiver(0.0f, 0.0f, 0.0f);
+  addReceiver(0.2f, 0.0f, 0.0f);
+
+//TODO - for later
+  // for (int channel = 0; channel < numChannels; channel++)
+  // {
+  //   addReceiver(0.0f, 0.0f, 0.0f);
+  // }
+
+  //calculate al reflections of all receivers
+  for (Receiver* receiver : m_receiverVector)
+  {
+    receiver->calculateReflections(m_source, std::size(m_source), m_mirrorSources, m_numMirrorSources);
+  }
+}
+
 
 void Room::calculateMirrorSources(const int diagonalOrder)
 {

@@ -24,6 +24,7 @@ ReflectionManager::~ReflectionManager()
 
 void ReflectionManager::prepare(int numChannels) {
     m_numChannels = numChannels;
+    m_room.prepare(numChannels);
     createDelays();
 }
 

@@ -91,6 +91,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
+    //FIXME - WHY THE NOISE
     m_reflectionManager = new ReflectionManager();
     m_reflectionManager->prepare(getTotalNumOutputChannels());
 }
