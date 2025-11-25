@@ -9,7 +9,7 @@
 class TappedDelay {
 public:
    TappedDelay() = default;
-   TappedDelay(float samplesDelay);
+   TappedDelay(int bufferSize);
    TappedDelay(float samplesDelay, float feedback);
    TappedDelay(float samplesDelay, float feedback, int bufferSize);
    ~TappedDelay();

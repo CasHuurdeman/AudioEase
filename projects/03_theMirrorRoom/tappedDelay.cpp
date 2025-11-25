@@ -5,9 +5,9 @@
 #include "tappedDelay.h"
 #include <iostream>
 
-TappedDelay::TappedDelay(float samplesDelay)
+TappedDelay::TappedDelay(int bufferSize)
 {
-    m_circularBuffer = new CircularBuffer(samplesDelay);
+    m_circularBuffer = new CircularBuffer(bufferSize);
 }
 
 TappedDelay::TappedDelay(float samplesDelay, float feedback)

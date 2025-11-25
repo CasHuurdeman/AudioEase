@@ -10,7 +10,7 @@ class CircularBuffer
 {
 public:
   CircularBuffer() = default;
-  CircularBuffer(float samplesDelay);
+  CircularBuffer(int bufferSize);
   CircularBuffer(float samplesDelay, int bufferSize);
   ~CircularBuffer();
 
@@ -38,7 +38,7 @@ private:
   float* m_buffer = nullptr;
   int m_bufferSize = 0;
 
-  std::vector<float> m_readHeads= {0.0f};
+  std::vector<float> m_readHeads= {};
   int m_writeHead = 0;
 };
 

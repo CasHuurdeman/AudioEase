@@ -8,12 +8,12 @@
 #include "interpolation.h"
 
 //=========================CONSTRUCTORS AND DESTRUCTORS=====================
-CircularBuffer::CircularBuffer(float samplesDelay)
+CircularBuffer::CircularBuffer(int bufferSize)
 {
   // std::cout << "CircularBuffer - constructor" << std::endl;
 
 	//The plus one is so that calling write before read doesn't matter anymore, so not necessarily needed
-    m_bufferSize = static_cast<int>(ceil(samplesDelay)) + 1;
+    m_bufferSize = bufferSize;
 
     //Allocate memory for m_buffer
     m_buffer = new float[m_bufferSize];
@@ -21,8 +21,6 @@ CircularBuffer::CircularBuffer(float samplesDelay)
     {
         m_buffer[i] = 0;
     }
-
-    initReadHead(m_readHeads[0], samplesDelay);
 }
 
 CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)

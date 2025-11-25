@@ -26,6 +26,7 @@ public:
     int getNumMirrorSources() const { return m_numMirrorSources; }
     //TODO - & ????
     Receiver*& getReceiver(int index) { return m_receiverVector[index]; }
+    float getMaxDelay() const { return m_maxDelay; }
 
     void addReceiver(float X, float Y, float Z);
     void removeReceiver(int receiverVectorIndex);
@@ -34,10 +35,11 @@ private:
   float m_source[3] = {6.0f, 5.0f, 0.0f};
   std::vector<Receiver*> m_receiverVector;
   std::array< float, 3> m_roomDimensions = {15.0f, 15.0f, 0.0f};
-  float m_maxDistance = 0.0f;
 
   std::vector< std::array<float, 2> > m_mirrorSources;
   int m_numMirrorSources = 0;
+
+  float m_maxDelay = 0.0f;
 
   enum coordinateIndex { topL = 0, topR, bottomR, bottomL, X = 0, Y = 1, Z = 2 };
 };

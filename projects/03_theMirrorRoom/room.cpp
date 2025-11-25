@@ -74,9 +74,12 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
 
   // calculate max distance, not very pretty but works
+  //maybe move?
   float TopRightCorner [] = {m_roomDimensions[X]/2.0f, m_roomDimensions[Y]/2.0f, m_roomDimensions[Z]/2.0f};
   float BottomLeftMirrorCorner [] = {-(1 + 2*diagonalOrder) * m_roomDimensions[X]/2.0f, -(1 + 2*diagonalOrder) * m_roomDimensions[Y]/2.0f,  -(1 + 2*diagonalOrder) * m_roomDimensions[Z]/2.0f};
-  m_maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
+  float maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
+  //caclulate maxDelay
+   m_maxDelay = maxDistance / 343 * 1000;
 }
 
 void Room::addReceiver(float X, float Y, float Z)
