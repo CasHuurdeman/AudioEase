@@ -19,9 +19,6 @@ public:
     std::vector<std::array<float, 2>>& getReflections() { return m_reflections;}
     int getNumReflections() const { return m_reflections.size(); }
 
-    float calculateDistance(float coordinatesA[], float coordinatesB[], size_t sizeA, size_t sizeB);
-    float square(float value) { return value*value; }
-
 private:
     float m_coordinates[3];
     float m_sourceAmplitude = 0.0f;

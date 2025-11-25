@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include "calculateDistance.h"
 
 Room::Room(/*float xSize, float ySize, float zSize*/) {
   std::cout << "Room - constructor" << std::endl;
@@ -45,6 +46,7 @@ void Room::prepare(int numChannels) {
 void Room::calculateMirrorSources(const int diagonalOrder)
 {
   //TODO - EXPLANATION!!!!!!!!!!!!!
+  // TODO - 3D
   std::vector arrX = {m_source[X]};
   std::vector arrY = {m_source[Y]};
 
@@ -70,6 +72,11 @@ void Room::calculateMirrorSources(const int diagonalOrder)
 
   //save numMirrorSources
   m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
+
+  // calculate max distance, not very pretty but works
+  float TopRightCorner [] = {m_roomDimensions[X]/2.0f, m_roomDimensions[Y]/2.0f, m_roomDimensions[Z]/2.0f};
+  float BottomLeftMirrorCorner [] = {-(1 + 2*diagonalOrder) * m_roomDimensions[X]/2.0f, -(1 + 2*diagonalOrder) * m_roomDimensions[Y]/2.0f,  -(1 + 2*diagonalOrder) * m_roomDimensions[Z]/2.0f};
+  m_maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
 }
 
 void Room::addReceiver(float X, float Y, float Z)

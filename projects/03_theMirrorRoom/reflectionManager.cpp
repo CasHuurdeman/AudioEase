@@ -50,12 +50,9 @@ float ReflectionManager::process(float input, int channel)
 //FIXME VECTOR UBSCRIPT OUT OF RANGE
 void ReflectionManager::createDelays()
 {
-    std::cout << "Beep, numchannels: " << m_numChannels << std::endl;
     for (int channel = 0; channel < m_numChannels; channel++)
     {
-
         m_delays.resize(m_room.getReceiver(channel)->getNumReflections());
-
 
         for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
         {
