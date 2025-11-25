@@ -17,11 +17,16 @@ public:
 
   float getBypassStatus() const { return m_bypassOn; }
   void setBypass(bool bypassOn);
+  void setNormalised(bool normalised);
+
+  void initNumChannels(int numChannels);
 
 private:
   Room m_room;
   std::vector<TappedDelay*> m_delays;
 
   bool m_bypassOn = false;
+  int numChannels;
+  bool m_normalised = true;
 };
 

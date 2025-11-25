@@ -8,14 +8,15 @@ project(plot VERSION 0.0.1)
 juce_add_console_app(plot
     PRODUCT_NAME "Console App Example")
 
-set(DIR ../04_tappedDelay)
+set(DIR ../03_theMirrorRoom)
 
 target_sources(plot PRIVATE
 
-#        ${DIR}/reflectionManager.cpp
+        ${DIR}/reflectionManager.cpp
         ${DIR}/circularBuffer.cpp
         ${DIR}/tappedDelay.cpp
-#        ${DIR}/room.cpp
+        ${DIR}/room.cpp
+        ${DIR}/receiver.cpp
         main.cpp)
 
 

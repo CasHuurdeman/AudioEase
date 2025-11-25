@@ -13,11 +13,11 @@ public:
     Receiver(float X, float Y, float Z);
     ~Receiver();
 
-    void calculateReflections(float source[], int arrayLength, std::vector< std::array<float, 2> > mirrorSources, int numMirrorSources);
+    void calculateReflections(float source[], size_t arrayLength, std::vector< std::array<float, 2> > mirrorSources, int numMirrorSources);
 
     float getSourceAmplitude() const { return m_sourceAmplitude; }
     std::vector<std::array<float, 2>>& getReflections() { return m_reflections;}
-    int getNumReflections() { return m_reflections.size(); }
+    int getNumReflections() const { return m_reflections.size(); }
 
     float calculateDistance(float coordinatesA[], float coordinatesB[], size_t sizeA, size_t sizeB);
     float square(float value) { return value*value; }

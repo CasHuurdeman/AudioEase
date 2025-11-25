@@ -7,10 +7,8 @@
 #include <filesystem>
 #include <iostream>
 
-
-Room::Room(/*float xSize, float ySize, float zSize*/)
-{
-//  std::cout << "Room - constructor" << std::endl;
+Room::Room(/*float xSize, float ySize, float zSize*/) {
+  std::cout << "Room - constructor" << std::endl;
 
   // m_roomDimensions[0] = xSize;
   // m_roomDimensions[1] = ySize;
@@ -18,12 +16,13 @@ Room::Room(/*float xSize, float ySize, float zSize*/)
 
   // createRoom();
   calculateMirrorSources(7);
-  addReceiver(0,0,0);
+  addReceiver(0.0f, 0.0f, 0.0f);
+  m_receiverVector[0]->calculateReflections(m_source, std::size(m_source), m_mirrorSources, m_numMirrorSources);
 }
 
 Room::~Room()
 {
-//	std::cout << "Room - destructor" << std::endl;
+	std::cout << "Room - destructor" << std::endl;
 }
 
 void Room::calculateMirrorSources(const int diagonalOrder)
@@ -51,9 +50,6 @@ void Room::calculateMirrorSources(const int diagonalOrder)
       m_mirrorSources.push_back({j, k});
     }
   }
-
-  //delete the m_source coordinate
-  m_mirrorSources.erase(m_mirrorSources.begin());
 
   //save numMirrorSources
   m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
