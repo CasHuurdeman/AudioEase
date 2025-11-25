@@ -92,6 +92,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
     m_reflectionManager = new ReflectionManager();
+    m_reflectionManager->prepare(getTotalNumOutputChannels());
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -136,7 +137,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
         buffer.clear (i, 0, buffer.getNumSamples());
     }
-    m_reflectionManager->initNumChannels(totalNumOutputChannels);
 
 //with focusrite solo now works with only 1 channel (left or right)
 //so not mono to stereo yet, only mono to mono or stereo to stereo
@@ -147,7 +147,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
         //samplewise
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-            output[sample] = m_reflectionManager->process(input[sample]);
+            output[sample] = m_reflectionManager->process(input[sample], channel);
         }
     }
 }

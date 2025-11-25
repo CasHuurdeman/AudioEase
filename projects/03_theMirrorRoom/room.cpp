@@ -16,7 +16,9 @@ Room::Room(/*float xSize, float ySize, float zSize*/) {
 
   // createRoom();
   calculateMirrorSources(7);
+  //TODO - make scalable to numOutPuts
   addReceiver(0.0f, 0.0f, 0.0f);
+  addReceiver(0.2f, 0.0f, 0.0f);
   m_receiverVector[0]->calculateReflections(m_source, std::size(m_source), m_mirrorSources, m_numMirrorSources);
 }
 

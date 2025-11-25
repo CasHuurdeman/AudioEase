@@ -13,20 +13,20 @@ public:
   ~ReflectionManager();
 
   void createDelays();
-  float process(float input);
+  float process(float input, int channel);
 
   float getBypassStatus() const { return m_bypassOn; }
   void setBypass(bool bypassOn);
   void setNormalised(bool normalised);
 
-  void initNumChannels(int numChannels);
+  void prepare(int numChannels);
 
 private:
   Room m_room;
   std::vector<TappedDelay*> m_delays;
 
   bool m_bypassOn = false;
-  int numChannels;
+  int m_numChannels = 0;
   bool m_normalised = true;
 };
 
