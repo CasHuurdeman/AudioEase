@@ -6,7 +6,6 @@
 
 #include "reflectionManager.h"
 #include <iostream>
-// #include "tappedDelay.h"
 #include "customPrint.h"
 #include "dspMath.h"
 
@@ -61,9 +60,4 @@ void ReflectionManager::createDelays()
             m_buffers[channel]->addReadHead(samplesDelay);
         }
     }
-}
-
-void ReflectionManager::setBypass(bool bypassOn)
-{
-    m_bypassOn = bypassOn;
 }

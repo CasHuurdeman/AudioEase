@@ -14,7 +14,7 @@ target_sources(plot PRIVATE
 
         ${DIR}/reflectionManager.cpp
         ${DIR}/circularBuffer.cpp
-        ${DIR}/tappedDelay.cpp
+#        ${DIR}/tappedDelay.cpp
         ${DIR}/room.cpp
         ${DIR}/receiver.cpp
         main.cpp)

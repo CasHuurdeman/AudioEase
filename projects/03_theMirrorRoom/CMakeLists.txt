@@ -22,12 +22,11 @@ juce_add_plugin(03_theMirrorRoom
 
 target_sources(03_theMirrorRoom  PRIVATE
         circularBuffer.cpp
-        tappedDelay.cpp
         room.cpp
         receiver.cpp
         reflectionManager.cpp
-        PluginEditor.cpp
-        PluginProcessor.cpp
+        JUCE_files/PluginEditor.cpp
+        JUCE_files/PluginProcessor.cpp
 )
 
 target_compile_definitions(03_theMirrorRoom  PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0

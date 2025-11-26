@@ -15,8 +15,9 @@ Room::Room(/*float xSize, float ySize, float zSize*/) {
   // m_roomDimensions[1] = ySize;
   // m_roomDimensions[2] = zSize;
 
-  // createRoom();
-  calculateMirrorSources(6);
+  int diagonalOrder = 4;
+  calculateMirrorSources(diagonalOrder);
+  calculateMaxDistance(diagonalOrder);
 }
 
 Room::~Room()
@@ -24,6 +25,7 @@ Room::~Room()
 	std::cout << "Room - destructor" << std::endl;
 }
 
+//TODO - a lot of this might need a process fuction
 void Room::prepare(int numChannels) {
 
   addReceiver(0.0f, 0.0f, 0.0f);
@@ -38,7 +40,8 @@ void Room::prepare(int numChannels) {
   //calculate al reflections of all receivers
   for (Receiver* receiver : m_receiverVector)
   {
-    receiver->calculateReflections(m_source, std::size(m_source), m_mirrorSources, m_numMirrorSources);
+    receiver->calculateReflections(m_mirrorSources, m_numMirrorSources, m_soundSpeed);
+    receiver->calculateSourceAmplitude(m_source, std::size(m_source));
   }
 }
 
@@ -50,8 +53,8 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   std::vector arrX = {m_source[X]};
   std::vector arrY = {m_source[Y]};
 
-  int a = -1;
   //calculate the different X and Y values to be used
+  int a = -1;
   for (int i = 1; i <= diagonalOrder; i++)
   {
     arrX.push_back(static_cast<float>(i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
@@ -72,20 +75,20 @@ void Room::calculateMirrorSources(const int diagonalOrder)
 
   //save numMirrorSources
   m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
-
-  // calculate max distance, not very pretty but works
-  //maybe move?
-  float TopRightCorner [] = {m_roomDimensions[X]/2.0f, m_roomDimensions[Y]/2.0f, m_roomDimensions[Z]/2.0f};
-  float BottomLeftMirrorCorner [] = {-(1 + 2*diagonalOrder) * m_roomDimensions[X]/2.0f, -(1 + 2*diagonalOrder) * m_roomDimensions[Y]/2.0f,  -(1 + 2*diagonalOrder) * m_roomDimensions[Z]/2.0f};
-  float maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
-  //caclulate maxDelay
-   m_maxDelay = maxDistance / 343 * 1000;
 }
 
-void Room::addReceiver(float X, float Y, float Z)
+void Room::calculateMaxDistance(int diagonalOrder)
 {
-   m_receiverVector.push_back(new Receiver(X, Y, Z));
+  // calculate max distance, not very pretty but works
+  float m = -(0.5f + static_cast<float>(diagonalOrder));
+  float BottomLeftMirrorCorner [] = {m * m_roomDimensions[X], m * m_roomDimensions[Y],  m * m_roomDimensions[Z]};
+  float TopRightCorner [] = {m_roomDimensions[X]/2.0f, m_roomDimensions[Y]/2.0f, m_roomDimensions[Z]/2.0f};
+  float maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
+
+  //caclulate maxDelay
+  m_maxDelay = maxDistance / m_soundSpeed * 1000;
 }
+
 
 void Room::removeReceiver(int receiverVectorIndex)
 {
@@ -118,6 +121,9 @@ void Room::removeReceiver(int receiverVectorIndex)
 
 
 //TODO - createRoom() has no need now
+//
+// ADD ENUM: topL = 0, topR, bottomR, bottomL,
+//
 // void Room::createRoom()
 // {
 //   //Array with coordinates of the corners

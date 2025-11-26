@@ -5,21 +5,21 @@
 #pragma once
 #include <vector>
 #include "room.h"
-#include "tappedDelay.h"
+#include "circularBuffer.h"
 
 class ReflectionManager {
 public:
   ReflectionManager();
   ~ReflectionManager();
 
-  void createDelays();
+  void prepare(int sampleRate, int numChannels);
   float process(float input, int channel);
 
-  bool getBypassStatus() const { return m_bypassOn; }
-  void setBypass(bool bypassOn);
-  void setNormalised(bool normalised);
+  void createDelays();
 
-  void prepare(int sampleRate, int numChannels);
+  //=========================GETTERS AND SETTERS======================================
+  [[nodiscard]] bool getBypassStatus() const { return m_bypassOn; }
+  void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
 
 private:
   Room m_room;
