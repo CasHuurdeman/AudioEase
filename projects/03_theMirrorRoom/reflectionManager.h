@@ -15,18 +15,19 @@ public:
   void createDelays();
   float process(float input, int channel);
 
-  float getBypassStatus() const { return m_bypassOn; }
+  bool getBypassStatus() const { return m_bypassOn; }
   void setBypass(bool bypassOn);
   void setNormalised(bool normalised);
 
-  void prepare(int numChannels);
+  void prepare(int sampleRate, int numChannels);
 
 private:
   Room m_room;
-  std::vector<TappedDelay*> m_delays;
+  std::vector<CircularBuffer*> m_buffers;
 
+  float m_feedback = 0.0f;
   bool m_bypassOn = false;
   int m_numChannels = 0;
-  bool m_normalised = true;
+  int m_sampleRate = 48000;
 };
 

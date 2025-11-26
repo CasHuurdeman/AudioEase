@@ -3,12 +3,12 @@
 //
 
 // in room.cpp and receiver.cpp too
-#define SOURCE_SEPERATED  0
 
 #include "reflectionManager.h"
 #include <iostream>
-#include "tappedDelay.h"
+// #include "tappedDelay.h"
 #include "customPrint.h"
+#include "dspMath.h"
 
 //TODO - als ik er nu twee aanroep worden dezelfde dingen ook twee keer berekend. Dit is in pricipe niet erg straks als ik met twee oren/speakers ga werken, tenzij ik dat in de class zelf wil regelen
 // --> GEEF EEN POINTER VAN ROOM MEE IN DE CONSTRUCTOR
@@ -22,8 +22,9 @@ ReflectionManager::~ReflectionManager()
     std::cout << "ReflectionManager - destructor" << std::endl;
 }
 
-void ReflectionManager::prepare(int numChannels) {
+void ReflectionManager::prepare(int sampleRate, int numChannels) {
     m_numChannels = numChannels;
+    m_sampleRate = sampleRate;
     m_room.prepare(numChannels);
     createDelays();
 }
@@ -36,28 +37,28 @@ float ReflectionManager::process(float input, int channel)
     float output = 0;
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
-        // /room.getSourceAmplitude -> To normalise the reflections for the input
-        // (the same effect as input * room.getSourceAmplitude() and then gaining everything up)
-        const float normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude() * static_cast<int>(m_normalised);
-        output += m_delays[i]->process(input) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
+    // /room.getSourceAmplitude -> To normalise the reflections for the input
+    // (the same effect as input * room.getSourceAmplitude() and then gaining everything up)
+    const float normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
+    output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }
+    m_buffers[channel]->write(output * m_feedback + input);
 
     return output;
 }
 
-//TODO - start with biggest delay, after that make smaller delays
-//TODO - ALSO NEEDS TO BE PER CHANNEL!!!!!
-//FIXME VECTOR UBSCRIPT OUT OF RANGE
 void ReflectionManager::createDelays()
 {
+    m_buffers.resize(m_numChannels);
     for (int channel = 0; channel < m_numChannels; channel++)
     {
-        m_delays.resize(m_room.getReceiver(channel)->getNumReflections());
+        float samplesDelay = dspMath::msToSamples(m_room.getMaxDelay(), m_sampleRate);
+        m_buffers[channel] = new CircularBuffer(static_cast<int>(ceil(samplesDelay)));
 
         for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
         {
-            m_delays[i] = new TappedDelay(m_room.getReceiver(channel)->getReflections()[i][0], 0);;
-            // std::cout << "Reflections: " << room.getReflections()[i][0]<< std::endl;
+            samplesDelay = dspMath::msToSamples(m_room.getReceiver(channel)->getReflections()[i][0], m_sampleRate);
+            m_buffers[channel]->addReadHead(samplesDelay);
         }
     }
 }
@@ -65,9 +66,4 @@ void ReflectionManager::createDelays()
 void ReflectionManager::setBypass(bool bypassOn)
 {
     m_bypassOn = bypassOn;
-}
-
-void ReflectionManager::setNormalised(bool normalised)
-{
-    m_normalised = normalised;
 }

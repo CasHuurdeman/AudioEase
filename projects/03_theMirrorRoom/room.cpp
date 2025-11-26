@@ -16,7 +16,7 @@ Room::Room(/*float xSize, float ySize, float zSize*/) {
   // m_roomDimensions[2] = zSize;
 
   // createRoom();
-  calculateMirrorSources(5);
+  calculateMirrorSources(6);
 }
 
 Room::~Room()

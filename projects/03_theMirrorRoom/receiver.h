@@ -17,10 +17,10 @@ public:
 
     float getSourceAmplitude() const { return m_sourceAmplitude; }
     std::vector<std::array<float, 2>>& getReflections() { return m_reflections;}
-    int getNumReflections() const { return m_reflections.size(); }
+    int getNumReflections() const { return static_cast<int>(m_reflections.size()); }
 
 private:
-    float m_coordinates[3];
+    float m_coordinates[3] {0.0f, 0.0f, 0.0f};
     float m_sourceAmplitude = 0.0f;
 
     float m_soundSpeed = 343.0f;  //in m/s @20 deg celcius

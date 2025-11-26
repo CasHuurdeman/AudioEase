@@ -10,7 +10,7 @@
 //=========================CONSTRUCTORS AND DESTRUCTORS=====================
 CircularBuffer::CircularBuffer(int bufferSize)
 {
-  // std::cout << "CircularBuffer - constructor" << std::endl;
+  std::cout << "CircularBuffer - constructor(int bufferSize)" << std::endl;
 
 	//The plus one is so that calling write before read doesn't matter anymore, so not necessarily needed
     m_bufferSize = bufferSize;
@@ -21,11 +21,12 @@ CircularBuffer::CircularBuffer(int bufferSize)
     {
         m_buffer[i] = 0;
     }
+	m_readHeads.clear();
 }
 
 CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
 {
-	// std::cout << "CircularBuffer - constructor" << std::endl;
+	std::cout << "CircularBuffer - constructor(float samplesDelay, int bufferSize)" << std::endl;
 
     m_bufferSize = bufferSize;
 

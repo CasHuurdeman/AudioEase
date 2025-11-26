@@ -19,9 +19,9 @@ int main()
      ReflectionManager reflectionManager;
      Pulse pulse;
 
-     reflectionManager.prepare(2);
+     reflectionManager.prepare(48000, 2);
 
-     for (int i = 0; i < 4800; i++)
+     for (int i = 0; i < 48000; i++)
      {
          fileWriter.writeToFile(reflectionManager.process(pulse.givePulse(), 1));
      }

@@ -32,9 +32,9 @@ public:
     void removeReceiver(int receiverVectorIndex);
 private:
   //these are the coordinates (in meters) of the source
-  float m_source[3] = {6.0f, 5.0f, 0.0f};
+  float m_source[3] = {2.3f, 1.2f, 0.0f};
   std::vector<Receiver*> m_receiverVector;
-  std::array< float, 3> m_roomDimensions = {15.0f, 15.0f, 0.0f};
+  std::array< float, 3> m_roomDimensions = {6.0f, 6.0f, 0.0f};
 
   std::vector< std::array<float, 2> > m_mirrorSources;
   int m_numMirrorSources = 0;

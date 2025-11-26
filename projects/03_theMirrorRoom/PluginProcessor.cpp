@@ -93,7 +93,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 
     //FIXME - WHY THE NOISE
     m_reflectionManager = new ReflectionManager();
-    m_reflectionManager->prepare(getTotalNumOutputChannels());
+    m_reflectionManager->prepare(static_cast<int>(sampleRate), getTotalNumOutputChannels());
 }
 
 void AudioPluginAudioProcessor::releaseResources()
