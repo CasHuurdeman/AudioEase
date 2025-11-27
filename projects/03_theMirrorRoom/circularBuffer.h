@@ -5,6 +5,8 @@
 #pragma once
 #include <vector>
 
+using std::vector;
+
 //CircularBuffer with multiple readHeads
 class CircularBuffer
 {
@@ -27,7 +29,7 @@ public:
   [[nodiscard]] int getBufferSize() const { return m_bufferSize; }
   [[nodiscard]] size_t getNumReadHeads() const { return m_readHeads.size(); }
   //special case of having the getter in the cpp file
-  std::vector<float> getSamplesDelay();
+  vector<float> getSamplesDelay();
 
   void setSamplesDelay(int readHeadIndex, float samplesDelay);
 
@@ -35,7 +37,7 @@ private:
   float* m_buffer = nullptr;
   int m_bufferSize = 0;
 
-  std::vector<float> m_readHeads= {0.0f};
+  vector<float> m_readHeads = {0.0f};
   int m_writeHead = 0;
 };
 

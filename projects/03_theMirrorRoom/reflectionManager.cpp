@@ -24,20 +24,23 @@ ReflectionManager::~ReflectionManager()
 void ReflectionManager::prepare(int sampleRate, int numChannels) {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
-    m_room.prepare(numChannels);
+
+    m_room.prepareReceivers(numChannels);
+
     createDelays();
 }
 
 
 float ReflectionManager::process(float input, int channel)
 {
+    //========================BYPASS===================================
     if(m_bypassOn){ return input; }
 
+    //=========================DELAY===================================
     float output = 0;
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
-    // /room.getSourceAmplitude -> To normalise the reflections for the input
-    // (the same effect as input * room.getSourceAmplitude() and then gaining everything up)
+    // normalising the first reflection to input level and the rest with it
     const float normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
     output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }

@@ -4,15 +4,19 @@
 // including code from https://www.youtube.com/watch?v=mYBr-Yb70Z4
 //
 #include <iostream>
+#include <array>
+#include <vector>
 #include <cmath>
 #include "../04_tappedDelay/circularBuffer.h"
 
 
 int main()
 {
-    bool normalised = true;
+    using namespace std;
 
-    std::cout << static_cast<int>(normalised) << std::endl;
+    vector<array<int, 2>> A = {{1,2}, {3,4}, {5,6}};
+
+    cout << size(A) << endl;
 
 //   CircularBuffer circBuffer{10};
 //   circBuffer.addReadHead(10);

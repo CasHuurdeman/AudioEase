@@ -118,9 +118,9 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
     }
 }
 
-std::vector<float> CircularBuffer::getSamplesDelay()
+vector<float> CircularBuffer::getSamplesDelay()
 {
-  std::vector<float> samplesDelay;
+  vector<float> samplesDelay;
   for(float readHead : m_readHeads)
   {
     float delay = static_cast<float>(m_writeHead) - readHead + static_cast<float>(m_bufferSize);

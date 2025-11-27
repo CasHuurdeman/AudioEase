@@ -8,12 +8,8 @@
 #include <iostream>
 #include "calculateDistance.h"
 
-Room::Room(/*float xSize, float ySize, float zSize*/) {
+Room::Room() {
   std::cout << "Room - constructor" << std::endl;
-
-  // m_roomDimensions[0] = xSize;
-  // m_roomDimensions[1] = ySize;
-  // m_roomDimensions[2] = zSize;
 
   int diagonalOrder = 4;
   calculateMirrorSources(diagonalOrder);
@@ -26,8 +22,8 @@ Room::~Room()
 }
 
 //TODO - a lot of this might need a process fuction
-void Room::prepare(int numChannels) {
-
+void Room::prepareReceivers(int numChannels)
+{
   addReceiver(0.0f, 0.0f, 0.0f);
   addReceiver(0.2f, 0.0f, 0.0f);
 
@@ -40,8 +36,8 @@ void Room::prepare(int numChannels) {
   //calculate al reflections of all receivers
   for (Receiver* receiver : m_receiverVector)
   {
-    receiver->calculateReflections(m_mirrorSources, m_numMirrorSources, m_soundSpeed);
-    receiver->calculateSourceAmplitude(m_source, std::size(m_source));
+    receiver->calculateReflections(m_mirrorSources, size(m_mirrorSources), m_soundSpeed);
+    receiver->calculateSourceAmplitude(m_source, size(m_source));
   }
 }
 
@@ -50,8 +46,8 @@ void Room::calculateMirrorSources(const int diagonalOrder)
 {
   //TODO - EXPLANATION!!!!!!!!!!!!!
   // TODO - 3D
-  std::vector arrX = {m_source[X]};
-  std::vector arrY = {m_source[Y]};
+  vector arrX = {m_source[X]};
+  vector arrY = {m_source[Y]};
 
   //calculate the different X and Y values to be used
   int a = -1;
@@ -72,9 +68,6 @@ void Room::calculateMirrorSources(const int diagonalOrder)
       m_mirrorSources.push_back({j, k});
     }
   }
-
-  //save numMirrorSources
-  m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
 }
 
 void Room::calculateMaxDistance(int diagonalOrder)
@@ -82,7 +75,7 @@ void Room::calculateMaxDistance(int diagonalOrder)
   // calculate max distance, not very pretty but works
   float m = -(0.5f + static_cast<float>(diagonalOrder));
   float BottomLeftMirrorCorner [] = {m * m_roomDimensions[X], m * m_roomDimensions[Y],  m * m_roomDimensions[Z]};
-  float TopRightCorner [] = {m_roomDimensions[X]/2.0f, m_roomDimensions[Y]/2.0f, m_roomDimensions[Z]/2.0f};
+  float TopRightCorner [] = {0.5f * m_roomDimensions[X], 0.5f * m_roomDimensions[Y], 0.5f * m_roomDimensions[Z]};
   float maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
 
   //caclulate maxDelay
@@ -90,16 +83,16 @@ void Room::calculateMaxDistance(int diagonalOrder)
 }
 
 
-void Room::removeReceiver(int receiverVectorIndex)
+void Room::removeReceiver(int receiverIndex)
 {
-	if (receiverVectorIndex < m_receiverVector.size())
+	if (receiverIndex < m_receiverVector.size())
 	{
 		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
 	}
 
-  delete m_receiverVector[receiverVectorIndex];
-  m_receiverVector[receiverVectorIndex] = nullptr;
-	m_receiverVector.erase(m_receiverVector.begin() + receiverVectorIndex);
+  delete m_receiverVector[receiverIndex];
+  m_receiverVector[receiverIndex] = nullptr;
+	m_receiverVector.erase(m_receiverVector.begin() + receiverIndex);
 }
 
 

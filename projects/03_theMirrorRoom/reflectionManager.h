@@ -7,6 +7,8 @@
 #include "room.h"
 #include "circularBuffer.h"
 
+using std::vector;
+
 class ReflectionManager {
 public:
   ReflectionManager();
@@ -14,6 +16,7 @@ public:
 
   void prepare(int sampleRate, int numChannels);
   float process(float input, int channel);
+  // void updateDelays??
 
   void createDelays();
 
@@ -23,7 +26,7 @@ public:
 
 private:
   Room m_room;
-  std::vector<CircularBuffer*> m_buffers;
+  vector<CircularBuffer*> m_buffers;
 
   float m_feedback = 0.0f;
   bool m_bypassOn = false;
