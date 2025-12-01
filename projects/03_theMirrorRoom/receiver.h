@@ -6,6 +6,10 @@
 #include <vector>
 #include <array>
 
+using std::vector;
+using std::array;
+using std::size;
+
 class Receiver{
 
 public:
@@ -13,23 +17,20 @@ public:
     Receiver(float X, float Y, float Z);
     ~Receiver();
 
-    void calculateReflections(float source[], int arrayLength, std::vector< std::array<float, 2> > mirrorSources, int numMirrorSources);
+    //FIXME - I DONT NEED TO KNOW EVERY REFLECTION EVERY TIME I MOVE, JUST THE ONES THAT GET TO THE RECEIVER IN THAT SPECIFIC MOMENT
+    void calculateReflections(vector< array<float, 3> > mirrorSources,
+        int numMirrorSources, float soundSpeed);
+    void calculateSourceAmplitude(float source[], size_t arrayLength);
 
+    //================================GETTERS================================================
     float getSourceAmplitude() const { return m_sourceAmplitude; }
-    std::vector<std::array<float, 2>>& getReflections() { return m_reflections;}
-    int getNumReflections() { return m_reflections.size(); }
-
-    float calculateDistance(float coordinatesA[], float coordinatesB[], size_t sizeA, size_t sizeB);
-    float square(float value) { return value*value; }
+    vector< array<float, 2> >& getReflections() { return m_reflections;}
+    int getNumReflections() const { return static_cast<int>(m_reflections.size()); }
 
 private:
-    float m_coordinates[3];
+    float m_coordinates[3] {0.0f, 0.0f, 0.0f};
+    vector< array< float, 2> > m_reflections;
+
     float m_sourceAmplitude = 0.0f;
-
-    float m_soundSpeed = 343.0f;  //in m/s @20 deg celcius
-
-    //TODO - do I want this here or do I want it as a return of calculateReflections
-    //0 --> delayTimes, 1--> amplitudes
-    std::vector< std::array< float, 2> > m_reflections;
 };
 

@@ -5,23 +5,36 @@
 #pragma once
 #include <vector>
 #include "room.h"
-#include "tappedDelay.h"
+#include "circularBuffer.h"
+#include "speedTest.h"
+
+using std::vector;
 
 class ReflectionManager {
 public:
   ReflectionManager();
   ~ReflectionManager();
 
-  void createDelays();
-  float process(float input);
+  void prepare(int sampleRate, int numChannels);
+  float process(float input, int channel);
+  float renderReflections(int channel);
+  // void updateDelays??
 
-  float getBypassStatus() const { return m_bypassOn; }
-  void setBypass(bool bypassOn);
+  void createDelays();
+
+  //=========================GETTERS AND SETTERS======================================
+  [[nodiscard]] bool getBypassStatus() const { return m_bypassOn; }
+  void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
 
 private:
   Room m_room;
-  std::vector<TappedDelay*> m_delays;
+  vector<CircularBuffer*> m_buffers;
 
+  float m_feedback = 0.0f;
   bool m_bypassOn = false;
+  int m_numChannels = 0;
+  int m_sampleRate = 48000;
+
+  SpeedTest speedTest;
 };
 

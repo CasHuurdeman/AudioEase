@@ -6,74 +6,102 @@
 
 #include <filesystem>
 #include <iostream>
+#include "calculateDistance.h"
 
+Room::Room() {
+  std::cout << "Room - constructor" << std::endl;
 
-Room::Room(/*float xSize, float ySize, float zSize*/)
-{
-//  std::cout << "Room - constructor" << std::endl;
-
-  // m_roomDimensions[0] = xSize;
-  // m_roomDimensions[1] = ySize;
-  // m_roomDimensions[2] = zSize;
-
-  // createRoom();
-  calculateMirrorSources(7);
-  addReceiver(0,0,0);
+  int diagonalOrder = 10;
+  calculateMirrorSources(diagonalOrder);
+  calculateMaxDistance(diagonalOrder);
 }
 
 Room::~Room()
 {
-//	std::cout << "Room - destructor" << std::endl;
+	std::cout << "Room - destructor" << std::endl;
 }
+
+//TODO - a lot of this might need a process fuction
+void Room::prepareReceivers(int numChannels)
+{
+  addReceiver(0.0f, 0.0f, 1.7f);
+  addReceiver(0.2f, 0.0f, 1.7f);
+
+//TODO - for later
+  // for (int channel = 0; channel < numChannels; channel++)
+  // {
+  //   addReceiver(0.0f, 0.0f, 0.0f);
+  // }
+
+  //calculate al reflections of all receivers
+  for (Receiver* receiver : m_receiverVector)
+  {
+    receiver->calculateReflections(m_mirrorSources, size(m_mirrorSources), m_soundSpeed);
+    receiver->calculateSourceAmplitude(m_source, size(m_source));
+  }
+}
+
 
 void Room::calculateMirrorSources(const int diagonalOrder)
 {
   //TODO - EXPLANATION!!!!!!!!!!!!!
-  std::vector arrX = {m_source[X]};
-  std::vector arrY = {m_source[Y]};
+  // TODO - 3D
+  vector arrX = {m_source[X]};
+  vector arrY = {m_source[Y]};
+  vector arrZ = {m_source[Z]};
 
-  int a = -1;
   //calculate the different X and Y values to be used
+  int a = -1;
   for (int i = 1; i <= diagonalOrder; i++)
   {
     arrX.push_back(static_cast<float>(i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
     arrX.push_back(static_cast<float>(-i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
+
     arrY.push_back(static_cast<float>(i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
     arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
+
+    //TODO - *0.5f good? --> think
+    arrY.push_back(static_cast<float>(i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
+    arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
     a *= -1;
   }
 
   //Combine all X and Y values to get the coordinates
-  for (float& j : arrX)
+  for (float& x : arrX)
   {
-    for (float& k : arrY)
+    for (float& y : arrY)
     {
-      m_mirrorSources.push_back({j, k});
+      for (float& z : arrZ)
+      {
+         m_mirrorSources.push_back({x, y, z});
+      }
     }
   }
-
-  //delete the m_source coordinate
-  m_mirrorSources.erase(m_mirrorSources.begin());
-
-  //save numMirrorSources
-  m_numMirrorSources = static_cast<int>(m_mirrorSources.size());
 }
 
-void Room::addReceiver(float X, float Y, float Z)
+void Room::calculateMaxDistance(int diagonalOrder)
 {
-   m_receiverVector.push_back(new Receiver(X, Y, Z));
+  // calculate max distance, not very pretty but works
+  float m = -(0.5f + static_cast<float>(diagonalOrder));
+  float BottomLeftMirrorCorner [] = {m * m_roomDimensions[X], m * m_roomDimensions[Y],  m * m_roomDimensions[Z]};
+  float TopRightCorner [] = {0.5f * m_roomDimensions[X], 0.5f * m_roomDimensions[Y], 0.5f * m_roomDimensions[Z]};
+  float maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
+
+  //caclulate maxDelay
+  m_maxDelay = maxDistance / m_soundSpeed * 1000;
 }
 
-void Room::removeReceiver(int receiverVectorIndex)
+
+void Room::removeReceiver(int receiverIndex)
 {
-	if (receiverVectorIndex < m_receiverVector.size())
+	if (receiverIndex < m_receiverVector.size())
 	{
 		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
 	}
 
-  delete m_receiverVector[receiverVectorIndex];
-  m_receiverVector[receiverVectorIndex] = nullptr;
-	m_receiverVector.erase(m_receiverVector.begin() + receiverVectorIndex);
+  delete m_receiverVector[receiverIndex];
+  m_receiverVector[receiverIndex] = nullptr;
+	m_receiverVector.erase(m_receiverVector.begin() + receiverIndex);
 }
 
 
@@ -95,6 +123,9 @@ void Room::removeReceiver(int receiverVectorIndex)
 
 
 //TODO - createRoom() has no need now
+//
+// ADD ENUM: topL = 0, topR, bottomR, bottomL,
+//
 // void Room::createRoom()
 // {
 //   //Array with coordinates of the corners

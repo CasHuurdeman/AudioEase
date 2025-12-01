@@ -4,6 +4,7 @@
 
 #include "receiver.h"
 #include <iostream>
+#include "calculateDistance.h"
 
 Receiver::Receiver(float X, float Y, float Z)
 {
@@ -19,44 +20,28 @@ Receiver::~Receiver()
 }
 
 
-void Receiver::calculateReflections(float source[], int arrayLength, std::vector< std::array<float, 2> > mirrorSources, int numMirrorSources)
+void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int numMirrorSources, float soundSpeed)
 {
-    //calculate amplitude from source to receiver
-    float sourceDistance = calculateDistance(source, m_coordinates, arrayLength, std::size(m_coordinates));
-    m_sourceAmplitude = 1 / pow(sourceDistance, 1.5f);
-    // std::cout << "Distance: " << distance << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
-
-
+    //does this take a lot of time?
     m_reflections.resize(numMirrorSources);
-  
     for (int i = 0; i < numMirrorSources; i++)
     {
         //Calculate distance from receiver to mirrorSources
-        float distance = calculateDistance(mirrorSources[i].data(), m_coordinates,
-          std::size(mirrorSources[i]), std::size(m_coordinates));
-    
+        float distance = CalculateDistance::calculateDistance(mirrorSources[i].data(),
+            m_coordinates, size(mirrorSources[i]), size(m_coordinates));
+
         //amplitude according to Richard Moore (Elements of computer music p370)
         float amplitude = 1 / pow(distance, 1.5f);
-        float delayTime = distance / m_soundSpeed * 1000;
+        float delayTime = distance / soundSpeed * 1000;
 
         m_reflections[i][0] = delayTime;
         m_reflections[i][1] = amplitude;
-
         // std::cout << "DelayTime" << i << ": " << m_reflections[i][0] << "\nAmplitude" << i << ": " << m_reflections[i][1] << "\nDistance" << i << ": " << distance << "\n" << std::endl;
     }
 }
 
-float Receiver::calculateDistance(float coordinatesA[], float coordinatesB[], size_t sizeA, size_t sizeB) {
-    //manage array sizes
-    int arraySize;
-    if (sizeA < sizeB) arraySize = sizeA;
-    else arraySize = sizeB;
-
-    float value = 0;
-    for (int i = 0; i < arraySize; i++)
-    {
-        value += square(coordinatesA[i] - coordinatesB[i]);
-    }
-
-    return sqrt(value);
+void Receiver::calculateSourceAmplitude(float source[], size_t arrayLength) {
+    float sourceDistance = CalculateDistance::calculateDistance(source, m_coordinates, arrayLength, std::size(m_coordinates));
+    m_sourceAmplitude = 1 / pow(sourceDistance, 1.5f);
+    // std::cout << "Distance: " << distance << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
 }

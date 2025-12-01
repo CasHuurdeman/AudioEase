@@ -8,12 +8,12 @@
 #include "interpolation.h"
 
 //=========================CONSTRUCTORS AND DESTRUCTORS=====================
-CircularBuffer::CircularBuffer(float samplesDelay)
+CircularBuffer::CircularBuffer(int bufferSize)
 {
-  // std::cout << "CircularBuffer - constructor" << std::endl;
+  std::cout << "CircularBuffer - constructor(int bufferSize)" << std::endl;
 
 	//The plus one is so that calling write before read doesn't matter anymore, so not necessarily needed
-    m_bufferSize = static_cast<int>(ceil(samplesDelay)) + 1;
+    m_bufferSize = bufferSize;
 
     //Allocate memory for m_buffer
     m_buffer = new float[m_bufferSize];
@@ -21,13 +21,12 @@ CircularBuffer::CircularBuffer(float samplesDelay)
     {
         m_buffer[i] = 0;
     }
-
-    initReadHead(m_readHeads[0], samplesDelay);
+	m_readHeads.clear();
 }
 
 CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
 {
-	// std::cout << "CircularBuffer - constructor" << std::endl;
+	std::cout << "CircularBuffer - constructor(float samplesDelay, int bufferSize)" << std::endl;
 
     m_bufferSize = bufferSize;
 
@@ -119,9 +118,9 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
     }
 }
 
-std::vector<float> CircularBuffer::getSamplesDelay()
+vector<float> CircularBuffer::getSamplesDelay()
 {
-  std::vector<float> samplesDelay;
+  vector<float> samplesDelay;
   for(float readHead : m_readHeads)
   {
     float delay = static_cast<float>(m_writeHead) - readHead + static_cast<float>(m_bufferSize);

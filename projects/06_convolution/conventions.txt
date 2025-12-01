@@ -3,8 +3,7 @@ fields in a Class: m_field, locale variabelen binnen een functie niet
 Class met hoofdletter en constructors ook
 de rest begint met kleine letters, ook objecten
 
-Everything that can fit on one line
---> HEADER ONLY
+getters header only
 
 Haakjes:
 

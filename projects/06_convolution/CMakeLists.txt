@@ -1,8 +1,6 @@
-project(03_theMirrorRoom  VERSION 0.0.1)
+project(06_convolution  VERSION 0.0.1)
 
-set(CMAKE_CXX_STANDARD 20)
-
-juce_add_plugin(03_theMirrorRoom
+juce_add_plugin(06_convolution
         # VERSION ...                               # Set this if the plugin version is different to the project version
         # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
         # ICON_SMALL ...
@@ -16,27 +14,22 @@ juce_add_plugin(03_theMirrorRoom
         PLUGIN_MANUFACTURER_CODE Juce               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE Dem0                            # A unique four-character plugin id with exactly one upper-case character
         # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
-        FORMATS Standalone VST3                         # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-        PRODUCT_NAME "The Mirror Room"         # The name of the final executable, which can differ from the target name
+        FORMATS Standalone                          # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        PRODUCT_NAME "Convolution"         # The name of the final executable, which can differ from the target name
 )
 
-target_sources(03_theMirrorRoom  PRIVATE
-        circularBuffer.cpp
-        room.cpp
-        receiver.cpp
-        reflectionManager.cpp
-        JUCE_files/PluginEditor.cpp
-        JUCE_files/PluginProcessor.cpp
+target_sources(06_convolution  PRIVATE
+#        circularBuffer.cpp
+#        tappedDelay.cpp
+#        PluginEditor.cpp
+#        PluginProcessor.cpp
 )
 
-target_compile_definitions(03_theMirrorRoom  PRIVATE
-        JUCE_WEB_BROWSER=0
-        JUCE_USE_CURL=0
-        SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}"
-        JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
+target_compile_definitions(06_convolution  PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0
+    SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-target_link_libraries(03_theMirrorRoom 
+target_link_libraries(06_convolution 
         PRIVATE
         myLibrary
         juce::juce_core

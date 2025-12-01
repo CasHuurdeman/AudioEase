@@ -8,7 +8,7 @@
 #include "writeToFile.h"
 #include <iostream>
 #include <cmath>
-#include "../04_tappedDelay/delay.h"
+#include "../03_theMirrorRoom/reflectionManager.h"
 
 int main()
 {
@@ -16,14 +16,14 @@ int main()
     WriteToFile fileWriter{sourceDir};
 
 
-     // ReflectionManager reflectionManager;
-     Delay delay{1000.0f};
-        delay.addDelayLine(300.0f);
+     ReflectionManager reflectionManager;
      Pulse pulse;
 
-     for (int i = 0; i < 4800; i++)
+     reflectionManager.prepare(48000, 2);
+
+     for (int i = 0; i < 48000; i++)
      {
-         fileWriter.writeToFile(delay.process(pulse.givePulse()));
+         fileWriter.writeToFile(reflectionManager.process(pulse.givePulse(), 1));
      }
 
      return 0;

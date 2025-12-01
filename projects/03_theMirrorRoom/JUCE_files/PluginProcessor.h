@@ -1,7 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "reflectionManager.h"
+#include "../reflectionManager.h"
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
@@ -45,7 +45,7 @@ public:
 
 private:
     //TODO - dont forget to delete
-    std::vector<ReflectionManager*> m_reflectionManagerVector;
+    ReflectionManager* m_reflectionManager;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };
