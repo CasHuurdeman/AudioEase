@@ -17,6 +17,7 @@ public:
 
   void prepare(int sampleRate, int numChannels);
   float process(float input, int channel);
+  float renderReflections(int channel);
   // void updateDelays??
 
   void createDelays();

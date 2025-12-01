@@ -11,7 +11,7 @@
 Room::Room() {
   std::cout << "Room - constructor" << std::endl;
 
-  int diagonalOrder = 4;
+  int diagonalOrder = 10;
   calculateMirrorSources(diagonalOrder);
   calculateMaxDistance(diagonalOrder);
 }

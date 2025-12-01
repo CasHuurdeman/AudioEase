@@ -36,16 +36,18 @@ float ReflectionManager::process(float input, int channel)
     //========================BYPASS===================================
     if(m_bypassOn){ return input; }
 
+    // speedTest.start();
     //=========================DELAY===================================
     float output = 0;
+    const float normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
     // normalising the first reflection to input level and the rest with it
-    const float normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
     output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }
     m_buffers[channel]->write(output * m_feedback + input);
 
+    // speedTest.printSpeed();
     return output;
 }
 
