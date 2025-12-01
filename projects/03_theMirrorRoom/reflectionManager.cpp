@@ -30,7 +30,7 @@ void ReflectionManager::prepare(int sampleRate, int numChannels) {
     createDelays();
 }
 
-
+//TODO - dit moet sneller
 float ReflectionManager::process(float input, int channel)
 {
     //========================BYPASS===================================

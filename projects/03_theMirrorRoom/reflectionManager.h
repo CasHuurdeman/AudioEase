@@ -6,6 +6,7 @@
 #include <vector>
 #include "room.h"
 #include "circularBuffer.h"
+#include "speedTest.h"
 
 using std::vector;
 
@@ -32,5 +33,7 @@ private:
   bool m_bypassOn = false;
   int m_numChannels = 0;
   int m_sampleRate = 48000;
+
+  SpeedTest speedTest;
 };
 
