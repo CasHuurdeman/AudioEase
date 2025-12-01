@@ -30,7 +30,7 @@ public:
 
 
     //=============================GETTERS=====================================
-    [[nodiscard]] int getNumMirrorSources() const { return std::size(m_mirrorSources); }
+    [[nodiscard]] int getNumMirrorSources() const { return size(m_mirrorSources); }
     [[nodiscard]] float getMaxDelay() const { return m_maxDelay; }
     Receiver*& getReceiver(const int index) { return m_receiverVector[index]; } //TODO - & ????
     //=========================================================================
@@ -38,10 +38,10 @@ public:
 
 private:
     //EVERYTHING IS IN METERS
-  float m_roomDimensions [3] = {15.0f, 15.0f, 0.0f};
+  float m_roomDimensions [3] = {6.0f, 6.0f, 6.0f};
 
-  float m_source[3] = {2.3f, 0.2f, 0.0f};
-  vector< array<float, 2> > m_mirrorSources;
+  float m_source[3] = {2.3f, 0.2f, 1.5f};
+  vector< array<float, 3> > m_mirrorSources;
 
   vector<Receiver*> m_receiverVector;
 

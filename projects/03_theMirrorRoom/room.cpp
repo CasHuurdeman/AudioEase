@@ -24,8 +24,8 @@ Room::~Room()
 //TODO - a lot of this might need a process fuction
 void Room::prepareReceivers(int numChannels)
 {
-  addReceiver(0.0f, 0.0f, 0.0f);
-  addReceiver(0.2f, 0.0f, 0.0f);
+  addReceiver(0.0f, 0.0f, 1.7f);
+  addReceiver(0.2f, 0.0f, 1.7f);
 
 //TODO - for later
   // for (int channel = 0; channel < numChannels; channel++)
@@ -48,6 +48,7 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   // TODO - 3D
   vector arrX = {m_source[X]};
   vector arrY = {m_source[Y]};
+  vector arrZ = {m_source[Z]};
 
   //calculate the different X and Y values to be used
   int a = -1;
@@ -55,17 +56,25 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   {
     arrX.push_back(static_cast<float>(i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
     arrX.push_back(static_cast<float>(-i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
+
     arrY.push_back(static_cast<float>(i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
     arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
+
+    //TODO - *0.5f good? --> think
+    arrY.push_back(static_cast<float>(i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
+    arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
     a *= -1;
   }
 
   //Combine all X and Y values to get the coordinates
-  for (float& j : arrX)
+  for (float& x : arrX)
   {
-    for (float& k : arrY)
+    for (float& y : arrY)
     {
-      m_mirrorSources.push_back({j, k});
+      for (float& z : arrZ)
+      {
+         m_mirrorSources.push_back({x, y, z});
+      }
     }
   }
 }

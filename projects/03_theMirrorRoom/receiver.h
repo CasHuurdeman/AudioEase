@@ -18,7 +18,7 @@ public:
     ~Receiver();
 
     //FIXME - I DONT NEED TO KNOW EVERY REFLECTION EVERY TIME I MOVE, JUST THE ONES THAT GET TO THE RECEIVER IN THAT SPECIFIC MOMENT
-    void calculateReflections(vector< array<float, 2> > mirrorSources,
+    void calculateReflections(vector< array<float, 3> > mirrorSources,
         int numMirrorSources, float soundSpeed);
     void calculateSourceAmplitude(float source[], size_t arrayLength);
 
