@@ -6,6 +6,7 @@ target_include_directories(audio_header INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
         /writeToFile.h,
         /customPrint.h
         /calculateDistance.h
+        /speedTest.h
 )
 
 add_library(myLibrary STATIC interpolation.cpp writeToWAV.cpp)
