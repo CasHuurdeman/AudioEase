@@ -2,31 +2,30 @@ cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_CXX_STANDARD 20)
 
-project(06_convolution VERSION 0.0.1)
+project(07_FFT VERSION 0.0.1)
 
 
-juce_add_console_app(06_convolution
+juce_add_console_app(07_FFT
     PRODUCT_NAME "Console App Example")
 
-set(DIR ../04_tappedDelay)
+#set(DIR ../04_tappedDelay)
 
-target_sources(06_convolution PRIVATE
-#        ${DIR}/circularBuffer.cpp
+target_sources(07_FFT PRIVATE
         main.cpp
 )
 
 
-target_compile_definitions(06_convolution
+target_compile_definitions(07_FFT
     PRIVATE
         # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
         JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_console_app` call
         JUCE_USE_CURL=0
-        SOURCE_DIR="../06_convolution"
+        SOURCE_DIR="../07_FFT"
 )    # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_console_app` call
 
- juce_generate_juce_header(06_convolution)
+ juce_generate_juce_header(07_FFT)
 
-target_link_libraries(06_convolution
+target_link_libraries(07_FFT
     PRIVATE
         myLibrary
         # ConsoleAppData            # If you'd created a binary data target, you'd link to it here
