@@ -27,7 +27,12 @@
 
 int main()
 {
+        int a = 1;
+        int b = 2;
+        double r = sqrt(a * a + b * b);
+        double phi = atan2(b, a);
 
+        std::cout << r*exp(-1*phi);
 
 
         // BinFile binFile("test", sourceDir);

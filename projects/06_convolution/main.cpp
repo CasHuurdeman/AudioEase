@@ -9,10 +9,10 @@
 using namespace std;
 
 #define FFT true
-typedef float T;
+typedef double T;
 
 //TODO - maybe not needed
-  // std::array<float, fftSize*2> X{};
+  // std::array<double, fftSize*2> X{};
   // X.fill(0);
   //
   // memcpy(&X, &signal, sizeof(signal));
@@ -20,12 +20,12 @@ typedef float T;
 int main()
 {
   const int fftSize = 8;
-  std::array<float, fftSize> X{1,1,1,1,0,0,0,0};
-  std::array<float, fftSize> Y{0.5,0.5,0,0,0,0,0,0};
+  std::array<double, fftSize> X{1,1,1,1,0,0,0,0};
+  std::array<double, fftSize> Y{0.5,0.5,0,0,0,0,0,0};
 #if FFT
 
 
-  std::array<float, fftSize> Z{0,0,0,0,0,0,0,0};
+  std::array<double, fftSize> Z{0,0,0,0,0,0,0,0};
 
 
   realfft_packed(&X[0], fftSize);
@@ -55,20 +55,20 @@ int main()
 #else
   //NORMAL CONVOLUTION
   std::cout << "\nNORMAL CONVOLUTION: \n";
-  // constexpr float X[4] = {1,1,1,1};
-  // constexpr float Y[4] = {0.5,0.5,0};
-  vector<float> Z;
+  // constexpr double X[4] = {1,1,1,1};
+  // constexpr double Y[4] = {0.5,0.5,0};
+  vector<double> Z;
 
   for(int n = 0; n < 10; n++)
   {
-    float sum = 0;
+    double sum = 0;
     for(int k = 0; k < 4; k++)
     {
-      float a;
+      double a;
       if (n-k < 0 || fftSize <= n)  a = 0;
       else  a = X[n-k];
 
-      float b;
+      double b;
       if (k < 0 || fftSize <= k) b = 0;
       else b = Y[k];
 

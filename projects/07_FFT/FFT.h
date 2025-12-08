@@ -5,13 +5,11 @@
 #pragma once
 #include <cmath>
 
-typedef float T;
-
-T PI = 4*atan(1);
+const double PI = 4*atan(1);
 
 /////////////////////////////////////////////////////////
 // Decimation-in-freq radix-2 in-place butterfly
-// data: array of Ts:
+// data: array of doubles:
 // re(0),im(0),re(1),im(1),...,re(size-1),im(size-1)
 // it means that size=array_length/2 !!
 //
@@ -22,11 +20,11 @@ T PI = 4*atan(1);
 // Source: Rabiner-Gold: Theory and Application of DSP,
 // Prentice Hall,1978
 
-void dif_butterfly(T *data,long size){
+void dif_butterfly(double *data,long size){
 
 	long angle,astep,dl;
-	T xr,yr,xi,yi,wr,wi,dr,di,ang;
-	T *l1, *l2, *end, *ol2;
+	double xr,yr,xi,yi,wr,wi,dr,di,ang;
+	double *l1, *l2, *end, *ol2;
 
      astep=1;
 	 end=data+size+size;
@@ -55,7 +53,7 @@ void dif_butterfly(T *data,long size){
 
 /////////////////////////////////////////////////////////
 // Decimation-in-time radix-2 in-place inverse butterfly
-// data: array of Ts:
+// data: array of doubles:
 // re(0),im(0),re(1),im(1),...,re(size-1),im(size-1)
 // it means that size=array_length/2 !!
 //
@@ -66,11 +64,11 @@ void dif_butterfly(T *data,long size){
 // Source: Rabiner-Gold: Theory and Application of DSP,
 // Prentice Hall,1978
 
-void inverse_dit_butterfly(T *data,long size){
+void inverse_dit_butterfly(double *data,long size){
 
 	long angle,astep,dl;
-	T xr,yr,xi,yi,wr,wi,dr,di,ang;
-	T *l1, *l2, *end, *ol2;
+	double xr,yr,xi,yi,wr,wi,dr,di,ang;
+	double *l1, *l2, *end, *ol2;
 
      astep=size>>1;
 	 end=data+size+size;
@@ -99,17 +97,17 @@ void inverse_dit_butterfly(T *data,long size){
 
 /////////////////////////////////////////////////////////
 // data shuffling into bit-reversed order
-// data: array of Ts:
+// data: array of doubles:
 // re(0),im(0),re(1),im(1),...,re(size-1),im(size-1)
 // it means that size=array_length/2 !!
 //
 // Source: Rabiner-Gold: Theory and Application of DSP,
 // Prentice Hall,1978
 
-void unshuffle(T *data, long size){
+void unshuffle(double *data, long size){
 
 	long i,j,k,l,m;
-	T re,im;
+	double re,im;
 
 	//old version - turned out to be a bit slower
     /*for(i=0;i<size-1;i++){
@@ -145,10 +143,10 @@ for (i=0,j=0; i<l ; i++){
 // Source: Brigham: The Fast Fourier Transform
 // Prentice Hall, ?
 
-void realize(T *data, long size){
+void realize(double *data, long size){
 
-	T xr,yr,xi,yi,wr,wi,dr,di,ang,astep;
-	T *l1, *l2;
+	double xr,yr,xi,yi,wr,wi,dr,di,ang,astep;
+	double *l1, *l2;
 
 	l1=data;
 	l2=data+size+size-2;
@@ -181,10 +179,10 @@ void realize(T *data, long size){
 // Source: Brigham: The Fast Fourier Transform
 // Prentice Hall, ?
 
-void unrealize(T *data, long size){
+void unrealize(double *data, long size){
 
-	T xr,yr,xi,yi,wr,wi,dr,di,ang,astep;
-	T *l1, *l2;
+	double xr,yr,xi,yi,wr,wi,dr,di,ang,astep;
+	double *l1, *l2;
 
 	l1=data;
 	l2=data+size+size-2;
@@ -213,7 +211,7 @@ void unrealize(T *data, long size){
 /////////////////////////////////////////////////////////
 // in-place Radix-2 FFT for real values
 // (by the so-called "packing method")
-// data: array of Ts:
+// data: array of doubles:
 // re(0),re(1),re(2),...,re(size-1)
 //
 // output:
@@ -222,10 +220,10 @@ void unrealize(T *data, long size){
 //
 // Source: see the routines it calls ...
 
-void realfft_packed(T *data, long size){
+void realfft_packed(double *data, long size){
 
-	T *l, *end;
-	T div;
+	double *l, *end;
+	double div;
 
 	size>>=1;
 	dif_butterfly(data,size);
@@ -241,7 +239,7 @@ void realfft_packed(T *data, long size){
 /////////////////////////////////////////////////////////
 // in-place Radix-2 inverse FFT for real values
 // (by the so-called "packing method")
-// data: array of Ts:
+// data: array of doubles:
 // re(0),re(size/2),re(1),im(1),re(2),im(2),...,re(size/2-1),im(size/2-1)
 //
 // output:
@@ -250,10 +248,10 @@ void realfft_packed(T *data, long size){
 //
 //Source: see the routines it calls ...
 
-void irealfft_packed(T *data, long size){
+void irealfft_packed(double *data, long size){
 
-	T *l, *end;
-	T div;
+	double *l, *end;
+	double div;
 
 	size>>=1;
 	unrealize(data,size);
