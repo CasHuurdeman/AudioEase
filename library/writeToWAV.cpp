@@ -58,14 +58,16 @@ void WriteToWAV::writeAsBytes(std::ofstream &file, auto value, const int byteSiz
     file.write(reinterpret_cast<const char*>(&value), byteSize);
 }
 
-//change to make it for n channels?
-void WriteToWAV::write(const float channel1, const float channel2)
+void WriteToWAV::writeSample(std::ofstream &file, float value)
 {
-    writeAsBytes(m_wav, channel1*32767.0f, 2);
-    writeAsBytes(m_wav, channel2*32767.0f, 2);
+    //nvalue is needed here
+    int16_t nvalue = static_cast<int16_t>(value);
+    file.write(reinterpret_cast<const char*>(&nvalue), sizeof(int16_t));
 }
 
-void WriteToWAV::writeToWAVMono(float channel)
+void WriteToWAV::write(const float channel1, const float channel2)
 {
-    writeAsBytes(m_wav, channel, 2);
+    float amp = 32767.0f;
+    writeSample(m_wav, channel1*amp);
+    writeSample(m_wav, channel2*amp);
 }

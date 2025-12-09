@@ -30,7 +30,6 @@ struct Twavheader
 };                                 // 44  bytes TOTAL
 
 
-//FIXME
 class ReadWAV {
 public:
     ReadWAV(const std::string& name, const std::string& sourcePath)
@@ -47,27 +46,32 @@ public:
         m_wav.close();  // Close audio file
     }
 
-    void read_wav_file()
+    void readWavFile()
     {
         if(m_wav.is_open())
         {
             // Read wave data
-            sampleBuffer.resize( wav.sub_chunk2_size / sizeof(int16_t) );
-            m_wav.read(reinterpret_cast<char*>( sampleBuffer.data() ), wav.sub_chunk2_size );
+            audioData.resize( wav.sub_chunk2_size / sizeof(int16_t) );
+            m_wav.read(reinterpret_cast<char*>( audioData.data() ), wav.sub_chunk2_size );
+
+
+            for (int16_t sample: audioData) {
+                sampleBuffer.push_back(static_cast<float>(sample) / 32767.0f);
+            }
 
             // // Display some audio samples
-            // const size_t numofsample = 840;
+            // const size_t numofsample = 10;
             // std::cout <<"Listin first " << numofsample << " Samples:" << std::endl;
-            // for (size_t i = 0; i < numofsample && i < sampleBuffer.size(); ++i)
+            // for (size_t i = 0; i < numofsample && i < audioData.size(); ++i)
             // {
-            //     std::cout << i << ":" << static_cast<float>(sampleBuffer[i])/32767 << std::endl;
+            //     std::cout << i << ":" << static_cast<float>(audioData[i]) << std::endl;
             // }
-            //
-            // std::cout << std::endl;
+
+            std::cout << std::endl;
         }
     }
 
-    vector<int16_t>& getSampleBuffer(){ return sampleBuffer; }
+    vector<float>& getSampleBuffer(){ return sampleBuffer; }
 
     void getMetaData()
     {
@@ -81,10 +85,18 @@ public:
         std::cout << "Bits Per Sample: " << wav.bits_per_sample << " bits" << std::endl;
     }
 
+    //DIT WERKT NIET MEER
+    int getNumSamples()
+    {
+        if (wav.sub_chunk2_size < 1) return 0;
+        return wav.sub_chunk2_size/(wav.bits_per_sample/8);
+    }
+
 private:
     std::ifstream m_wav;
     Twavheader wav{};
 
-    vector<int16_t> sampleBuffer;
+    vector<int16_t> audioData;
+    vector<float> sampleBuffer;
 };
 

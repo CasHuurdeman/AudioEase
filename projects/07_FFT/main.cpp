@@ -56,8 +56,8 @@ public:
 int main()
 {
   const int fftSize = 8;
-  std::array<double, fftSize> X{1,1,1,1,0,0,0,0};
-  std::array<double, fftSize> Y{0.5,0.5,0,0,0,0,0,0};
+  std::array<double, fftSize> X{1,0,0,0,0,0,0,0};
+  std::array<double, fftSize> Y{1,0,0,0,0,0,0,0}; //when this is a pulse, nothing happens
 
   std::array<double, fftSize> Z{0,0,0,0,0,0,0,0};
 
@@ -83,7 +83,7 @@ int main()
 //    Playground Z
 
     // z.phi = 0;
-    // z.r *= 2;
+    z.r *= 2;
     z.calcC();
 
 

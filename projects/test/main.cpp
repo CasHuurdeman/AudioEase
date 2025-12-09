@@ -10,6 +10,7 @@
 #include <vector>
 #include <cmath>
 #include "readWAV.h"
+#include "writeToWAV.h"
 #include "../04_tappedDelay/circularBuffer.h"
 #include "binFile.h"
 
@@ -27,23 +28,32 @@
 
 int main()
 {
-        int a = 1;
-        int b = 2;
-        double r = sqrt(a * a + b * b);
-        double phi = atan2(b, a);
+        float PI = 4* atan(1);
+        WriteToWAV writeWAV("test", sourceDir, 48000);
 
-        std::cout << r*exp(-1*phi);
+        for (int i = 0; i < 48000; i++){
+            float freq = 440.0f;
+            float signal = 1 * sin(2*PI * i/48000 * freq);
 
+            writeWAV.write(signal,signal);
+        }
 
-        // BinFile binFile("test", sourceDir);
-        // binFile.write(0.3f);
-        // binFile.write(0.3f);
-        // binFile.write(0.3f);
+        // std::ofstream outFile(sourceDir + "/data.bin", std::ios::binary);
+        // float wdata = 990;
+        // int16_t ndata = static_cast<int16_t>(wdata);
+        // outFile.write(reinterpret_cast<char*>(&ndata), sizeof(int16_t));
+        // outFile.close();
         //
-        // binFile.read();
-        // std::cout << binFile.getData()[0] << binFile.getData()[1] << binFile.getData()[2] << "\n";
-
-       // std::cout << squareLoop(2) << "\n";
+        // std::ifstream file(sourceDir + "/data.bin", std::ios::binary);
+        // if (file) {
+        //     int16_t data;
+        //     while (file.read(reinterpret_cast<char*>(&data), sizeof(data))) {
+        //         std::cout << data << std::endl;
+        //     }
+        //     file.close();
+        // } else {
+        //     std::cerr << "Error opening file." << std::endl;
+        // }
 
 //   CircularBuffer circBuffer{10};
 //   circBuffer.addReadHead(10);

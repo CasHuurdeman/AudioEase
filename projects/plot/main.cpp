@@ -35,8 +35,10 @@ int main()
     speed_test.start();
      for (int i = 0; i < sampleRate/2; i++)
      {
-         fileWriter.writeToFile(reflectionManager.process(pulse.givePulse(), 0));
-         wavWriter.write(reflectionManager.process(pulse.givePulse(), 0),0);
+         float signal = reflectionManager.process(pulse.givePulse(), 0);
+         // float signal = pulse.giveNyquist();
+         fileWriter.writeToFile(signal);
+         wavWriter.write(signal,signal);
      }
     speed_test.printSpeed();
 
