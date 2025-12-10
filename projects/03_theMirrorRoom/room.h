@@ -40,7 +40,7 @@ private:
     //EVERYTHING IS IN METERS
   float m_roomDimensions [3] = {6.0f, 6.0f, 6.0f};
 
-  float m_source[3] = {2.5f, 1.2f, 1.7f};
+  float m_source[3] = {1.5f, 1.0f, 1.7f};
   vector< array<float, 3> > m_mirrorSources;
 
   vector<Receiver*> m_receiverVector;

@@ -3,8 +3,9 @@
 //
 #include "writeToWAV.h"
 
-WriteToWAV::WriteToWAV(const std::string& name, const std::string& sourcePath, const int sampleRate)
+WriteToWAV::WriteToWAV(const std::string& name, const std::string& sourcePath, const int sampleRate, int numChannels)
 {
+    m_numChannels = numChannels;
     m_sampleRate = sampleRate;
     m_wav.open(sourcePath + "/" + name + ".wav", std::ios::binary);
 
@@ -44,18 +45,29 @@ WriteToWAV::~WriteToWAV()
     m_wav.seekp(4, std::ios::beg);
     writeAsBytes(m_wav, 36 + subchunk2Size, 4);
 
+    //update numChannels
+    m_wav.seekp(22, std::ios::beg);
+    writeAsBytes(m_wav, m_numChannels, 2);
+
     m_wav.close();
 }
 
 
-void WriteToWAV::writeAsBytes(std::ofstream &file, int value, int byteSize)
+void WriteToWAV::writeAsBytes(std::ofstream &file, auto value, const int byteSize)
 {
     file.write(reinterpret_cast<const char*>(&value), byteSize);
 }
 
-//change to make it for n channels?
-void WriteToWAV::writeToWAV(float channel1, float channel2)
+void WriteToWAV::writeSample(std::ofstream &file, float value)
 {
-    writeAsBytes(m_wav, channel1, 2);
-    writeAsBytes(m_wav, channel2, 2);
+    //nvalue is needed here
+    int16_t nvalue = static_cast<int16_t>(value);
+    file.write(reinterpret_cast<const char*>(&nvalue), sizeof(int16_t));
+}
+
+void WriteToWAV::write(const float channel1, const float channel2)
+{
+    float amp = 32767.0f;
+    writeSample(m_wav, channel1*amp);
+    writeSample(m_wav, channel2*amp);
 }

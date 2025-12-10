@@ -6,16 +6,19 @@
 #include <fstream>
 #include <cmath>
 #include <string>
+#include "customPrint.h"
 //TODO - schrijf meteen 32bit float weg (ipv 16bit, pcm) OF EXTENDABLE
 
 //writes to a stereo .wav file
 class WriteToWAV {
 public:
-  WriteToWAV(const std::string& name, const std::string& sourcePath, int sampleRate);
+  WriteToWAV(const std::string& name, const std::string& sourcePath, int sampleRate, int numChannels = 2);
   ~WriteToWAV();
 
-  void writeAsBytes(std::ofstream &file, int value, int byteSize);
-  void writeToWAV(float channel1, float channel2);
+  void writeAsBytes(std::ofstream &file, auto value, int byteSize);
+  void writeSample(std::ofstream &file, float value);
+  void write(float channel1, float channel2);
+
 
 private:
   std::ofstream m_wav;

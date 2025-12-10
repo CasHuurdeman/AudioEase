@@ -9,7 +9,7 @@ class Pulse
 {
 public:
     Pulse() { count = 0; }
-    ~Pulse() {}
+    ~Pulse() = default;
 
     int getCount() { return count; }
 
@@ -25,6 +25,18 @@ public:
             count++;
             return 0.0f;
         }
+    }
+
+    float giveDC()
+    {
+        return 1.0f;
+    }
+
+    //starting with -1
+    float giveNyquist()
+    {
+        count++;
+        return pow(-1, count);
     }
 
 
