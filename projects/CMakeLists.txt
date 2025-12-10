@@ -5,6 +5,7 @@
 #add_subdirectory(04_tappedDelay)
 #add_subdirectory(05_delay)
 add_subdirectory(06_convolution)
-add_subdirectory(07_FFT)
+#add_subdirectory(07_FFT)
+add_subdirectory(08_convoluteWAV)
 add_subdirectory(test)
 add_subdirectory(plot)

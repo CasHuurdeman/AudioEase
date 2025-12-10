@@ -33,7 +33,7 @@ int main()
      reflectionManager.prepare(sampleRate, 1);
 
     speed_test.start();
-     for (int i = 0; i < sampleRate/2; i++)
+     for (int i = 0; i < sampleRate; i++)
      {
          float signal = reflectionManager.process(pulse.givePulse(), 0);
          // float signal = pulse.giveNyquist();

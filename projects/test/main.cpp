@@ -25,18 +25,48 @@
         std::cout << "Hoi\n"; //dit is gek
     }
 
-
-int main()
+float devide(float num, float den)
 {
-        float PI = 4* atan(1);
-        WriteToWAV writeWAV("test", sourceDir, 48000);
+    return (num / den);
+}
 
-        for (int i = 0; i < 48000; i++){
-            float freq = 440.0f;
-            float signal = 1 * sin(2*PI * i/48000 * freq);
+#define state 2
 
-            writeWAV.write(signal,signal);
-        }
+int main() {
+#if  state == 0
+        std::cout << "if" << std::endl;
+
+#elif state == 1
+        std::cout << "elif" << std::endl;
+
+#else state == 2
+        std::cout << "else" << std::endl;
+
+#endif
+
+
+        std::cout << devide(0,0) << std::endl;
+        std::cout << devide(1,0) << std::endl;
+        std::cout << devide (1, pow(10, -39)) << std::endl;
+        std::cout << devide(1, pow(10, -38)) << std::endl;
+
+        // ReadWAV readWAV("test.wav", sourceDir);
+        // readWAV.readWavFile();
+        //
+        // for (int i = 0; i < 1000; i++) {
+        //
+        // std::cout << readWAV.getSamplesL()[i] << std::endl;
+        // }
+
+        // float PI = 4* atan(1);
+        // WriteToWAV writeWAV("test", sourceDir, 48000);
+        //
+        // for (int i = 0; i < 48000; i++){
+        //     float freq = 440.0f;
+        //     float signal = 1 * sin(2*PI * i/48000 * freq);
+        //
+        //     writeWAV.write(signal,signal);
+        // }
 
         // std::ofstream outFile(sourceDir + "/data.bin", std::ios::binary);
         // float wdata = 990;

@@ -54,24 +54,22 @@ public:
             audioData.resize( wav.sub_chunk2_size / sizeof(int16_t) );
             m_wav.read(reinterpret_cast<char*>( audioData.data() ), wav.sub_chunk2_size );
 
+            for (int i = 0; i < audioData.size(); i++) {
+                float sample = static_cast<float>(audioData[i]) / 32767.0f;
 
-            for (int16_t sample: audioData) {
-                sampleBuffer.push_back(static_cast<float>(sample) / 32767.0f);
+                if (i%2 == 0) samplesL.push_back(sample);
+                else samplesR.push_back(sample);
             }
 
-            // // Display some audio samples
-            // const size_t numofsample = 10;
-            // std::cout <<"Listin first " << numofsample << " Samples:" << std::endl;
-            // for (size_t i = 0; i < numofsample && i < audioData.size(); ++i)
-            // {
-            //     std::cout << i << ":" << static_cast<float>(audioData[i]) << std::endl;
+            // for (int16_t sample: audioData) {
+            //     sampleBuffer.push_back(static_cast<float>(sample) / 32767.0f);
             // }
-
-            std::cout << std::endl;
         }
     }
 
-    vector<float>& getSampleBuffer(){ return sampleBuffer; }
+    vector<float>& getSamplesL(){ return samplesL; }
+
+    vector<float>& getSamplesR(){ return samplesR; }
 
     void getMetaData()
     {
@@ -85,7 +83,6 @@ public:
         std::cout << "Bits Per Sample: " << wav.bits_per_sample << " bits" << std::endl;
     }
 
-    //DIT WERKT NIET MEER
     int getNumSamples()
     {
         if (wav.sub_chunk2_size < 1) return 0;
@@ -97,6 +94,7 @@ private:
     Twavheader wav{};
 
     vector<int16_t> audioData;
-    vector<float> sampleBuffer;
+    vector<float> samplesL;
+    vector<float> samplesR;
 };
 
