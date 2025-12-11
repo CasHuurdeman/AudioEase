@@ -34,6 +34,7 @@ target_compile_definitions(03_theMirrorRoom  PRIVATE
         JUCE_USE_CURL=0
         SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}"
         JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
+#        ${target} PUBLIC JUCE_ASIO=1
 )
 
 target_link_libraries(03_theMirrorRoom 

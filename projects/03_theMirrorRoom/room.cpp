@@ -11,7 +11,7 @@
 Room::Room() {
   std::cout << "Room - constructor" << std::endl;
 
-  int diagonalOrder = 40;
+  int diagonalOrder = 7;
   calculateMirrorSources(diagonalOrder);
   calculateMaxDistance(diagonalOrder);
 }
@@ -33,6 +33,10 @@ void Room::prepareReceivers(int numChannels)
   //   addReceiver(0.0f, 0.0f, 0.0f);
   // }
 
+  updateReceivers();
+}
+
+void Room::updateReceivers() {
   //calculate al reflections of all receivers
   for (Receiver* receiver : m_receiverVector)
   {
@@ -66,6 +70,8 @@ void Room::calculateMirrorSources(const int diagonalOrder)
     a *= -1;
   }
 
+  //THIS IS IMPORTANT WHEN UPDATING THE MIRRORSOURCES, ELSE THEY GET PILED UP ON TOP OF THE EXISTING ONES
+  m_mirrorSources.clear();
   //Combine all X and Y values to get the coordinates
   for (float& x : arrX)
   {

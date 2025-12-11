@@ -23,6 +23,7 @@ public:
     void calculateMirrorSources(int diagonalOrder);
     void calculateMaxDistance(int diagonalOrder);
     void prepareReceivers(int numChannels);
+    void updateReceivers();
 
     //=======================ADD/REMOVE RECEIVER===============================
     void addReceiver(float X, float Y, float Z) { m_receiverVector.push_back(new Receiver(X, Y, Z)); }
@@ -33,12 +34,12 @@ public:
     [[nodiscard]] int getNumMirrorSources() const { return size(m_mirrorSources); }
     [[nodiscard]] float getMaxDelay() const { return m_maxDelay; }
     Receiver*& getReceiver(const int index) { return m_receiverVector[index]; } //TODO - & ????
+    float* getSource(){ return m_source; } //WATCH OUT!! NO WAY OF KNOWING HOW LONG THE ARRAY IS
     //=========================================================================
-
 
 private:
     //EVERYTHING IS IN METERS
-  float m_roomDimensions [3] = {6.0f, 6.0f, 6.0f};
+  float m_roomDimensions [3] = {6.0f, 6.0f, 3.0f};
 
   float m_source[3] = {1.5f, 1.0f, 1.7f};
   vector< array<float, 3> > m_mirrorSources;

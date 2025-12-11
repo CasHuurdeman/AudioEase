@@ -66,3 +66,35 @@ void ReflectionManager::createDelays()
         }
     }
 }
+
+void ReflectionManager::updateDelays()
+{
+    for (int channel = 0; channel < m_numChannels; channel++)
+    {
+        std::cout << "ReflectionManager::updateDelays; numReflections (should be 45): " << m_room.getReceiver(channel)->getNumReflections() << std::endl;
+        for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
+        {
+            float samplesDelay = dspMath::msToSamples(m_room.getReceiver(channel)->getReflections()[i][0], m_sampleRate);
+            m_buffers[channel]->setSamplesDelay(i,samplesDelay);
+        }
+    }
+}
+
+
+void ReflectionManager::moveReceiver(Receiver &receiver, float X, float Y, float Z)
+{
+
+}
+
+void ReflectionManager::moveSource(float X, float Y, float Z)
+{
+    m_room.getSource()[0] = X;
+    m_room.getSource()[1] = Y;
+    m_room.getSource()[2] = Z;
+
+    m_room.calculateMirrorSources(7);
+    //this also calculates the reflections, so this name is a bit unclear maybe
+    m_room.updateReceivers();
+    updateDelays();
+}
+

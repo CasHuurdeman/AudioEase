@@ -27,6 +27,9 @@ public:
     vector< array<float, 2> >& getReflections() { return m_reflections;}
     int getNumReflections() const { return static_cast<int>(m_reflections.size()); }
 
+    //UI
+    void setCoordinates(float X, float Y, float Z);
+
 private:
     float m_coordinates[3] {0.0f, 0.0f, 0.0f};
     vector< array< float, 2> > m_reflections;

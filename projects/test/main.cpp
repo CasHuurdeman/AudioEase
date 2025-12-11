@@ -14,77 +14,69 @@
 #include "../04_tappedDelay/circularBuffer.h"
 #include "binFile.h"
 
+std::string sourceDir = SOURCE_DIR;
 
-    std::string sourceDir = SOURCE_DIR;
-
-
-    int squareLoop(int x) {
-        if (x >= 16) return x;
-        x = x*x;
-        squareLoop(x);
-        std::cout << "Hoi\n"; //dit is gek
-    }
-
+int squareLoop(int x) {
+    if (x >= 16) return x;
+    x = x*x;
+    squareLoop(x);
+    std::cout << "Hoi\n"; //dit is gek
+}
 float devide(float num, float den)
 {
     return (num / den);
 }
 
-#define state 2
 
 int main() {
-#if  state == 0
-        std::cout << "if" << std::endl;
-
-#elif state == 1
-        std::cout << "elif" << std::endl;
-
-#else state == 2
-        std::cout << "else" << std::endl;
-
-#endif
 
 
-        std::cout << devide(0,0) << std::endl;
-        std::cout << devide(1,0) << std::endl;
-        std::cout << devide (1, pow(10, -39)) << std::endl;
-        std::cout << devide(1, pow(10, -38)) << std::endl;
 
-        // ReadWAV readWAV("test.wav", sourceDir);
-        // readWAV.readWavFile();
-        //
-        // for (int i = 0; i < 1000; i++) {
-        //
-        // std::cout << readWAV.getSamplesL()[i] << std::endl;
-        // }
+    // //Seeing which results I get by deviding by 0
+    //     std::cout << devide(0,0) << std::endl;
+    //     std::cout << devide(1,0) << std::endl;
+    //     std::cout << devide (1, pow(10, -39)) << std::endl;
+    //     std::cout << devide(1, pow(10, -38)) << std::endl;
 
-        // float PI = 4* atan(1);
-        // WriteToWAV writeWAV("test", sourceDir, 48000);
-        //
-        // for (int i = 0; i < 48000; i++){
-        //     float freq = 440.0f;
-        //     float signal = 1 * sin(2*PI * i/48000 * freq);
-        //
-        //     writeWAV.write(signal,signal);
-        // }
+    // // reading a wav file
+    //     ReadWAV readWAV("test.wav", sourceDir);
+    //     readWAV.readWavFile();
+    //
+    //     for (int i = 0; i < 1000; i++) {
+    //
+    //     std::cout << readWAV.getSamplesL()[i] << std::endl;
+    //     }
 
-        // std::ofstream outFile(sourceDir + "/data.bin", std::ios::binary);
-        // float wdata = 990;
-        // int16_t ndata = static_cast<int16_t>(wdata);
-        // outFile.write(reinterpret_cast<char*>(&ndata), sizeof(int16_t));
-        // outFile.close();
-        //
-        // std::ifstream file(sourceDir + "/data.bin", std::ios::binary);
-        // if (file) {
-        //     int16_t data;
-        //     while (file.read(reinterpret_cast<char*>(&data), sizeof(data))) {
-        //         std::cout << data << std::endl;
-        //     }
-        //     file.close();
-        // } else {
-        //     std::cerr << "Error opening file." << std::endl;
-        // }
+    // //Sine write to wav
+    //     float PI = 4* atan(1);
+    //     WriteToWAV writeWAV("test", sourceDir, 48000);
+    //
+    //     for (int i = 0; i < 48000; i++){
+    //         float freq = 440.0f;
+    //         float signal = 1 * sin(2*PI * i/48000 * freq);
+    //
+    //         writeWAV.write(signal,signal);
+    //     }
 
+// //Writing and reading a binary file
+//         std::ofstream outFile(sourceDir + "/data.bin", std::ios::binary);
+//         float wdata = 990;
+//         int16_t ndata = static_cast<int16_t>(wdata);
+//         outFile.write(reinterpret_cast<char*>(&ndata), sizeof(int16_t));
+//         outFile.close();
+//
+//         std::ifstream file(sourceDir + "/data.bin", std::ios::binary);
+//         if (file) {
+//             int16_t data;
+//             while (file.read(reinterpret_cast<char*>(&data), sizeof(data))) {
+//                 std::cout << data << std::endl;
+//             }
+//             file.close();
+//         } else {
+//             std::cerr << "Error opening file." << std::endl;
+//         }
+
+//     //CircBufferCheck
 //   CircularBuffer circBuffer{10};
 //   circBuffer.addReadHead(10);
 //

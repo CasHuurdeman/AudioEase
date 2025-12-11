@@ -21,10 +21,15 @@ public:
   // void updateDelays??
 
   void createDelays();
+  void updateDelays();
 
   //=========================GETTERS AND SETTERS======================================
   [[nodiscard]] bool getBypassStatus() const { return m_bypassOn; }
   void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
+
+  //UI
+  void moveReceiver(Receiver &receiver, float X, float Y, float Z);
+  void moveSource(float X, float Y, float Z);
 
 private:
   Room m_room;

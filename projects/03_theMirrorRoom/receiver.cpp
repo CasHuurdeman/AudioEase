@@ -20,7 +20,7 @@ Receiver::~Receiver()
 }
 
 
-void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int numMirrorSources, float soundSpeed)
+void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, const int numMirrorSources, const float soundSpeed)
 {
     //does this take a lot of time?
     m_reflections.resize(numMirrorSources);
@@ -44,4 +44,11 @@ void Receiver::calculateSourceAmplitude(float source[], size_t arrayLength) {
     float sourceDistance = CalculateDistance::calculateDistance(source, m_coordinates, arrayLength, std::size(m_coordinates));
     m_sourceAmplitude = 1 / pow(sourceDistance, 1.5f);
     // std::cout << "Distance: " << distance << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
+}
+
+void Receiver::setCoordinates(float X, float Y, float Z) {
+    m_coordinates[0] = X;
+    m_coordinates[1] = Y;
+    m_coordinates[2] = Z;
+    //calc reflections and source amplitude
 }

@@ -46,6 +46,7 @@ public:
 private:
     //TODO - dont forget to delete
     ReflectionManager* m_reflectionManager;
+    int k = 0;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };
