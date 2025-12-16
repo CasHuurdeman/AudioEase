@@ -139,11 +139,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-    k++;
-    if (k == 500) {
-        std::cout << "Source moving" << std::endl;
-        m_reflectionManager->moveSource(-1.5f, -1.0f, 1.7f);
-    }
+    // k++;
+    // float PI = 4* atan(1);
+    // float signal = 2*sin(2*PI * k/200 * 1);
+    // m_reflectionManager->moveSource(signal, 1.0f, 1.7f);
 
 //with focusrite solo now works with only 1 channel (left or right)
 //so not mono to stereo yet, only mono to mono or stereo to stereo

@@ -36,8 +36,8 @@ float ReflectionManager::process(float input, int channel)
     //========================BYPASS===================================
     if(m_bypassOn){ return input; }
 
-    // speedTest.start();
     //=========================DELAY===================================
+    updateDelays();
     float output = 0;
     const float normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
@@ -47,7 +47,6 @@ float ReflectionManager::process(float input, int channel)
     }
     m_buffers[channel]->write(output * m_feedback + input);
 
-    // speedTest.printSpeed();
     return output;
 }
 
@@ -66,12 +65,11 @@ void ReflectionManager::createDelays()
         }
     }
 }
-
+//TODO - only call when needed?
 void ReflectionManager::updateDelays()
 {
     for (int channel = 0; channel < m_numChannels; channel++)
     {
-        std::cout << "ReflectionManager::updateDelays; numReflections (should be 45): " << m_room.getReceiver(channel)->getNumReflections() << std::endl;
         for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
         {
             float samplesDelay = dspMath::msToSamples(m_room.getReceiver(channel)->getReflections()[i][0], m_sampleRate);
@@ -92,9 +90,8 @@ void ReflectionManager::moveSource(float X, float Y, float Z)
     m_room.getSource()[1] = Y;
     m_room.getSource()[2] = Z;
 
-    m_room.calculateMirrorSources(7);
+    m_room.calculateMirrorSources(0);
     //this also calculates the reflections, so this name is a bit unclear maybe
     m_room.updateReceivers();
-    updateDelays();
 }
 

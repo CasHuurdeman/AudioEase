@@ -39,7 +39,16 @@ public:
         return pow(-1, count);
     }
 
+    float sine(float freq, int sampleRate)
+    {
+        float signal = 0.5 * sin(PI*2 * 440.0f * count/48000);
+        count++;
+        // if (count >= sampleRate) count = 0;
+        return signal;
+    }
+
 
 private:
     int count;
+    float PI = 4* atan(1);
 };

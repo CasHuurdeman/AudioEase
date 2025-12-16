@@ -13,6 +13,8 @@
 #include "writeToWAV.h"
 #include "../04_tappedDelay/circularBuffer.h"
 #include "binFile.h"
+#include "interpolation.h"
+#include "smoothe.h"
 
 std::string sourceDir = SOURCE_DIR;
 
@@ -30,6 +32,22 @@ float devide(float num, float den)
 
 int main() {
 
+    float smoothedValue = 4.393579;
+    for (int i = 0; i < 7; i++) {
+        smoothedValue = Smoothe::smootheValue(smoothedValue, 34.35735893, 5-i);
+        std::cout << smoothedValue << std::endl;
+    }
+
+
+    // float value = 4;
+    // interpolation.setTarget(value, 4, 5);
+    //
+    // for (int i = 0; i < 9; i++) {
+    //     if (i == 3)     interpolation.setTarget(value, 5, 5);
+    //     value = interpolation.smoothe(value);
+    //
+    //      std::cout << value << std::endl;
+    // }
 
 
     // //Seeing which results I get by deviding by 0

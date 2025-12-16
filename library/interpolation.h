@@ -11,8 +11,5 @@ class Interpolation {
     static float linMap(float offset, float value1, float value2);
     static float mapInRange(float value, float fromLow, float fromHigh,
                      float toLow, float toHigh);
-
-
-
 };
 
