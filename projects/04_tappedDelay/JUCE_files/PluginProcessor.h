@@ -1,7 +1,7 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "tappedDelay.h"
+#include "../tappedDelay.h"
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor

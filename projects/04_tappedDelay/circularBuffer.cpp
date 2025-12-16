@@ -115,21 +115,11 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
   	}
     else
     {
+    	m_samplesDelay.push_back(samplesDelay);
         initReadHead(m_readHeads[readHeadIndex], samplesDelay);
     }
 }
 
-std::vector<float> CircularBuffer::getSamplesDelay()
-{
-  std::vector<float> samplesDelay;
-  for(float readHead : m_readHeads)
-  {
-    float delay = static_cast<float>(m_writeHead) - readHead + static_cast<float>(m_bufferSize);
-  	wrap(delay);
-    samplesDelay.push_back(delay);
-  }
-  return samplesDelay;
-}
 
 void CircularBuffer::removeReadHead(int readHeadIndex)
 {
@@ -138,4 +128,5 @@ void CircularBuffer::removeReadHead(int readHeadIndex)
 		std::cout << "CircularBuffer::removeReadHead; Error: This index doest exist" << std::endl;
 	}
 	m_readHeads.erase(m_readHeads.begin() + readHeadIndex);
+	m_samplesDelay.erase(m_samplesDelay.begin() + readHeadIndex);
 }

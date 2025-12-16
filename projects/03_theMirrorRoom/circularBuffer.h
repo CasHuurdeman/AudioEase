@@ -28,7 +28,7 @@ public:
   //getters and setters
   [[nodiscard]] int getBufferSize() const { return m_bufferSize; }
   [[nodiscard]] size_t getNumReadHeads() const { return m_readHeads.size(); }
-  std::vector<float> getSamplesDelay() { return m_samplesDelay; }
+  vector<float> getSamplesDelay() { return m_samplesDelay; }
 
   void setSamplesDelay(int readHeadIndex, float samplesDelay);
 
