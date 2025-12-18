@@ -29,17 +29,18 @@ public:
   int getBufferSize() const { return m_bufferSize; }
   size_t getNumReadHeads() const { return m_readHeads.size(); }
   std::vector<float> getSamplesDelay() { return m_samplesDelay; }
-  // std::vector<float> getReadSpeed() const { return m_readSpeed; }
+  std::vector<float> getTargetSamplesDelay() { return m_targetSamplesDelay; }//TODO - new
 
   void setSamplesDelay(int readHeadIndex, float samplesDelay);
-  // void setReadSpeed(int readHeadIndex, float readSpeed);
+  void setTargetSamplesDelay(int readHeadIndex, float samplesDelay); //TODO new
 
 private:
   float* m_buffer = nullptr;
   int m_bufferSize = 0;
-  std::vector<float> m_samplesDelay;
 
-  // std::vector<float> m_readSpeed = {1.0f};
+  std::vector<float> m_samplesDelay;
+  std::vector<float> m_targetSamplesDelay;//TODO - new
+
   std::vector<float> m_readHeads = {0.0f};
   int m_writeHead = 0;
 };

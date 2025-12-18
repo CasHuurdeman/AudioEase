@@ -31,12 +31,19 @@ float devide(float num, float den)
 
 
 int main() {
+    ReadWAV read("test.wav", sourceDir);
 
-    float smoothedValue = 4.393579;
-    for (int i = 0; i < 7; i++) {
-        smoothedValue = Smoothe::smootheValue(smoothedValue, 34.35735893, 5-i);
-        std::cout << smoothedValue << std::endl;
+    read.readWavFile();
+
+    for (int i = 0; i < 1000; i++) {
+    std::cout << read.getSamplesL()[i] << std::endl;
     }
+
+    // float smoothedValue = 4.393579;
+    // for (int i = 0; i < 7; i++) {
+    //     smoothedValue = Smoothe::smootheValue(smoothedValue, 34.35735893, 5-i);
+    //     std::cout << smoothedValue << std::endl;
+    // }
 
 
     // float value = 4;

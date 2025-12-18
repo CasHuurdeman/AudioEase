@@ -23,6 +23,7 @@ CircularBuffer::CircularBuffer(float samplesDelay)
     }
 
 	m_samplesDelay.push_back(samplesDelay);
+	m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
     initReadHead(m_readHeads[0], samplesDelay);
 }
 
@@ -40,6 +41,7 @@ CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
     }
 
 	m_samplesDelay.push_back(samplesDelay);
+	m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
     initReadHead(m_readHeads[0], samplesDelay);
 }
 
@@ -103,8 +105,10 @@ void CircularBuffer::initReadHead(float& readHead, float samplesDelay)
 //For tapped delay
 void CircularBuffer::addReadHead(float samplesDelay)
 {
-  float readHead = 0.0f;
   m_samplesDelay.push_back(samplesDelay);
+  m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
+
+  float readHead = 0.0f;
   initReadHead(readHead, samplesDelay);
   m_readHeads.push_back(readHead);
 }
@@ -123,11 +127,15 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
         initReadHead(m_readHeads[readHeadIndex], samplesDelay);
     }
 }
-//
-// void CircularBuffer::setReadSpeed(int readHeadIndex, float readSpeed) {
-// 	m_readSpeed[readHeadIndex] = readSpeed;
-// }
 
+//TODO - new
+void CircularBuffer::setTargetSamplesDelay(int readHeadIndex, float samplesDelay) {
+	if (samplesDelay > m_bufferSize) std::cerr << "TappedDelay::setTargetSamplesDelay - samplesDelay cant be bigger than bufferSize" << std::endl;
+	else
+	{
+		m_targetSamplesDelay[readHeadIndex] = samplesDelay;
+	}
+}
 
 
 void CircularBuffer::removeReadHead(int readHeadIndex)
@@ -138,4 +146,5 @@ void CircularBuffer::removeReadHead(int readHeadIndex)
 	}
 	m_readHeads.erase(m_readHeads.begin() + readHeadIndex);
 	m_samplesDelay.erase(m_samplesDelay.begin() + readHeadIndex);
+	m_targetSamplesDelay.erase(m_targetSamplesDelay.begin() + readHeadIndex);//TODO - new
 }

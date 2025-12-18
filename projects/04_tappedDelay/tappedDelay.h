@@ -22,31 +22,22 @@ public:
 
    void setFeedback(float feedback);
    void setSamplesDelay(int readHeadIndex, float samplesDelay);
-   void setTargetSamplesDelay(int readHeadIndex, float samplesDelay); //TODO new
    void setBypass(bool bypassOn);
+   void setTargetSamplesDelay(int readHeadIndex, float samplesDelay)
+         { m_circularBuffer->setTargetSamplesDelay(readHeadIndex, samplesDelay); }
 
    float getFeedback() const { return m_feedback; }
    vector<float> getSamplesDelay() const { return m_circularBuffer->getSamplesDelay(); }
    float getBypassStatus() const { return m_bypassOn; }
 
 
-   void addDelayLine(float samplesDelay)
-   {
-      m_circularBuffer->addReadHead(samplesDelay);
-      m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
-   }
+   void addDelayLine(float samplesDelay) { m_circularBuffer->addReadHead(samplesDelay); }
 
-   void removeDelayLine(int readHeadIndex)
-   {
-      m_circularBuffer->removeReadHead(readHeadIndex);
-      m_targetSamplesDelay.erase(m_targetSamplesDelay.begin() + readHeadIndex);//TODO - new
-   }
+   void removeDelayLine(int readHeadIndex) { m_circularBuffer->removeReadHead(readHeadIndex); }
 
 private:
    CircularBuffer* m_circularBuffer;
    TestSignal signal;
-
-   vector<float> m_targetSamplesDelay;//TODO - new
 
    bool m_bypassOn = false;
    float m_feedback = 0.0f;

@@ -16,7 +16,7 @@ public:
   ~ReflectionManager();
 
   void prepare(int sampleRate, int numChannels);
-  float process(float input, int channel);
+  float process(float input, int channel, int numSamplesLeft);
   float renderReflections(int channel);
   // void updateDelays??
 
@@ -26,6 +26,7 @@ public:
   //=========================GETTERS AND SETTERS======================================
   [[nodiscard]] bool getBypassStatus() const { return m_bypassOn; }
   void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
+  void setNormalise(const bool normaliseOn) { m_normalise = normaliseOn; }
 
   //UI
   void moveReceiver(Receiver &receiver, float X, float Y, float Z);
@@ -37,6 +38,7 @@ private:
 
   float m_feedback = 0.0f;
   bool m_bypassOn = false;
+  bool m_normalise = false;
   int m_numChannels = 0;
   int m_sampleRate = 48000;
 

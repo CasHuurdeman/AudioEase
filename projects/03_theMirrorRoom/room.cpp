@@ -24,8 +24,8 @@ Room::~Room()
 //TODO - a lot of this might need a process fuction
 void Room::prepareReceivers(int numChannels)
 {
-  addReceiver(0.0f, 0.0f, 1.7f);
-  addReceiver(0.2f, 0.0f, 1.7f);
+  addReceiver(0.1f, 0.0f, 1.7f);
+  addReceiver(-0.07f, 0.0f, 1.7f);
 
 //TODO - for later
   // for (int channel = 0; channel < numChannels; channel++)

@@ -21,7 +21,6 @@ CircularBuffer::CircularBuffer(int bufferSize)
     {
         m_buffer[i] = 0;
     }
-	m_readHeads.clear();
 }
 
 CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
@@ -37,7 +36,7 @@ CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
         m_buffer[i] = 0;
     }
 
-    initReadHead(m_readHeads[0], samplesDelay);
+    addReadHead(samplesDelay);
 }
 
 CircularBuffer::~CircularBuffer()
@@ -90,7 +89,6 @@ void CircularBuffer::initReadHead(float& readHead, float samplesDelay)
   	}
     else
     {
-    	m_samplesDelay.push_back(samplesDelay);
         readHead = static_cast<float>(m_writeHead) - samplesDelay + static_cast<float>(m_bufferSize);
     	//readHead gets changed--> so wrap
         wrap(readHead);
@@ -100,6 +98,9 @@ void CircularBuffer::initReadHead(float& readHead, float samplesDelay)
 //For tapped delay
 void CircularBuffer::addReadHead(float samplesDelay)
 {
+  m_samplesDelay.push_back(samplesDelay);
+  m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
+
   float readHead = 0.0f;
   initReadHead(readHead, samplesDelay);
   m_readHeads.push_back(readHead);
@@ -115,9 +116,20 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
   	}
     else
     {
+    	m_samplesDelay[readHeadIndex] = samplesDelay;
         initReadHead(m_readHeads[readHeadIndex], samplesDelay);
     }
 }
+
+//TODO - new
+void CircularBuffer::setTargetSamplesDelay(int readHeadIndex, float samplesDelay) {
+	if (samplesDelay > m_bufferSize) std::cerr << "TappedDelay::setTargetSamplesDelay - samplesDelay cant be bigger than bufferSize" << std::endl;
+	else
+	{
+		m_targetSamplesDelay[readHeadIndex] = samplesDelay;
+	}
+}
+
 
 void CircularBuffer::removeReadHead(int readHeadIndex)
 {
@@ -127,4 +139,5 @@ void CircularBuffer::removeReadHead(int readHeadIndex)
 	}
 	m_readHeads.erase(m_readHeads.begin() + readHeadIndex);
 	m_samplesDelay.erase(m_samplesDelay.begin() + readHeadIndex);
+	m_targetSamplesDelay.erase(m_targetSamplesDelay.begin() + readHeadIndex);//TODO - new
 }

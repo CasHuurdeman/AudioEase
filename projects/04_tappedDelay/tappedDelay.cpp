@@ -9,21 +9,18 @@
 TappedDelay::TappedDelay(float samplesDelay)
 {
     m_circularBuffer = new CircularBuffer(samplesDelay);
-    m_targetSamplesDelay.push_back(samplesDelay); //TODO - new
 }
 
 TappedDelay::TappedDelay(float samplesDelay, float feedback)
 {
     m_feedback = feedback;
     m_circularBuffer = new CircularBuffer(samplesDelay);
-    m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
 }
 
 TappedDelay::TappedDelay(float samplesDelay, float feedback, int bufferSize)
 {
     m_feedback = feedback;
     m_circularBuffer = new CircularBuffer(samplesDelay, bufferSize);
-    m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
 }
 
 TappedDelay::~TappedDelay()
@@ -42,7 +39,7 @@ float TappedDelay::process(float input, int numSamplesLeft)
     for (int i = 0; i < m_circularBuffer->getNumReadHeads(); i++)
     {
         float prevDelay = m_circularBuffer->getSamplesDelay()[i];
-        float targetDelay = m_targetSamplesDelay[i];
+        float targetDelay = m_circularBuffer->getTargetSamplesDelay()[i];
         if (prevDelay != targetDelay)
         {
             float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
@@ -70,16 +67,6 @@ void TappedDelay::setSamplesDelay(int readHeadIndex, float samplesDelay)
 {
     m_circularBuffer->setSamplesDelay(readHeadIndex, samplesDelay);
 }
-
-//TODO - new
-void TappedDelay::setTargetSamplesDelay(int readHeadIndex, float samplesDelay) {
-    if (samplesDelay > m_circularBuffer->getBufferSize()) std::cerr << "TappedDelay::setTargetSamplesDelay - samplesDelay cant be bigger than bufferSize" << std::endl;
-    else
-    {
-        m_targetSamplesDelay[readHeadIndex] = samplesDelay;
-    }
-}
-
 
 void TappedDelay::setBypass(bool bypassOn)
 {
