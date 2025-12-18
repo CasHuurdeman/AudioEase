@@ -32,14 +32,14 @@ public:
   std::vector<float> getTargetSamplesDelay() { return m_targetSamplesDelay; }
 
   void setSamplesDelay(int readHeadIndex, float samplesDelay);
-  void setTargetSamplesDelay(int readHeadIndex, float samplesDelay); //TODO new
+  void setTargetSamplesDelay(int readHeadIndex, float samplesDelay);
 
 private:
   float* m_buffer = nullptr;
   int m_bufferSize = 0;
 
   vector<float> m_samplesDelay;
-  vector<float> m_targetSamplesDelay;//TODO - new
+  vector<float> m_targetSamplesDelay;
 
   vector<float> m_readHeads = {};
   int m_writeHead = 0;

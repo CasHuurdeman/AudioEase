@@ -21,7 +21,6 @@ Room::~Room()
 	std::cout << "Room - destructor" << std::endl;
 }
 
-//TODO - a lot of this might need a process fuction
 void Room::prepareReceivers(int numChannels)
 {
   addReceiver(0.1f, 0.0f, 1.7f);
@@ -49,7 +48,6 @@ void Room::updateReceivers() {
 void Room::calculateMirrorSources(const int diagonalOrder)
 {
   //TODO - EXPLANATION!!!!!!!!!!!!!
-  // TODO - 3D
   vector arrX = {m_source[X]};
   vector arrY = {m_source[Y]};
   vector arrZ = {m_source[Z]};
@@ -64,7 +62,6 @@ void Room::calculateMirrorSources(const int diagonalOrder)
     arrY.push_back(static_cast<float>(i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
     arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
 
-    //TODO - *0.5f good? --> think
     arrY.push_back(static_cast<float>(i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
     arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
     a *= -1;
@@ -98,29 +95,17 @@ void Room::calculateMaxDistance(int diagonalOrder)
 }
 
 
-void Room::removeReceiver(int receiverIndex)
-{
-	if (receiverIndex < m_receiverVector.size())
-	{
-		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
-	}
-
-  delete m_receiverVector[receiverIndex];
-  m_receiverVector[receiverIndex] = nullptr;
-	m_receiverVector.erase(m_receiverVector.begin() + receiverIndex);
-}
-
-
-
-
-
-
-
-
-
-
-
-
+// void Room::removeReceiver(int receiverIndex)
+// {
+// 	if (receiverIndex < m_receiverVector.size())
+// 	{
+// 		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
+// 	}
+//
+//   delete m_receiverVector[receiverIndex];
+//   m_receiverVector[receiverIndex] = nullptr;
+// 	m_receiverVector.erase(m_receiverVector.begin() + receiverIndex);
+// }
 
 
 

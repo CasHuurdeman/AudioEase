@@ -91,7 +91,6 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
-    //FIXME - WHY THE NOISE
     m_reflectionManager = new ReflectionManager();
     m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
     m_reflectionManager->prepare(static_cast<int>(sampleRate), getTotalNumOutputChannels());
@@ -140,11 +139,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
+    //MODULATING SIGNAL TO MOVE THE SOURCE
     float s = signal.sine(0.5, 100);
      m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
 
-//with focusrite solo now works with only 1 channel (left or right)
-//so not mono to stereo yet, only mono to mono or stereo to stereo
+
     //Bufferwise
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
@@ -153,6 +152,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         //samplewise
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
             float in = input[sample];
+
+            // //only for testing
             // if (channel == 0) {
             //  in = signalL.sine(440, 48000);
             // }

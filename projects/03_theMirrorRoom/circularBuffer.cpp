@@ -25,7 +25,7 @@ CircularBuffer::CircularBuffer(int bufferSize)
 
 CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
 {
-	std::cout << "CircularBuffer - constructor(float samplesDelay, int bufferSize)" << std::endl;
+	// std::cout << "CircularBuffer - constructor(float samplesDelay, int bufferSize)" << std::endl;
 
     m_bufferSize = bufferSize;
 
@@ -54,14 +54,17 @@ float CircularBuffer::read(int readHeadIndex)
 	float sampleOffset = modf(m_readHeads[readHeadIndex], &p);
     int intReadHead = static_cast<int>(p);
 
+	//store value and increment readHead to nextvalue
 	float value = m_buffer[intReadHead];
     wrap(++m_readHeads[readHeadIndex]);
 
+	//reset intReadHead and read nextValue
 	intReadHead = m_readHeads[readHeadIndex];
     float nextValue = m_buffer[intReadHead];
 
+	//calculate the output with interpolation
 	float output = Interpolation::linMap(sampleOffset, value, nextValue);
-	// std::cout << "ReadHead" << readHeadIndex << ": " << m_readHeads[readHeadIndex] << "\nValue: " << value << " nextValue: " << nextValue << " output: " << output << " sampleOffset: " << sampleOffset << "\n" << std::endl;
+
     return output;
 }
 
@@ -99,7 +102,7 @@ void CircularBuffer::initReadHead(float& readHead, float samplesDelay)
 void CircularBuffer::addReadHead(float samplesDelay)
 {
   m_samplesDelay.push_back(samplesDelay);
-  m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
+  m_targetSamplesDelay.push_back(samplesDelay);
 
   float readHead = 0.0f;
   initReadHead(readHead, samplesDelay);
@@ -121,7 +124,7 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
     }
 }
 
-//TODO - new
+
 void CircularBuffer::setTargetSamplesDelay(int readHeadIndex, float samplesDelay) {
 	if (samplesDelay > m_bufferSize) std::cerr << "TappedDelay::setTargetSamplesDelay - samplesDelay cant be bigger than bufferSize" << std::endl;
 	else
@@ -139,5 +142,5 @@ void CircularBuffer::removeReadHead(int readHeadIndex)
 	}
 	m_readHeads.erase(m_readHeads.begin() + readHeadIndex);
 	m_samplesDelay.erase(m_samplesDelay.begin() + readHeadIndex);
-	m_targetSamplesDelay.erase(m_targetSamplesDelay.begin() + readHeadIndex);//TODO - new
+	m_targetSamplesDelay.erase(m_targetSamplesDelay.begin() + readHeadIndex);
 }

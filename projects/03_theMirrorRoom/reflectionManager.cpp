@@ -2,11 +2,8 @@
 // Created by cashu on 13/11/2025.
 //
 
-// in room.cpp and receiver.cpp too
-
 #include "reflectionManager.h"
 #include <iostream>
-#include "customPrint.h"
 #include "dspMath.h"
 #include "smoothe.h"
 

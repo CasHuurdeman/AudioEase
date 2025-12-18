@@ -23,7 +23,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Nothing happens", getLocalBounds(), juce::Justification::centred, 1);
+    g.drawFittedText ("Where am I?\nCan you hear me?", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void AudioPluginAudioProcessorEditor::resized()

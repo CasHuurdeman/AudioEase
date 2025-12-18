@@ -17,7 +17,7 @@ public:
     Receiver(float X, float Y, float Z);
     ~Receiver();
 
-    //FIXME - I DONT NEED TO KNOW EVERY REFLECTION EVERY TIME I MOVE, JUST THE ONES THAT GET TO THE RECEIVER IN THAT SPECIFIC MOMENT
+    //TODO - I DONT NEED TO KNOW EVERY REFLECTION EVERY TIME I MOVE, JUST THE ONES THAT GET TO THE RECEIVER IN THAT SPECIFIC MOMENT
     void calculateReflections(vector< array<float, 3> > mirrorSources,
         int numMirrorSources, float soundSpeed);
     void calculateSourceAmplitude(float source[], size_t arrayLength);
@@ -28,7 +28,6 @@ public:
     int getNumReflections() const { return static_cast<int>(m_reflections.size()); }
 
     //UI
-    void setCoordinates(float X, float Y, float Z);
 
 private:
     float m_coordinates[3] {0.0f, 0.0f, 0.0f};

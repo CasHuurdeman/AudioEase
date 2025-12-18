@@ -18,22 +18,21 @@ public:
     Room();
     ~Room();
 
-    //TODO - is this the way to go -> yes, maybe even remove createRoom()
-    void createWalls();
     void calculateMirrorSources(int diagonalOrder);
     void calculateMaxDistance(int diagonalOrder);
+
+    //TODO - is this the way to go -> yes, maybe even remove createRoom()
+    void createWalls();
+
+    //============================RECEIVER===============================
+    void addReceiver(float X, float Y, float Z) { m_receiverVector.push_back(new Receiver(X, Y, Z)); }
     void prepareReceivers(int numChannels);
     void updateReceivers();
-
-    //=======================ADD/REMOVE RECEIVER===============================
-    void addReceiver(float X, float Y, float Z) { m_receiverVector.push_back(new Receiver(X, Y, Z)); }
-    void removeReceiver(int receiverIndex); //TODO - IS THIS NEEDED?
-
 
     //=============================GETTERS=====================================
     [[nodiscard]] int getNumMirrorSources() const { return size(m_mirrorSources); }
     [[nodiscard]] float getMaxDelay() const { return m_maxDelay; }
-    Receiver*& getReceiver(const int index) { return m_receiverVector[index]; } //TODO - & ????
+    Receiver*& getReceiver(const int index) { return m_receiverVector[index]; }
     float* getSource(){ return m_source; } //WATCH OUT!! NO WAY OF KNOWING HOW LONG THE ARRAY IS
     //=========================================================================
 

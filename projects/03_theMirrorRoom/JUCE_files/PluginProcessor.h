@@ -45,7 +45,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    //TODO - dont forget to delete
+    //TODO - dont forget to delete; is this needed?
     ReflectionManager* m_reflectionManager;
     TestSignal signal;
     TestSignal signalL;
