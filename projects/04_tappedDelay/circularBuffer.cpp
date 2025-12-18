@@ -22,6 +22,7 @@ CircularBuffer::CircularBuffer(float samplesDelay)
         m_buffer[i] = 0;
     }
 
+	m_samplesDelay.push_back(samplesDelay);
     initReadHead(m_readHeads[0], samplesDelay);
 }
 
@@ -38,6 +39,7 @@ CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
         m_buffer[i] = 0;
     }
 
+	m_samplesDelay.push_back(samplesDelay);
     initReadHead(m_readHeads[0], samplesDelay);
 }
 
@@ -57,6 +59,7 @@ float CircularBuffer::read(int readHeadIndex)
     int intReadHead = static_cast<int>(p);
 
 	float value = m_buffer[intReadHead];
+	// m_readHeads[readHeadIndex] += m_readSpeed[readHeadIndex];
     wrap(++m_readHeads[readHeadIndex]);
 
 	intReadHead = m_readHeads[readHeadIndex];
@@ -101,6 +104,7 @@ void CircularBuffer::initReadHead(float& readHead, float samplesDelay)
 void CircularBuffer::addReadHead(float samplesDelay)
 {
   float readHead = 0.0f;
+  m_samplesDelay.push_back(samplesDelay);
   initReadHead(readHead, samplesDelay);
   m_readHeads.push_back(readHead);
 }
@@ -115,10 +119,15 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
   	}
     else
     {
-    	m_samplesDelay.push_back(samplesDelay);
+    	m_samplesDelay[readHeadIndex] = samplesDelay;
         initReadHead(m_readHeads[readHeadIndex], samplesDelay);
     }
 }
+//
+// void CircularBuffer::setReadSpeed(int readHeadIndex, float readSpeed) {
+// 	m_readSpeed[readHeadIndex] = readSpeed;
+// }
+
 
 
 void CircularBuffer::removeReadHead(int readHeadIndex)

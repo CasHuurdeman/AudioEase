@@ -1,8 +1,11 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "../tappedDelay.h"
+#include "../delay.h"
 #include "testSignal.h"
+#include "writeToWAV.h"
+
+inline std::string sourceDir = SOURCE_DIR;
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
@@ -46,10 +49,10 @@ public:
 
 private:
     //TODO - dont forget to delete
-    std::vector<TappedDelay*> m_delayVector;
+    std::vector<Delay*> m_delayVector;
     std::array<TestSignal, 2> m_pulse;
-    float k = 0;
-    TestSignal signal;
-    //==============================================================================
+    // float k = 0;
+     // WriteToWAV wavWriter{"test", sourceDir, 48000};
+    // ==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };

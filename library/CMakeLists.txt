@@ -2,7 +2,7 @@
 add_library(audio_header INTERFACE)
 target_include_directories(audio_header INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
         /dspMath.h,
-        /pulse.h,
+        /testSignal.h,
         /writeToFile.h,
         /customPrint.h
         /calculateDistance.h

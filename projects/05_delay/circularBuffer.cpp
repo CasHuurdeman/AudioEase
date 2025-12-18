@@ -54,14 +54,20 @@ CircularBuffer::~CircularBuffer()
 //the read is sample based so the delay can be time-varying
 float CircularBuffer::read()
 {
-	float value = m_buffer[m_readHead];
-    wrap(++m_readHead);
+	float p;
+	float sampleOffset = modf(m_readHead, &p);
+	int intReadHead = static_cast<int>(p);
 
-    float nextValue = m_buffer[m_readHead];
+	float value = m_buffer[intReadHead];
+	// m_readHeads[readHeadIndex] += m_readSpeed[readHeadIndex];
+	wrap(++m_readHead);
 
-	float output = Interpolation::linMap(m_sampleOffset, value, nextValue);
-	// std::cout << "Value: " << value << " nextValue: " << nextValue << " output: " << output << " sampleOffset: " << m_sampleOffset << std::endl;
-    return output;
+	intReadHead = m_readHead;
+	float nextValue = m_buffer[intReadHead];
+
+	float output = Interpolation::linMap(sampleOffset, value, nextValue);
+	// std::cout << "ReadHead" << readHeadIndex << ": " << m_readHeads[readHeadIndex] << "\nValue: " << value << " nextValue: " << nextValue << " output: " << output << " sampleOffset: " << sampleOffset << "\n" << std::endl;
+	return output;
 }
 
 
@@ -72,7 +78,7 @@ void CircularBuffer::write(float input)
 	wrap(++m_writeHead);
 }
 
-void CircularBuffer::wrap(int& head)
+void CircularBuffer::wrap(auto& head)
 {
     if (head >= m_bufferSize)
   	{
@@ -88,8 +94,7 @@ void CircularBuffer::initReadHead()
   	}
 	else
     {
-        m_readHead = m_writeHead - static_cast<int>(m_samplesDelay) + m_bufferSize;
-        m_sampleOffset = m_samplesDelay - static_cast<int>(m_samplesDelay);
+        m_readHead = static_cast<float>(m_writeHead) - m_samplesDelay + static_cast<float>(m_bufferSize);
     	//readHead gets changed--> so wrap
         wrap(m_readHead);
     }

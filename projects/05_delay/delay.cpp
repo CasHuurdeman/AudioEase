@@ -4,6 +4,7 @@
 
 #include "delay.h"
 #include <iostream>
+#include "dspMath.h"
 
 Delay::Delay(float samplesDelay, float feedback)
 {
@@ -30,6 +31,9 @@ float Delay::process(float input)
 {
     //Bypass
     if (m_bypassOn) { return input; }
+
+    // float s = signal.sine(1, 48000);
+    //  m_circularBuffer->setSamplesDelay(dspMath::msToSamples(10, 48000) + dspMath::msToSamples(s * 6, 48000));
 
     float output = m_circularBuffer->read();
     m_circularBuffer->write(output * m_feedback + input);
