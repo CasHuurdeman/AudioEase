@@ -91,10 +91,11 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
-    //FIXME - WHY THE NOISE
-    m_reflectionManager = new ReflectionManager();
-    m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
-    m_reflectionManager->prepare(static_cast<int>(sampleRate), getTotalNumOutputChannels());
+    m_delayVector.resize(getTotalNumOutputChannels());
+    for (int i = 0; i < getTotalNumOutputChannels(); i++)
+    {
+        m_delayVector[i] = new Delay(sampleRate, 0);
+    }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -140,11 +141,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-    float s = signal.sine(0.5, 100);
-     m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
-
-//with focusrite solo now works with only 1 channel (left or right)
-//so not mono to stereo yet, only mono to mono or stereo to stereo
     //Bufferwise
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
@@ -152,14 +148,13 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
         //samplewise
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-            float in = input[sample];
-            // if (channel == 0) {
-            //  in = signalL.sine(440, 48000);
-            // }
-            // else  in = signalR.sine(440, 48000);
+            float signal = input[sample];
+            // float signal = m_pulse[channel].sine(1000, 48000);
+            output[sample] = m_delayVector[channel]->process(signal);
 
-            int numSamplesLeft = buffer.getNumSamples() - sample;
-            output[sample] = m_reflectionManager->process(in, channel, numSamplesLeft);
+             // if (channel == 0) {
+             // wavWriter.write(output[sample], 0);
+             // }
         }
     }
 }

@@ -28,16 +28,20 @@ public:
   //getters and setters
   [[nodiscard]] int getBufferSize() const { return m_bufferSize; }
   [[nodiscard]] size_t getNumReadHeads() const { return m_readHeads.size(); }
-  //special case of having the getter in the cpp file
-  vector<float> getSamplesDelay();
+  vector<float> getSamplesDelay() { return m_samplesDelay; }
+  std::vector<float> getTargetSamplesDelay() { return m_targetSamplesDelay; }
 
   void setSamplesDelay(int readHeadIndex, float samplesDelay);
+  void setTargetSamplesDelay(int readHeadIndex, float samplesDelay); //TODO new
 
 private:
   float* m_buffer = nullptr;
   int m_bufferSize = 0;
 
-  vector<float> m_readHeads = {0.0f};
+  vector<float> m_samplesDelay;
+  vector<float> m_targetSamplesDelay;//TODO - new
+
+  vector<float> m_readHeads = {};
   int m_writeHead = 0;
 };
 

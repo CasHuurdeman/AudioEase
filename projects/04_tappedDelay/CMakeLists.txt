@@ -21,8 +21,8 @@ juce_add_plugin(04_tappedDelay
 target_sources(04_tappedDelay  PRIVATE
         circularBuffer.cpp
         tappedDelay.cpp
-        PluginEditor.cpp
-        PluginProcessor.cpp
+        JUCE_files/PluginEditor.cpp
+        JUCE_files/PluginProcessor.cpp
 )
 
 target_compile_definitions(04_tappedDelay  PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0

@@ -22,6 +22,8 @@ CircularBuffer::CircularBuffer(float samplesDelay)
         m_buffer[i] = 0;
     }
 
+	m_samplesDelay.push_back(samplesDelay);
+	m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
     initReadHead(m_readHeads[0], samplesDelay);
 }
 
@@ -38,6 +40,8 @@ CircularBuffer::CircularBuffer(float samplesDelay, int bufferSize)
         m_buffer[i] = 0;
     }
 
+	m_samplesDelay.push_back(samplesDelay);
+	m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
     initReadHead(m_readHeads[0], samplesDelay);
 }
 
@@ -57,6 +61,7 @@ float CircularBuffer::read(int readHeadIndex)
     int intReadHead = static_cast<int>(p);
 
 	float value = m_buffer[intReadHead];
+	// m_readHeads[readHeadIndex] += m_readSpeed[readHeadIndex];
     wrap(++m_readHeads[readHeadIndex]);
 
 	intReadHead = m_readHeads[readHeadIndex];
@@ -100,6 +105,9 @@ void CircularBuffer::initReadHead(float& readHead, float samplesDelay)
 //For tapped delay
 void CircularBuffer::addReadHead(float samplesDelay)
 {
+  m_samplesDelay.push_back(samplesDelay);
+  m_targetSamplesDelay.push_back(samplesDelay);//TODO - new
+
   float readHead = 0.0f;
   initReadHead(readHead, samplesDelay);
   m_readHeads.push_back(readHead);
@@ -115,21 +123,20 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
   	}
     else
     {
+    	m_samplesDelay[readHeadIndex] = samplesDelay;
         initReadHead(m_readHeads[readHeadIndex], samplesDelay);
     }
 }
 
-std::vector<float> CircularBuffer::getSamplesDelay()
-{
-  std::vector<float> samplesDelay;
-  for(float readHead : m_readHeads)
-  {
-    float delay = static_cast<float>(m_writeHead) - readHead + static_cast<float>(m_bufferSize);
-  	wrap(delay);
-    samplesDelay.push_back(delay);
-  }
-  return samplesDelay;
+//TODO - new
+void CircularBuffer::setTargetSamplesDelay(int readHeadIndex, float samplesDelay) {
+	if (samplesDelay > m_bufferSize) std::cerr << "TappedDelay::setTargetSamplesDelay - samplesDelay cant be bigger than bufferSize" << std::endl;
+	else
+	{
+		m_targetSamplesDelay[readHeadIndex] = samplesDelay;
+	}
 }
+
 
 void CircularBuffer::removeReadHead(int readHeadIndex)
 {
@@ -138,4 +145,6 @@ void CircularBuffer::removeReadHead(int readHeadIndex)
 		std::cout << "CircularBuffer::removeReadHead; Error: This index doest exist" << std::endl;
 	}
 	m_readHeads.erase(m_readHeads.begin() + readHeadIndex);
+	m_samplesDelay.erase(m_samplesDelay.begin() + readHeadIndex);
+	m_targetSamplesDelay.erase(m_targetSamplesDelay.begin() + readHeadIndex);//TODO - new
 }

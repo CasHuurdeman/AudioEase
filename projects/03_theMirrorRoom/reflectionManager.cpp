@@ -8,6 +8,7 @@
 #include <iostream>
 #include "customPrint.h"
 #include "dspMath.h"
+#include "smoothe.h"
 
 //TODO - als ik er nu twee aanroep worden dezelfde dingen ook twee keer berekend. Dit is in pricipe niet erg straks als ik met twee oren/speakers ga werken, tenzij ik dat in de class zelf wil regelen
 // --> GEEF EEN POINTER VAN ROOM MEE IN DE CONSTRUCTOR
@@ -31,23 +32,33 @@ void ReflectionManager::prepare(int sampleRate, int numChannels) {
 }
 
 //TODO - dit moet sneller
-float ReflectionManager::process(float input, int channel)
+float ReflectionManager::process(float input, int channel, int numSamplesLeft)
 {
     //========================BYPASS===================================
     if(m_bypassOn){ return input; }
 
-    // speedTest.start();
     //=========================DELAY===================================
     float output = 0;
-    const float normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
+
+    float normalise = 1;
+    if (m_normalise)    normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
+
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
-    // normalising the first reflection to input level and the rest with it
-    output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
+        //INTERPOLATION
+        float prevDelay = m_buffers[channel]->getSamplesDelay()[i];
+        float targetDelay = m_buffers[channel]->getTargetSamplesDelay()[i];
+        if (prevDelay != targetDelay)
+        {
+            float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
+            m_buffers[channel]->setSamplesDelay(i,delay);
+        }
+
+        // normalising the first reflection to input level and the rest with it
+        output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }
     m_buffers[channel]->write(output * m_feedback + input);
 
-    // speedTest.printSpeed();
     return output;
 }
 
@@ -66,3 +77,34 @@ void ReflectionManager::createDelays()
         }
     }
 }
+
+void ReflectionManager::updateDelays()
+{
+    for (int channel = 0; channel < m_numChannels; channel++)
+    {
+        for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
+        {
+            float samplesDelay = dspMath::msToSamples(m_room.getReceiver(channel)->getReflections()[i][0], m_sampleRate);
+            m_buffers[channel]->setTargetSamplesDelay(i,samplesDelay);
+        }
+    }
+}
+
+void ReflectionManager::moveReceiver(Receiver &receiver, float X, float Y, float Z)
+{
+
+}
+
+void ReflectionManager::moveSource(float X, float Y, float Z)
+{
+    //TODO - dit is wel een beetje gek, misschien met een setter doen?
+    m_room.getSource()[0] = X;
+    m_room.getSource()[1] = Y;
+    m_room.getSource()[2] = Z;
+
+    m_room.calculateMirrorSources(0);
+    //this also calculates the reflections, so this name is a bit unclear maybe
+    m_room.updateReceivers();
+    updateDelays();
+}
+

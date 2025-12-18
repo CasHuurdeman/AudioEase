@@ -15,7 +15,7 @@ public:
   void write(float input);
   float read();
 //  float readWithoutIncrement();
-  void wrap(int& head);
+  void wrap(auto& head);
   void initReadHead();
 
   //getters and setters
@@ -30,8 +30,7 @@ private:
   int m_bufferSize = 0;
   float m_samplesDelay= 0.0f;
 
-  float m_sampleOffset = 0.0f;
-  int m_readHead = 0;
+  float m_readHead = 0;
   int m_writeHead = 0;
 };
 

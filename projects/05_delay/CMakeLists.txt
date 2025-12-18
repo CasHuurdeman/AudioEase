@@ -1,8 +1,6 @@
-project(03_theMirrorRoom  VERSION 0.0.1)
+project(05_Delay  VERSION 0.0.1)
 
-set(CMAKE_CXX_STANDARD 20)
-
-juce_add_plugin(03_theMirrorRoom
+juce_add_plugin(05_Delay
         # VERSION ...                               # Set this if the plugin version is different to the project version
         # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
         # ICON_SMALL ...
@@ -20,24 +18,19 @@ juce_add_plugin(03_theMirrorRoom
         PRODUCT_NAME "The Mirror Room"         # The name of the final executable, which can differ from the target name
 )
 
-target_sources(03_theMirrorRoom  PRIVATE
+target_sources(05_Delay  PRIVATE
         circularBuffer.cpp
-        room.cpp
-        receiver.cpp
-        reflectionManager.cpp
+        delay.cpp
         JUCE_files/PluginEditor.cpp
         JUCE_files/PluginProcessor.cpp
 )
 
-target_compile_definitions(03_theMirrorRoom  PRIVATE
-        JUCE_WEB_BROWSER=0
-        JUCE_USE_CURL=0
-        SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}"
+target_compile_definitions(05_Delay  PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0
         JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
-#        ${target} PUBLIC JUCE_ASIO=1
+    SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 
-target_link_libraries(03_theMirrorRoom 
+target_link_libraries(05_Delay 
         PRIVATE
         myLibrary
         juce::juce_core

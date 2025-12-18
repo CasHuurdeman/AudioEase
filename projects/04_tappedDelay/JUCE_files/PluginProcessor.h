@@ -1,7 +1,8 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "tappedDelay.h"
+#include "../tappedDelay.h"
+#include "testSignal.h"
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
@@ -46,6 +47,9 @@ public:
 private:
     //TODO - dont forget to delete
     std::vector<TappedDelay*> m_delayVector;
+    std::array<TestSignal, 2> m_pulse;
+    float k = 0;
+    TestSignal signal;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };

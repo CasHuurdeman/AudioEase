@@ -38,7 +38,7 @@ int main()
          float signal = reflectionManager.process(pulse.givePulse(), 0);
          // float signal = pulse.giveNyquist();
          fileWriter.writeToFile(signal);
-         wavWriter.write(signal,signal);
+         // wavWriter.write(signal,signal);
      }
     speed_test.printSpeed();
 

@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "dspMath.h"
 
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
@@ -94,9 +95,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     m_delayVector.resize(getTotalNumOutputChannels());
     for (int i = 0; i < getTotalNumOutputChannels(); i++)
     {
-        m_delayVector[i] = new TappedDelay(sampleRate+0.3);
-        m_delayVector[i]->addDelayLine(sampleRate/2);
-        m_delayVector[i]->addDelayLine(sampleRate/3);
+        m_delayVector[i] = new TappedDelay(sampleRate);
     }
 }
 
@@ -143,9 +142,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
+    float s = signal.sine(1, 100);
+    for (int i = 0; i < 2; i++) {
+    m_delayVector[i]->setTargetSamplesDelay(0, dspMath::msToSamples(10, 48000) + dspMath::msToSamples(s * 6, 48000));
+    }
 
-//with focusrite solo now works with only 1 channel (left or right)
-//so not mono to stereo yet, only mono to mono or stereo to stereo
     //Bufferwise
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
@@ -153,7 +154,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
         //samplewise
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-            output[sample] = m_delayVector[channel]->process(input[sample]);
+            // float signal = input[sample];
+            float signal = m_pulse[channel].sine(1000, 48000);
+            int numSamplesLeft = buffer.getNumSamples() - sample;
+            output[sample] = m_delayVector[channel]->process(signal, numSamplesLeft);
         }
     }
 }

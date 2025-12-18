@@ -4,6 +4,7 @@
 
 #pragma once
 #include "circularBuffer.h"
+#include "testSignal.h"
 
 class Delay {
 public:
@@ -25,6 +26,7 @@ public:
 
 private:
    CircularBuffer* m_circularBuffer;
+   TestSignal signal;
 
    bool m_bypassOn = false;
    float m_feedback = 0.0f;

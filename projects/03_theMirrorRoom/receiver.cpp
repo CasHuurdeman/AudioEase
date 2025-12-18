@@ -20,7 +20,7 @@ Receiver::~Receiver()
 }
 
 
-void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int numMirrorSources, float soundSpeed)
+void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, const int numMirrorSources, const float soundSpeed)
 {
     //does this take a lot of time?
     m_reflections.resize(numMirrorSources);
@@ -29,6 +29,8 @@ void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int
         //Calculate distance from receiver to mirrorSources
         float distance = CalculateDistance::calculateDistance(mirrorSources[i].data(),
             m_coordinates, size(mirrorSources[i]), size(m_coordinates));
+        //Make sure not to devide by 0 or a too small number (will get inf or NaN)
+        if (distance < 0.5) distance = 0.5; //TODO - this works but how can I do this nicely
 
         //amplitude according to Richard Moore (Elements of computer music p370)
         float amplitude = 1 / pow(distance, 1.5f);
@@ -42,6 +44,14 @@ void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int
 
 void Receiver::calculateSourceAmplitude(float source[], size_t arrayLength) {
     float sourceDistance = CalculateDistance::calculateDistance(source, m_coordinates, arrayLength, std::size(m_coordinates));
+    if (sourceDistance < 0.5) sourceDistance = 0.5; //TODO - this works but how can I do this nicely
     m_sourceAmplitude = 1 / pow(sourceDistance, 1.5f);
     // std::cout << "Distance: " << distance << "SourceAmplitude: " << getSourceAmplitude() << "\n" << std::endl;
+}
+
+void Receiver::setCoordinates(float X, float Y, float Z) {
+    m_coordinates[0] = X;
+    m_coordinates[1] = Y;
+    m_coordinates[2] = Z;
+    //calc reflections and source amplitude
 }

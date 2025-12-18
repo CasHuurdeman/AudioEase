@@ -4,6 +4,7 @@
 
 #include "tappedDelay.h"
 #include <iostream>
+#include "dspMath.h"
 
 TappedDelay::TappedDelay(float samplesDelay)
 {
@@ -28,14 +29,22 @@ TappedDelay::~TappedDelay()
     m_circularBuffer = nullptr;
 };
 
-float TappedDelay::process(float input)
+float TappedDelay::process(float input, int numSamplesLeft)
 {
     //TODO - somewhere here needs to be an insert for low pas filtering.
     //Bypass
     if (m_bypassOn == true) { return input; }
     float output = 0;
+
     for (int i = 0; i < m_circularBuffer->getNumReadHeads(); i++)
     {
+        float prevDelay = m_circularBuffer->getSamplesDelay()[i];
+        float targetDelay = m_circularBuffer->getTargetSamplesDelay()[i];
+        if (prevDelay != targetDelay)
+        {
+            float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
+            m_circularBuffer->setSamplesDelay(i,delay);
+        }
         output += m_circularBuffer->read(i);
     }
     m_circularBuffer->write(output * m_feedback + input);

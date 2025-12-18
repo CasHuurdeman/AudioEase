@@ -40,7 +40,3 @@ float Interpolation::mapInRange(float value, float fromLow, float fromHigh,
 
     return (toLow * (1.0 - ratio))+(toHigh * ratio);
 }
-
-
-
-//3*(1-0.3) + 2* 0.3 = 2.7

@@ -28,17 +28,20 @@ public:
   //getters and setters
   int getBufferSize() const { return m_bufferSize; }
   size_t getNumReadHeads() const { return m_readHeads.size(); }
-  //special case of having the getter in the cpp file
-  std::vector<float> getSamplesDelay();
+  std::vector<float> getSamplesDelay() { return m_samplesDelay; }
+  std::vector<float> getTargetSamplesDelay() { return m_targetSamplesDelay; }//TODO - new
 
-  //TODO - do I even want a setSamplesDelay?
   void setSamplesDelay(int readHeadIndex, float samplesDelay);
+  void setTargetSamplesDelay(int readHeadIndex, float samplesDelay); //TODO new
 
 private:
   float* m_buffer = nullptr;
   int m_bufferSize = 0;
 
-  std::vector<float> m_readHeads= {0.0f};
+  std::vector<float> m_samplesDelay;
+  std::vector<float> m_targetSamplesDelay;//TODO - new
+
+  std::vector<float> m_readHeads = {0.0f};
   int m_writeHead = 0;
 };
 
