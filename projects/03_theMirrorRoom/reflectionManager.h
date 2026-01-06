@@ -33,7 +33,7 @@ public:
   void moveSource(float X, float Y, float Z);
 
 private:
-  Room m_room{4};
+  Room m_room{3};
   vector<CircularBuffer*> m_buffers;
 
   float m_feedback = 0.0f;

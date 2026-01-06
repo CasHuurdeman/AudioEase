@@ -40,8 +40,6 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
     float normalise = 1;
     if (m_normalise)    normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
 
-    speedTest.start();
-
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
         // INTERPOLATION
@@ -60,8 +58,6 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
         //If m_normalise = true: normalising the first reflection to input level and the rest with it
         output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }
-    speedTest.printSpeed();
-    std::cout << "\n";
 
     m_buffers[channel]->write(output * m_feedback + input);
 
