@@ -8,12 +8,12 @@
 #include <iostream>
 #include "calculateDistance.h"
 
-Room::Room() {
+Room::Room(int diagonalOrder) {
   std::cout << "Room - constructor" << std::endl;
 
-  int diagonalOrder = 0;
-  calculateMirrorSources(diagonalOrder);
-  calculateMaxDistance(diagonalOrder);
+  m_diagonalOrder = diagonalOrder;
+  calculateMirrorSources();
+  calculateMaxDistance();
 }
 
 Room::~Room()
@@ -45,7 +45,7 @@ void Room::updateReceivers() {
 }
 
 
-void Room::calculateMirrorSources(const int diagonalOrder)
+void Room::calculateMirrorSources()
 {
   //TODO - EXPLANATION!!!!!!!!!!!!!
   vector arrX = {m_source[X]};
@@ -54,7 +54,7 @@ void Room::calculateMirrorSources(const int diagonalOrder)
 
   //calculate the different X and Y values to be used
   int a = -1;
-  for (int i = 1; i <= diagonalOrder; i++)
+  for (int i = 1; i <= m_diagonalOrder; i++)
   {
     arrX.push_back(static_cast<float>(i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
     arrX.push_back(static_cast<float>(-i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
@@ -82,10 +82,10 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   }
 }
 
-void Room::calculateMaxDistance(int diagonalOrder)
+void Room::calculateMaxDistance()
 {
   // calculate max distance, not very pretty but works
-  float m = -(0.5f + static_cast<float>(diagonalOrder));
+  float m = -(0.5f + static_cast<float>(m_diagonalOrder));
   float BottomLeftMirrorCorner [] = {m * m_roomDimensions[X], m * m_roomDimensions[Y],  m * m_roomDimensions[Z]};
   float TopRightCorner [] = {0.5f * m_roomDimensions[X], 0.5f * m_roomDimensions[Y], 0.5f * m_roomDimensions[Z]};
   float maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);

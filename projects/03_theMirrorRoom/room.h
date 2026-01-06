@@ -15,11 +15,11 @@ using std::size;
 class Room {
 public:
     // Room() = default;
-    Room();
+    explicit Room(int diagonalOrder);
     ~Room();
 
-    void calculateMirrorSources(int diagonalOrder);
-    void calculateMaxDistance(int diagonalOrder);
+    void calculateMirrorSources();
+    void calculateMaxDistance();
 
     //TODO - is this the way to go -> yes, maybe even remove createRoom()
     void createWalls();
@@ -39,6 +39,7 @@ public:
 private:
     //EVERYTHING IS IN METERS
   float m_roomDimensions [3] = {20.0f, 20.0f, 3.0f};
+  int m_diagonalOrder = 0;
 
   float m_source[3] = {1.5f, 1.0f, 1.7f};
   vector< array<float, 3> > m_mirrorSources;

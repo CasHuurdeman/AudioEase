@@ -139,9 +139,9 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
-    //MODULATING SIGNAL TO MOVE THE SOURCE
-    float s = signal.sine(0.5, 100);
-     m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
+    // //MODULATING SIGNAL TO MOVE THE SOURCE
+    // float s = signal.sine(0.5, 100);
+    //  m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
 
 
     //Bufferwise
