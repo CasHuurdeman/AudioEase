@@ -101,8 +101,7 @@ void CircularBuffer::initReadHead(float& readHead, float samplesDelay)
 //For tapped delay
 void CircularBuffer::addReadHead(float samplesDelay)
 {
-  m_samplesDelay.push_back(samplesDelay);
-  m_targetSamplesDelay.push_back(samplesDelay);
+  m_samplesDelay.push_back({samplesDelay,samplesDelay});
 
   float readHead = 0.0f;
   initReadHead(readHead, samplesDelay);
@@ -119,7 +118,7 @@ void CircularBuffer::setSamplesDelay(int readHeadIndex, float samplesDelay)
   	}
     else
     {
-    	m_samplesDelay[readHeadIndex] = samplesDelay;
+    	m_samplesDelay[readHeadIndex][0] = samplesDelay;
         initReadHead(m_readHeads[readHeadIndex], samplesDelay);
     }
 }
@@ -129,18 +128,16 @@ void CircularBuffer::setTargetSamplesDelay(int readHeadIndex, float samplesDelay
 	if (samplesDelay > m_bufferSize) std::cerr << "TappedDelay::setTargetSamplesDelay - samplesDelay cant be bigger than bufferSize" << std::endl;
 	else
 	{
-		m_targetSamplesDelay[readHeadIndex] = samplesDelay;
+		m_samplesDelay[readHeadIndex][1] = samplesDelay;
 	}
 }
 
 
-void CircularBuffer::removeReadHead(int readHeadIndex)
-{
+void CircularBuffer::removeReadHead(int readHeadIndex) {
 	if (readHeadIndex < m_readHeads.size())
 	{
 		std::cout << "CircularBuffer::removeReadHead; Error: This index doest exist" << std::endl;
 	}
 	m_readHeads.erase(m_readHeads.begin() + readHeadIndex);
 	m_samplesDelay.erase(m_samplesDelay.begin() + readHeadIndex);
-	m_targetSamplesDelay.erase(m_targetSamplesDelay.begin() + readHeadIndex);
 }

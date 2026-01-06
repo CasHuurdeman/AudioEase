@@ -43,17 +43,16 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
         // INTERPOLATION
-         float prevDelay = m_buffers[channel]->getSamplesDelay(i);
-         float targetDelay = m_buffers[channel]->getTargetSamplesDelay(i);
+
+         array<float, 2> samplesDelay = m_buffers[channel]->getSamplesDelay()[i];
+         float prevDelay = samplesDelay[0];
+         float targetDelay = samplesDelay[1];
 
          if (prevDelay != targetDelay)
          {
          float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
          m_buffers[channel]->setSamplesDelay(i,delay);
          }
-
-        // //ONLY CALL WHEN INTERPOLATION OFF
-        // m_buffers[channel]->setSamplesDelay(i,delay);
 
         //If m_normalise = true: normalising the first reflection to input level and the rest with it
         output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;

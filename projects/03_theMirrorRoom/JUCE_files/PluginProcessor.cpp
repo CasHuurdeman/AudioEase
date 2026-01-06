@@ -147,7 +147,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     float s = signal.sine(0.5, 100);
     m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
 
-    speedTest.start();
+    // speedTest.start();
     //Bufferwise
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
@@ -167,8 +167,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
             output[sample] = m_reflectionManager->process(in, channel, numSamplesLeft);
         }
     }
-    speedTest.printSpeed();
-    std::cout << "\n";
+    // speedTest.printSpeed();
+    // std::cout << "\n";
 }
 
 //========================= USER INTERFACE PART ==================================
