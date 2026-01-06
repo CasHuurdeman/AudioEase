@@ -95,6 +95,15 @@ void Room::calculateMaxDistance()
 }
 
 
+void Room::setSource(float X, float Y, float Z)
+{
+  m_source[0] = X;
+  m_source[1] = Y;
+  m_source[2] = Z;
+}
+
+
+
 // void Room::removeReceiver(int receiverIndex)
 // {
 // 	if (receiverIndex < m_receiverVector.size())

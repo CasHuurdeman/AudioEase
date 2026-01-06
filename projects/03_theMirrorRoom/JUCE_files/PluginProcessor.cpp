@@ -135,14 +135,17 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
 
+
+    int numSamples = buffer.getNumSamples();
+
+    //Comment
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear (i, 0, numSamples);
     }
 
-    // //MODULATING SIGNAL TO MOVE THE SOURCE
-    // float s = signal.sine(0.5, 100);
-    //  m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
-
+    //MODULATING SIGNAL TO MOVE THE SOURCE
+    float s = signal.sine(0.5, 100);
+     m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
 
     //Bufferwise
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
@@ -150,7 +153,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         auto* input = buffer.getReadPointer(channel);
 
         //samplewise
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+        for (int sample = 0; sample < numSamples; ++sample) {
             float in = input[sample];
 
             // //only for testing
@@ -159,7 +162,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
             // }
             // else  in = signalR.sine(440, 48000);
 
-            int numSamplesLeft = buffer.getNumSamples() - sample;
+            int numSamplesLeft = numSamples - sample;
             output[sample] = m_reflectionManager->process(in, channel, numSamplesLeft);
         }
     }

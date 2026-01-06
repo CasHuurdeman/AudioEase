@@ -40,22 +40,29 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
     float normalise = 1;
     if (m_normalise)    normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
 
+    speedTest.start();
+
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
-        //INTERPOLATION
-        // float prevDelay = m_buffers[channel]->getSamplesDelay()[i];
-        // float targetDelay = m_buffers[channel]->getTargetSamplesDelay()[i];
-        // if (prevDelay != targetDelay)
-        // {
-        //     float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
-        //     m_buffers[channel]->setSamplesDelay(i,delay);
-        // }
+        // INTERPOLATION
+         float prevDelay = m_buffers[channel]->getSamplesDelay(i);
+         float targetDelay = m_buffers[channel]->getTargetSamplesDelay(i);
+
+         if (prevDelay != targetDelay)
+         {
+         float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
+         m_buffers[channel]->setSamplesDelay(i,delay);
+         }
+
+        // //ONLY CALL WHEN INTERPOLATION OFF
         // m_buffers[channel]->setSamplesDelay(i,delay);
 
-
-        // normalising the first reflection to input level and the rest with it
+        //If m_normalise = true: normalising the first reflection to input level and the rest with it
         output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }
+    speedTest.printSpeed();
+    std::cout << "\n";
+
     m_buffers[channel]->write(output * m_feedback + input);
 
     return output;
@@ -96,10 +103,7 @@ void ReflectionManager::moveReceiver(Receiver &receiver, float X, float Y, float
 
 void ReflectionManager::moveSource(float X, float Y, float Z)
 {
-    //TODO - this is a bit weird, maybe use a setter
-    m_room.getSource()[0] = X;
-    m_room.getSource()[1] = Y;
-    m_room.getSource()[2] = Z;
+    m_room.setSource(X, Y, Z);
 
     m_room.calculateMirrorSources();
     //this also calculates the reflections, so this name is a bit unclear maybe

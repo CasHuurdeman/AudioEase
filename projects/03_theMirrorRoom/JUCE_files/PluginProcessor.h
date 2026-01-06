@@ -3,6 +3,7 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "../reflectionManager.h"
 #include "testSignal.h"
+#include "speedTest.h"
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
@@ -50,6 +51,8 @@ private:
     TestSignal signal;
     TestSignal signalL;
     TestSignal signalR;
+    SpeedTest speedTest;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };

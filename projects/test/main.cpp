@@ -9,6 +9,8 @@
 #include <array>
 #include <vector>
 #include <cmath>
+#include <speedTest.h>
+
 #include "readWAV.h"
 #include "writeToWAV.h"
 #include "../04_tappedDelay/circularBuffer.h"
@@ -31,13 +33,22 @@ float devide(float num, float den)
 
 
 int main() {
-    ReadWAV read("test.wav", sourceDir);
 
-    read.readWavFile();
+    SpeedTest s1;
+    SpeedTest s2;
 
-    for (int i = 0; i < 1000; i++) {
-    std::cout << read.getSamplesL()[i] << std::endl;
-    }
+    s1.start();
+    s2.start();
+    s2.printSpeed();
+    s1.printSpeed();
+
+    // ReadWAV read("test.wav", sourceDir);
+    //
+    // read.readWavFile();
+    //
+    // for (int i = 0; i < 1000; i++) {
+    // std::cout << read.getSamplesL()[i] << std::endl;
+    // }
 
     // float smoothedValue = 4.393579;
     // for (int i = 0; i < 7; i++) {

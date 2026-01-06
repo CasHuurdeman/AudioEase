@@ -33,8 +33,9 @@ public:
     [[nodiscard]] int getNumMirrorSources() const { return size(m_mirrorSources); }
     [[nodiscard]] float getMaxDelay() const { return m_maxDelay; }
     Receiver*& getReceiver(const int index) { return m_receiverVector[index]; }
-    float* getSource(){ return m_source; } //WATCH OUT!! NO WAY OF KNOWING HOW LONG THE ARRAY IS
+    // float* getSource(){ return m_source; } //WATCH OUT!! NO WAY OF KNOWING HOW LONG THE ARRAY IS
     //=========================================================================
+    void setSource(float X, float Y, float Z);
 
 private:
     //EVERYTHING IS IN METERS

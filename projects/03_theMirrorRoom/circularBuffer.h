@@ -28,8 +28,10 @@ public:
   //getters and setters
   [[nodiscard]] int getBufferSize() const { return m_bufferSize; }
   [[nodiscard]] size_t getNumReadHeads() const { return m_readHeads.size(); }
-  vector<float> getSamplesDelay() { return m_samplesDelay; }
-  std::vector<float> getTargetSamplesDelay() { return m_targetSamplesDelay; }
+
+  //This is more efficient than returning vector&
+  float getSamplesDelay(const int i) const { return m_samplesDelay[i]; }
+  float getTargetSamplesDelay(const int i) const { return m_targetSamplesDelay[i]; }
 
   void setSamplesDelay(int readHeadIndex, float samplesDelay);
   void setTargetSamplesDelay(int readHeadIndex, float samplesDelay);
