@@ -45,6 +45,8 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState& getApvts(){ return m_apvts; }
+
 private:
     //TODO - dont forget to delete; is this needed?
     ReflectionManager* m_reflectionManager;
@@ -52,6 +54,14 @@ private:
     TestSignal signalL;
     TestSignal signalR;
     SpeedTest speedTest;
+
+    juce::AudioProcessorValueTreeState m_apvts;
+
+    std::atomic<float>* m_xCoordinate;
+    std::atomic<float>* m_yCoordinate;
+
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)

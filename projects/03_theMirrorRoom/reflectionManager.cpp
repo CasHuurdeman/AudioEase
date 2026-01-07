@@ -43,7 +43,7 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
         // INTERPOLATION
-
+        //TODO - Declarations out of loop? --> more efficient?
          array<float, 2> samplesDelay = m_buffers[channel]->getSamplesDelay()[i];
          float prevDelay = samplesDelay[0];
          float targetDelay = samplesDelay[1];

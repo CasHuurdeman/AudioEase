@@ -10,7 +10,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), m_apvts(*this, nullptr, "Parameters", createParameters())
 {
 }
 
@@ -91,6 +91,10 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
+    //Put the raw parameter values in the variables
+    m_xCoordinate = m_apvts.getRawParameterValue("X");
+    m_yCoordinate = m_apvts.getRawParameterValue("Y");
+
     m_reflectionManager = new ReflectionManager();
     m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
     m_reflectionManager->prepare(static_cast<int>(sampleRate), getTotalNumOutputChannels());
@@ -143,9 +147,17 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, numSamples);
     }
 
-    //MODULATING SIGNAL TO MOVE THE SOURCE
-    float s = signal.sine(0.5, 100);
-    m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
+    // //MODULATING SIGNAL TO MOVE THE SOURCE
+    // float s = signal.sine(0.5, 100);
+    // m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
+
+    //Load the raw parameter values
+    const float X = m_xCoordinate->load();
+    const float Y = m_yCoordinate->load();
+    const float Z = 1.7f;
+
+    //-X or it goes to the wrong side when sliding horizontally haha
+    m_reflectionManager->moveSource(-X,Y,Z);
 
     // speedTest.start();
     //Bufferwise
@@ -203,4 +215,24 @@ void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeI
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new AudioPluginAudioProcessor();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameters() {
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "X",
+        "xCoord",
+        -10.0f, //TODO - this gon be a problem?
+        10.0f,
+        0.0f ));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "Y",
+        "yCoord",
+        -10.0f, //TODO - this gon be a problem?
+        10.0f,
+        0.0f ));
+
+    return {parameters.begin(), parameters.end()};
 }
