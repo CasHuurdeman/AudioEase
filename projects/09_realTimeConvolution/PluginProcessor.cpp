@@ -1,5 +1,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "readWAV.h"
+
+std::string sourceDir = SOURCE_DIR;
 
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
@@ -90,7 +93,18 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
+    juce::ignoreUnused (sampleRate);
+
+    m_inputBuffer.resize(samplesPerBlock, 0);
+    m_convolutionEngines.resize(2);
+
+    ReadWAV read("test.wav", sourceDir);
+    read.readWavFile();
+    m_impulseResponse = read.getSamplesL();
+
+    for (int i = 0; i < m_convolutionEngines.size(); i++) {
+        m_convolutionEngines[i].prepare(samplesPerBlock, m_impulseResponse);
+    }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -141,13 +155,25 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
+
+
     //with focusrite solo now works with only 1 channel (left or right)
     //so not mono to stereo yet, only mono to mono or stereo to stereo
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
-        auto* input = buffer.getReadPointer(channel);
+        const float* input = buffer.getReadPointer(channel);
 
-        memcpy(output, input, buffer.getNumSamples() * sizeof(float));
+        std::memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
+
+
+//        //another option is:
+//        auto* input = buffer.getReadPointer(channel);
+//        std::memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(*input));
+
+            n_output = m_convolutionEngines[channel].process(m_inputBuffer);
+
+            memcpy(output, &n_output[0], buffer.getNumSamples() * sizeof(float));
+
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         }
     }

@@ -32,20 +32,56 @@ float devide(float num, float den)
 }
 
 
+std::vector<int> v2;
+void printCopy(vector<int>& v) {
+    v2 = v;
+    std::cout << v2[3] << std::endl;
+}
+
 int main() {
-
-    SpeedTest s1;
-    SpeedTest s2;
-
-    s1.start();
-    s2.start();
-    s2.printSpeed();
-    s1.printSpeed();
-
-    // ReadWAV read("test.wav", sourceDir);
+    // int m_fftSize = 511;
     //
-    // read.readWavFile();
+    // int a = 1;
+    // while (a < m_fftSize)
+    // {
+    //     a <<= 1;
+    // }
+    // std::cout << a << std::endl;
+
+    // std::vector<int> v1 = {1,2,3,4};
     //
+    // printCopy(v1);
+
+
+    // std::vector<int> v1;
+    // std::vector<int> v2;
+    // SpeedTest s1;
+    //
+    // s1.start();
+    // for (int i = 0; i < 1000000; i++)
+    // {
+    //     v1.push_back(4);
+    // }
+    // for (int i = 0; i < 1000000; i++)
+    // {
+    //     v2.push_back(5);
+    // }
+    // s1.printSpeed();
+    //
+    // s1.start();
+    // for (int i = 0; i < 1000000; i++)
+    // {
+    //     v1.push_back(4);
+    //     v2.push_back(5);
+    // }
+    // s1.printSpeed();
+
+    ReadWAV read("test.wav", sourceDir);
+
+    read.readWavFile();
+
+    read.getMetaData();
+
     // for (int i = 0; i < 1000; i++) {
     // std::cout << read.getSamplesL()[i] << std::endl;
     // }

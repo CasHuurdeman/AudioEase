@@ -6,7 +6,7 @@
 // #include "../03_theMirrorRoom/reflectionManager.h"
 #include <algorithm>
 
-#include "pulse.h"
+#include "testSignal.h"
 #include "writeToFile.h"
 #include "writeToWAV.h"
 #include "readWAV.h"
@@ -21,7 +21,7 @@ int main()
 {
     std::string sourceDir = SOURCE_DIR;
 
-    Pulse pulse;
+    TestSignal pulse;
     ReflectionManager reflectionManager;
     SpeedTest speed_test;
 
@@ -32,15 +32,16 @@ int main()
 
      reflectionManager.prepare(sampleRate, 1);
 
-    speed_test.start();
-     for (int i = 0; i < sampleRate; i++)
+    // speed_test.start();
+     for (int i = 0; i < sampleRate/5; i++)
      {
-         float signal = reflectionManager.process(pulse.givePulse(), 0);
+         int numSamplesLeft = sampleRate - i;
+         float signal = reflectionManager.process(pulse.givePulse(), 0, numSamplesLeft);
          // float signal = pulse.giveNyquist();
          fileWriter.writeToFile(signal);
-         // wavWriter.write(signal,signal);
+         wavWriter.write(signal,signal);
      }
-    speed_test.printSpeed();
+    // speed_test.printSpeed();
 
      return 0;
 }

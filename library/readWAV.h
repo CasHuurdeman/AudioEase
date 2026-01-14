@@ -37,6 +37,11 @@ public:
         // Open the WAV file
         m_wav.open(sourcePath + "/" + name, std::ios::binary);
 
+        if (m_wav.is_open() == false)
+        {
+            std::cout << "ERROR: WAV file not found" << std::endl;
+        }
+
         // Read the WAV header
         m_wav.read(reinterpret_cast<char*>(&wav), sizeof(Twavheader));
     }
