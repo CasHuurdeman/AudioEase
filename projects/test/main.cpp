@@ -38,7 +38,29 @@ void printCopy(vector<int>& v) {
     std::cout << v2[3] << std::endl;
 }
 
+    vector<int> v = {0,1,2,3,4};
+
 int main() {
+
+    SpeedTest s;
+
+    s.start();
+    for (int i = 0; i < 100000; i++) {
+
+    v.clear();
+    v.resize(5,1);
+    }
+    s.printSpeed();
+
+    s.start();
+    for (int i = 0; i < 100000; i++) {
+
+        fill(v.begin(), v.end(), 1);
+    }
+    s.printSpeed();
+
+    for (int i : v){ std::cout << i << std::endl;}
+
     // int m_fftSize = 511;
     //
     // int a = 1;
@@ -76,11 +98,11 @@ int main() {
     // }
     // s1.printSpeed();
 
-    ReadWAV read("test.wav", sourceDir);
-
-    read.readWavFile();
-
-    read.getMetaData();
+    // ReadWAV read("test.wav", sourceDir);
+    //
+    // read.readWavFile();
+    //
+    // read.getMetaData();
 
     // for (int i = 0; i < 1000; i++) {
     // std::cout << read.getSamplesL()[i] << std::endl;
