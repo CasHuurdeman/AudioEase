@@ -13,6 +13,7 @@
 #include <iostream>
 #include <cmath>
 #include "../03_theMirrorRoom/reflectionManager.h"
+// #include "../05_delay/delay.h"
 #include "speedTest.h"
 
 int sampleRate = 48000;
@@ -23,6 +24,7 @@ int main()
 
     TestSignal pulse;
     ReflectionManager reflectionManager;
+    // Delay delay{static_cast<float>(sampleRate), 0};
     SpeedTest speed_test;
 
     WriteToFile fileWriter{sourceDir};
@@ -37,6 +39,7 @@ int main()
      {
          int numSamplesLeft = sampleRate - i;
          float signal = reflectionManager.process(pulse.givePulse(), 0, numSamplesLeft);
+         // float signal = delay.process(pulse.givePulse());
          // float signal = pulse.giveNyquist();
          fileWriter.writeToFile(signal);
          wavWriter.write(signal,signal);

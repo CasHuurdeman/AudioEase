@@ -226,7 +226,7 @@ void realfft_packed(float *data, long size){
 	float div;
 
 	size>>=1;
-	dif_butterfly(data,size); //FIXME
+	dif_butterfly(data,size);
 	unshuffle(data,size);
 	realize(data,size);
 
@@ -251,6 +251,7 @@ void realfft_packed(float *data, long size){
 void irealfft_packed(float *data, long size){
 
 	float *l, *end;
+	float div;
 
 	size>>=1;
 	unrealize(data,size);
@@ -258,5 +259,6 @@ void irealfft_packed(float *data, long size){
 	inverse_dit_butterfly(data,size);
 
 	end=data+size+size;
+	div=size+size;
 	for(l=data;l<end;l++){*l=(*l)*2;};
 }

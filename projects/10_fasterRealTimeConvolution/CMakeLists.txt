@@ -14,7 +14,7 @@ juce_add_plugin(10_fasterRealTimeConvolution
         PLUGIN_MANUFACTURER_CODE Juce               # A four-character manufacturer id with at least one upper-case character
         PLUGIN_CODE Dem0                            # A unique four-character plugin id with exactly one upper-case character
         # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
-        FORMATS Standalone                          # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
+        FORMATS Standalone VST3                         # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
         PRODUCT_NAME "Does nothing"         # The name of the final executable, which can differ from the target name
 )
 
@@ -25,6 +25,7 @@ target_sources(10_fasterRealTimeConvolution  PRIVATE
 )
 
 target_compile_definitions(10_fasterRealTimeConvolution  PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0
+        JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
         SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
 )
 

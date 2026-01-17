@@ -52,8 +52,10 @@ public:
 private:
       vector<float> m_inputBuffer = {1,1,1,1,0,0,0,0};
       vector<ConvolutionEngine> m_convolutionEngines;
-      vector<float> m_impulseResponse = {0.5,0.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+      vector<float> m_impulseResponse;
     vector<float> n_output;
+
+    int k = 0;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
