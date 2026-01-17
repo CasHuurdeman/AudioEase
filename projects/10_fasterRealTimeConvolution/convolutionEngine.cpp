@@ -21,8 +21,8 @@ void ConvolutionEngine::prepare(int inputBufferSize, vector<float>& impulseRespo
 {
 
 //find fftSize
-  // m_inputBufferSize = inputBufferSize;
-  m_dataBlockSize = 8;
+  m_dataBlockSize = inputBufferSize;
+  // m_dataBlockSize = 8;
   m_fftSize = m_dataBlockSize * 2;
 
   //a<<=b is the same as a*=(2^b)
