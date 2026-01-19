@@ -15,9 +15,9 @@ using std::vector;
 
 int main()
 {
-  const int fftSize = 8;
-  std::vector<double> X{1,1,1,1,0,0,0,0};
-  std::vector<double> Y{0.5,0.5,0,0,0,0,0,0};
+  const int fftSize = 64;
+  std::vector<double> X{1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  std::vector<double> Y{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 #if state == 2
 //====================FFT DECONVOLUTION=============================
@@ -60,11 +60,12 @@ int main()
   for (int i = 0; i < fftSize; i++) {
     std::cout << Z[i] << std::endl;
   }
-
+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0array
 #elif state == 1
 //============================FFT CONVOLUTION=======================================
 
-  std::vector<double> Z{0,0,0,0,0,0,0,0};
+  std::vector<double> Z;
+  Z.resize(fftSize);
 
   realfft_packed(&X[0], fftSize);
   realfft_packed(&Y[0], fftSize);

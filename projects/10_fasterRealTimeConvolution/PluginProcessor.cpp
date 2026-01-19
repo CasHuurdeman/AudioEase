@@ -95,24 +95,28 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate);
 
-    m_convolutionEngines.resize(2);
+    m_convolutionEngines.resize(1);
 
-    m_inputBuffer.resize(samplesPerBlock, 0);
+    // m_inputBuffer.resize(samplesPerBlock, 0);
 
-    ReadWAV read("test.wav", sourceDir);
-    read.readWavFile();
-    m_impulseResponse = read.getSamplesL();
+    // ReadWAV read("test.wav", sourceDir);
+    // read.readWavFile();
+    // m_impulseResponse = read.getSamplesL();
 
-    // m_inputBuffer.resize(8, 0);
-    //
-    // int size = 8*2;
-    // m_impulseResponse.resize(size, 0);
-    // for (int i = 0; i < size; i++) {
-    //     m_impulseResponse[i] = i;
-    // }
+
+    m_inputBuffer.resize(4,0);
+
+    int size = 4*3;
+
+    m_impulseResponse.resize(size, 0);
+    m_impulseResponse[0] = 1;
+    m_impulseResponse[7] = 1;
+    m_impulseResponse[11] = 1;
+
+
 
     for (int i = 0; i < m_convolutionEngines.size(); i++) {
-        m_convolutionEngines[i].prepare(samplesPerBlock, m_impulseResponse);
+        m_convolutionEngines[i].prepare(m_inputBuffer.size(), m_impulseResponse);
     }
 }
 
@@ -172,21 +176,19 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         auto* output = buffer.getWritePointer(channel);
         const float* input = buffer.getReadPointer(channel);
 
-        memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
-            // if (k == 0) {
-            // for (int i = 0; i < 8; i++){m_inputBuffer[i] = 1;}
-            // }
-            //
-            // if (k == 1)
-            // {
-            //     for (int i = 0; i < 8; i++){m_inputBuffer[i] = 0;}
-            // }
-            // k++;
+        // memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
 
-        // n_output = m_convolutionEngines[channel].process(m_inputBuffer);
-        n_output = m_inputBuffer;
+            for (int i = 0; i < 4; i++){m_inputBuffer[i] = i +(k*4);}
+            k++;
 
-            memcpy(output, &n_output[0], buffer.getNumSamples() * sizeof(float));
+        // if (m_inputBuffer[0] != 0) {
+        //     std::cout << "Beep" << std::endl;
+        // }
+
+        n_output = m_convolutionEngines[0].process(m_inputBuffer);
+        // n_output = m_inputBuffer;
+
+            // memcpy(output, &n_output[0], buffer.getNumSamples() * sizeof(float));
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
         }

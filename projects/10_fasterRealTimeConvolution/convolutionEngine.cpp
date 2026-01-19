@@ -6,6 +6,9 @@
 #include <iostream>
 #include <complex>
 #include "FFT.h"
+#include "writeToFile.h"
+
+std::string sourcePath = SOURCE_DIR;
 
 ConvolutionEngine::ConvolutionEngine()
 {
@@ -22,7 +25,6 @@ void ConvolutionEngine::prepare(int inputBufferSize, vector<float>& impulseRespo
 
 //find fftSize
   m_dataBlockSize = inputBufferSize;
-  // m_dataBlockSize = 8;
   m_fftSize = m_dataBlockSize * 2;
 
   //a<<=b is the same as a*=(2^b)
@@ -43,6 +45,12 @@ void ConvolutionEngine::prepare(int inputBufferSize, vector<float>& impulseRespo
   m_numIRs = ceil(numIRs);
   m_IRSize = m_numIRs * m_fftSize;
 
+  //Make sure that impulseResponse will be broken up nicely in parts of m_dataBlockSize
+  while (impulseResponse.size() < m_numIRs * m_dataBlockSize)
+  {
+    impulseResponse.push_back(0);
+  }
+
   m_impulseResponse.resize(m_IRSize, 0);
 
   for(int i = 0; i < m_numIRs; i++)
@@ -52,7 +60,6 @@ void ConvolutionEngine::prepare(int inputBufferSize, vector<float>& impulseRespo
     memcpy(&m_impulseResponse[x], &impulseResponse[y], m_dataBlockSize * sizeof(float));
     realfft_packed(&m_impulseResponse[x], m_fftSize);
   }
-
 
   //Initialise all buffers
   m_inputBuffer.resize(m_IRSize, 0);
@@ -83,11 +90,16 @@ vector<float> ConvolutionEngine::process(vector<float>& input)
 
   for(int i = 0; i < m_numIRs; i++)
   {
+    // if (i == m_numIRs - 1 && m_writeHead < 2000 && m_inputBuffer[0] != 0)
+    // {
+    //   std::cout << "Beep" << std::endl;
+    // }
       convolve();
+
   }
 
-  //To start at the right spot --> kruislings?
-  m_readHeadInput -= m_fftSize;
+  //To start convolution at the right spot next loop
+  m_readHeadInput = m_writeHead;
   wrap(m_readHeadInput);
 
   //inverse fft the overlapping buffer to get audio again
@@ -110,6 +122,7 @@ vector<float> ConvolutionEngine::process(vector<float>& input)
 
 void ConvolutionEngine::convolve()
 {
+
   //0 Hz
   m_overlappingBuffer[0] += m_inputBuffer[m_readHeadInput] * m_impulseResponse[m_readHeadIR];
   //[0 Hz, Nyquist]
@@ -128,7 +141,7 @@ void ConvolutionEngine::convolve()
 //To see which part to convolve
   m_readHeadInput += m_fftSize;
   wrap(m_readHeadInput);
-  m_readHeadIR += m_fftSize;
+  m_readHeadIR -= m_fftSize;
   wrap(m_readHeadIR);
 }
 
