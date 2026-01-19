@@ -13,7 +13,7 @@
 //FFT CONVOLUTION --> 0
 //FFT DECONVOLUTION --> 1
 //NON-FFT CONVOLUTION --> 2
-#define state 1
+#define state 0
   // std::array<double, fftSize*2> X{};
   // X.fill(0);
   //
@@ -32,7 +32,7 @@ int main()
   impulse.readWavFile();
 
   //TODO - FFTSIZE SHOULD BE 2^X
-  const int fftSize = 65536;
+  const int fftSize = 131072 * 2;
   std::vector<float> fX(fftSize, 0);
   std::vector<float> fY(fftSize, 0);
   std::vector<double> Z(fftSize);
