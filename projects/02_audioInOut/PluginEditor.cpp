@@ -3,12 +3,15 @@
 
 //==============================================================================
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), processorRef (p)
+    : AudioProcessorEditor (&p), processorRef (p),
+        m_slider(processorRef.getApvts().getParameter("GAIN")),
+        m_xyPad(processorRef.getApvts().getParameter("X"), processorRef.getApvts().getParameter("Y"))
 {
     juce::ignoreUnused (processorRef);
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     addAndMakeVisible(m_Label);
+    addAndMakeVisible(m_slider.slider);
     addAndMakeVisible(m_xyPad);
 
     setSize (400, 400);
@@ -35,5 +38,6 @@ void AudioPluginAudioProcessorEditor::resized()
     // subcomponents in your editor..
     m_Label.setBounds(0, 0, 100, 20);
     m_xyPad.setBounds(0, 0, 200, 200);
+    m_slider.slider.setBounds(0,0, getWidth()/4, getHeight());
 
 }

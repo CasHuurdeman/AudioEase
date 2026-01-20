@@ -17,16 +17,19 @@ public:
 private:
     typedef juce::AudioProcessorValueTreeState APVTS;
 
-    unique_ptr<APVTS::SliderAttachment> m_xCoordinateAttachment;
-    unique_ptr<APVTS::SliderAttachment> m_yCoordinateAttachment;
+    // unique_ptr<APVTS::SliderAttachment> m_xCoordinateAttachment;
+    // unique_ptr<APVTS::SliderAttachment> m_yCoordinateAttachment;
+    //
+    // juce::Slider m_xCoordinateSlider;
+    // juce::Slider m_yCoordinateSlider;
 
-    juce::Slider m_xCoordinateSlider;
-    juce::Slider m_yCoordinateSlider;
 
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     AudioPluginAudioProcessor& processorRef;
+
+    comp::XYPad m_xyPad;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

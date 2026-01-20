@@ -25,8 +25,10 @@ private:
   int m_readHeadInput = 0;
   int m_writeHead = 0;
   vector<float> m_inputBuffer;
+
   int m_readHeadIR = 0;
   vector<float> m_impulseResponse;
+
   vector<float> m_overlappingBuffer;
 
   int m_dataBlockSize = 0;

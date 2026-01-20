@@ -51,6 +51,7 @@ private:
     juce::AudioProcessorValueTreeState m_apvts;
 
     std::atomic<float>* m_freq;
+    std::atomic<float>* m_amp;
     std::atomic<float>* m_bypassed;
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();

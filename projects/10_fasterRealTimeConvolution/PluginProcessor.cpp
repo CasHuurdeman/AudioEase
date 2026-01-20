@@ -96,27 +96,16 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     juce::ignoreUnused (sampleRate);
 
     m_convolutionEngines.resize(2);
-
     m_inputBuffer.resize(samplesPerBlock, 0);
 
     ReadWAV read("test.wav", sourceDir);
     read.readWavFile();
-    m_impulseResponse = read.getSamplesL();
+    m_impulseResponseL = read.getSamplesL();
+    m_impulseResponseR = read.getSamplesR();
 
 
-    // m_inputBuffer.resize(8,0);
-
-
-    // int size = 16384;
-    // m_impulseResponse.resize(size, 0);
-    // m_impulseResponse[0] = 1;
-    // m_impulseResponse[8192] = 1;
-    // // m_impulseResponse[7] = 1;
-    // // m_impulseResponse[11] = 1;
-
-    for (int i = 0; i < m_convolutionEngines.size(); i++) {
-        m_convolutionEngines[i].prepare(m_inputBuffer.size(), m_impulseResponse);
-    }
+    m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
+    m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -177,22 +166,9 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
         memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
 
-        //      for(int i = 0; i < m_inputBuffer.size(); i ++){ m_inputBuffer[i] = k*i;}
-        // if (k >= 5){for(int i = 0; i < m_inputBuffer.size(); i ++){ m_inputBuffer[i] = 0;}}
-            // for (int i = 0; i < 4; i++){m_inputBuffer[i] = i +(k*4);}
-            // k++;
+        m_output = m_convolutionEngines[channel].process(m_inputBuffer);
 
-        // if (m_inputBuffer[0] != 0) {
-        //     std::cout << "Beep" << std::endl;
-        // }
-
-        n_output = m_convolutionEngines[channel].process(m_inputBuffer);
-        // n_output = m_inputBuffer;
-
-            memcpy(output, &n_output[0], buffer.getNumSamples() * sizeof(float));
-
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        }
+        memcpy(output, &m_output[0], buffer.getNumSamples() * sizeof(float));
     }
 }
 

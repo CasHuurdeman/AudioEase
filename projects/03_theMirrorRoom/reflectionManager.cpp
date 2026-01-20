@@ -7,8 +7,6 @@
 #include "dspMath.h"
 #include "smoothe.h"
 
-//TODO - als ik er nu twee aanroep worden dezelfde dingen ook twee keer berekend. Dit is in pricipe niet erg straks als ik met twee oren/speakers ga werken, tenzij ik dat in de class zelf wil regelen
-// --> GEEF EEN POINTER VAN ROOM MEE IN DE CONSTRUCTOR
 ReflectionManager::ReflectionManager()
 {
     std::cout << "ReflectionManager - constructor" << std::endl;

@@ -23,7 +23,7 @@ Room::~Room()
 
 void Room::prepareReceivers(int numChannels)
 {
-  addReceiver(0.1f, 0.0f, 1.7f);
+  addReceiver(0.1f, 0.01f, 1.7f);
   addReceiver(-0.07f, 0.0f, 1.7f);
 
 //TODO - for later

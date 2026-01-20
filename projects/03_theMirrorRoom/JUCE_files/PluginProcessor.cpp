@@ -92,8 +92,8 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
     //Put the raw parameter values in the variables
-    m_xCoordinate = m_apvts.getRawParameterValue("X");
-    m_yCoordinate = m_apvts.getRawParameterValue("Y");
+    m_xCoordinate = m_apvts.getRawParameterValue("XCOORD");
+    m_yCoordinate = m_apvts.getRawParameterValue("YCOORD");
 
     m_reflectionManager = new ReflectionManager();
     m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
@@ -160,12 +160,12 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     m_reflectionManager->moveSource(-X,Y,Z);
 
     // speedTest.start();
-    //Bufferwise
+    //Buffer loop
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
         auto* input = buffer.getReadPointer(channel);
 
-        //samplewise
+        //sample loop
         for (int sample = 0; sample < numSamples; ++sample) {
             float in = input[sample];
 
@@ -221,14 +221,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        "X",
+        "XCOORD",
         "xCoord",
         -10.0f, //TODO - this gon be a problem?
         10.0f,
         0.0f ));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        "Y",
+        "YCOORD",
         "yCoord",
         -10.0f, //TODO - this gon be a problem?
         10.0f,

@@ -3,18 +3,21 @@
 
 //==============================================================================
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), processorRef (p)
+    : AudioProcessorEditor (&p), processorRef (p),
+        m_xyPad(processorRef.getApvts().getParameter("XCOORD"), processorRef.getApvts().getParameter("YCOORD"))
+
 {
     juce::ignoreUnused (processorRef);
-
     //Connecting the sliderattachment to the sliders
-    m_xCoordinateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "X", m_xCoordinateSlider);
-    m_yCoordinateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "Y", m_yCoordinateSlider);
+    // m_xCoordinateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "XCOORD", m_xCoordinateSlider);
+    // m_yCoordinateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "YCOORD", m_yCoordinateSlider);
+    //
+    // m_xCoordinateSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    // m_yCoordinateSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    // addAndMakeVisible(m_xCoordinateSlider);
+    // addAndMakeVisible(m_yCoordinateSlider);
 
-    m_xCoordinateSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    m_yCoordinateSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
-    addAndMakeVisible(m_xCoordinateSlider);
-    addAndMakeVisible(m_yCoordinateSlider);
+    addAndMakeVisible(m_xyPad);
 
 
     // Make sure that before the constructor has finished, you've set the
@@ -42,7 +45,8 @@ void AudioPluginAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 
-    m_xCoordinateSlider.setBounds( 15, getHeight() / 2 + 20, 300, 100);
-    m_yCoordinateSlider.setBounds(getWidth() / 2 - 80, getHeight() / 2 - 150, 100, 200);
+    // m_xCoordinateSlider.setBounds( 15, getHeight() / 2 + 20, 300, 100);
+    // m_yCoordinateSlider.setBounds(getWidth() / 2 - 80, getHeight() / 2 - 150, 100, 200);
 
+   m_xyPad.setBounds(0,0, getWidth(), getHeight());
 }

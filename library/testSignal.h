@@ -8,7 +8,11 @@
 class TestSignal
 {
 public:
-    TestSignal() { count = 0; }
+    TestSignal()
+    {
+        std::cout << "TestSignal; WARNING - only one signal per object" << std::endl;
+        count = 0;
+    }
     ~TestSignal() = default;
 
     int getCount() { return count; }

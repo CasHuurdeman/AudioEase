@@ -90,12 +90,7 @@ vector<float> ConvolutionEngine::process(vector<float>& input)
 
   for(int i = 0; i < m_numIRs; i++)
   {
-    // if (i == m_numIRs - 1 && m_writeHead < 2000 && m_inputBuffer[0] != 0)
-    // {
-    //   std::cout << "Beep" << std::endl;
-    // }
       convolve();
-
   }
 
   //To start convolution at the right spot next loop
@@ -116,7 +111,6 @@ vector<float> ConvolutionEngine::process(vector<float>& input)
 
   return outputBuffer;
 //=============================================================================
-
 }
 
 
