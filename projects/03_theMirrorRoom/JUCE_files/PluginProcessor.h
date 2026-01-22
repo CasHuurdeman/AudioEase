@@ -67,6 +67,7 @@ private:
     std::atomic<float>* m_diagonalOrder;
     std::atomic<float>* m_normalise;
     std::atomic<float>* m_receiverDistance;
+    std::atomic<float>* m_speed;
 
 
     ParameterListener m_parameterListenerX;

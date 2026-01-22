@@ -36,6 +36,10 @@ private:
     unique_ptr<APVTS::SliderAttachment> m_numReflectionsAttach;
     juce::Slider m_numReflections;
 
+    juce::TextButton  m_speedLabel;
+    unique_ptr<APVTS::SliderAttachment> m_speedSliderAttach;
+    juce::Slider m_speedSlider;
+
     juce::Label m_myLabel{"signature", "by Cas Huurdeman"};
 
     juce::TooltipWindow m_tooltipWindow{nullptr, 200};

@@ -17,6 +17,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_radiusXSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSX", m_radiusXSlider);
     m_radiusYSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSY", m_radiusYSlider);
     m_numReflectionsAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "REFLECTIONS", m_numReflections);
+    m_speedSliderAttach= std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SPEED", m_speedSlider);
 
 //===============================================XYPAD=================================================
     addAndMakeVisible(m_xyPad);
@@ -53,6 +54,12 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     //Listener distance
     addAndMakeVisible(m_ears.slider);
     m_ears.slider.onValueChange = [this]() { repaint(); };
+
+    //speed slider
+    m_speedSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    m_speedSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_speedSlider);
+
 
 //==========================================LABELS====================================================
     m_radiusXLabel.setButtonText("Circle X");
@@ -96,6 +103,21 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_earsLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
     addAndMakeVisible(m_earsLabel);
 
+//speedslider
+    m_speedLabel.setButtonText("Speed");
+    m_speedLabel.setToggleState(true, juce::NotificationType::dontSendNotification);
+    m_speedLabel.setClickingTogglesState(true);
+    m_speedLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+    m_speedLabel.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::darkred);
+    addAndMakeVisible(m_speedLabel);
+
+    //LAMBDA FUNCTION
+    m_speedLabel.onClick = [this]() {
+        //change state of the button when clicked
+        const bool click = m_speedLabel.getToggleState();
+        m_speedLabel.setButtonText(click ? "Speed" : "Sorry, a bit buggy");
+    };
+
 //signature
     m_myLabel.setFont(17.0f);
     m_myLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::steelblue);
@@ -103,7 +125,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (600, 400);
+    setSize (610, 450);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -144,22 +166,25 @@ void AudioPluginAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor.
 
-    m_xyPad.setBounds(200,0, 400, 400);
+    m_xyPad.setBounds(200,25, 400, 400);
 
-    m_CircleOn.setBounds(10, 35, 80, 35);
-    m_normalise.setBounds(110, 35, 80, 35);
+    m_CircleOn.setBounds(10, 30, 80, 35);
+    m_normalise.setBounds(110, 30, 80, 35);
 
-    m_radiusYLabel.setBounds(10, 110, 100, 20);
-    m_radiusYSlider.setBounds(10, 140, 180, 20);
+    m_speedLabel.setBounds(10, 95, 100, 20);
+    m_speedSlider.setBounds(10, 125, 180, 20);
 
-    m_radiusXLabel.setBounds(10, 170, 100, 20);
-    m_radiusXSlider.setBounds(10, 200, 180, 20);
+    m_radiusYLabel.setBounds(10, 155, 100, 20);
+    m_radiusYSlider.setBounds(10, 185, 180, 20);
 
-    m_numReflectionsLabel.setBounds(10,250,100,20);
-    m_numReflections.setBounds(10, 280, 180, 20);
+    m_radiusXLabel.setBounds(10, 215, 100, 20);
+    m_radiusXSlider.setBounds(10, 245, 180, 20);
 
-    m_earsLabel.setBounds(10, 310, 100, 20);
-    m_ears.slider.setBounds(10, 340, 180, 20);
+    m_numReflectionsLabel.setBounds(10,300,100,20);
+    m_numReflections.setBounds(10, 330, 180, 20);
+
+    m_earsLabel.setBounds(10, 360, 100, 20);
+    m_ears.slider.setBounds(10, 390, 180, 20);
 
     m_myLabel.setBounds(10, getHeight() - 30, 180, 30);
 }

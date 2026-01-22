@@ -106,6 +106,8 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     m_diagonalOrder = m_apvts.getRawParameterValue("REFLECTIONS");
     m_receiverDistance = m_apvts.getRawParameterValue("RECEIVERDISTANCE");
 
+    m_speed = m_apvts.getRawParameterValue("SPEED");
+
 //Initialise reflectionManager
     m_reflectionManager = new ReflectionManager();
     m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
@@ -175,6 +177,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     float diagonalOrder = m_diagonalOrder->load();
     float receiverDistance = m_receiverDistance->load();
 
+    float speed = m_speed->load();
+
 //Change num reflections
     if (diagonalOrder != m_reflectionManager->getRoom().getDiagonalOrder())
     {
@@ -192,9 +196,14 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
 
 //MODULATING SIGNAL TO MOVE THE SOURCE
+    //40 is roomsize*2
+    float freq = speed/40;
+
+    float PI = 4*atan(1);
+
     int localSampleRate = getSampleRate() / numSamples;
-    float cosine = m_cosine.cosine(0.15, localSampleRate);
-    float sine = m_sine.sine(0.15, localSampleRate);
+    float cosine = m_cosine.cosine(freq, localSampleRate);
+    float sine = m_sine.sine(freq, localSampleRate);
 
 //Source movement
     float posX = X + (cosine) * radiusX * circleOn;
@@ -324,6 +333,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
      0.15f,
      19.0f,
      0.17f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+     "SPEED",
+     "Speed of source in m/s",
+     1.0f,
+     10.0f,
+     10.0f));
 
     return {parameters.begin(), parameters.end()};
 }
