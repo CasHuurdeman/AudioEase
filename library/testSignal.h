@@ -19,16 +19,10 @@ public:
 
     float givePulse()
     {
-        if(count == 0)
-        {
-            count++;
-            return 1.0f;
-        }
-        else
-        {
-            count++;
-            return 0.0f;
-        }
+        count++;
+
+        if(count == 0) return 1.0f;
+        return 0.0f;
     }
 
     float giveDC()
@@ -45,16 +39,24 @@ public:
 
     float sine(float freq, int sampleRate)
     {
-        float signal = 0.2 * sin(PI*2 * freq * count/sampleRate);
+        float signal = sin(PI*2 * freq * count/sampleRate);
         count++;
-//         if (count >= sampleRate) count = 0;
+
+        return signal;
+    }
+
+    float cosine(float freq, int sampleRate)
+    {
+        float signal = cos(PI*2 * freq * count/sampleRate);
+        count++;
+
         return signal;
     }
 
     float triangle(float freq, int sampleRate) {
         float signal = 4.0f*fabs((freq * count/sampleRate) - 0.5f) -1.0f;
         count++;
-//        if (count >= sampleRate) count = 0;
+
         return signal;
     }
 

@@ -17,8 +17,7 @@ public:
 
   void prepare(int sampleRate, int numChannels);
   float process(float input, int channel, int numSamplesLeft);
-  float renderReflections(int channel);
-  // void updateDelays??
+  // float renderReflections(float distance);
 
   void createDelays();
   void updateDelays();
@@ -28,9 +27,20 @@ public:
   void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
   void setNormalise(const bool normaliseOn) { m_normalise = normaliseOn; }
 
+  Room& getRoom() {return m_room; }
+
   //UI
-  void moveReceiver(Receiver &receiver, float X, float Y, float Z);
   void moveSource(float X, float Y, float Z);
+  void moveReceivers(float distance)
+  {
+    m_room.changeReceivers(distance);
+    updateDelays();
+  }
+  void changeNumReflections(int diagonalOrder)
+  {
+    m_room.changeNumReflections(diagonalOrder);
+    createDelays();
+  }
 
 private:
   Room m_room{2};

@@ -8,7 +8,7 @@
 
 Receiver::Receiver(float X, float Y, float Z)
 {
-  std::cout << "Receiver - constructor" << std::endl;
+  // std::cout << "Receiver - constructor" << std::endl;
     m_coordinates[0] = X;
     m_coordinates[1] = Y;
     m_coordinates[2] = Z;
@@ -16,7 +16,7 @@ Receiver::Receiver(float X, float Y, float Z)
 
 Receiver::~Receiver()
 {
-    std::cout << "Receiver - destructor" << std::endl;
+    // std::cout << "Receiver - destructor" << std::endl;
 }
 
 

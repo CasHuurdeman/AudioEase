@@ -20,7 +20,7 @@ private:
     AudioPluginAudioProcessor& processorRef;
     comp::Label m_Label{"Label"};
     comp::XYPad m_xyPad;
-    // SpecialSlider m_slider;
+    SpecialSlider m_slider;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)

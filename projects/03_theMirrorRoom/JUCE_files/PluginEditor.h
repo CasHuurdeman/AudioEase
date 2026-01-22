@@ -17,19 +17,36 @@ public:
 private:
     typedef juce::AudioProcessorValueTreeState APVTS;
 
-    // unique_ptr<APVTS::SliderAttachment> m_xCoordinateAttachment;
-    // unique_ptr<APVTS::SliderAttachment> m_yCoordinateAttachment;
-    //
-    // juce::Slider m_xCoordinateSlider;
-    // juce::Slider m_yCoordinateSlider;
+    unique_ptr<APVTS::ButtonAttachment> m_circleOnAttach;
+    juce::TextButton m_CircleOn;
+
+    unique_ptr<APVTS::ButtonAttachment> m_normaliseAttach;
+    juce::TextButton m_normalise;
 
 
+    juce::TextButton  m_radiusXLabel;
+    unique_ptr<APVTS::SliderAttachment> m_radiusXSliderAttach;
+    juce::Slider m_radiusXSlider;
+
+    juce::TextButton m_radiusYLabel;
+    unique_ptr<APVTS::SliderAttachment> m_radiusYSliderAttach;
+    juce::Slider m_radiusYSlider;
+
+    juce::TextButton  m_numReflectionsLabel;
+    unique_ptr<APVTS::SliderAttachment> m_numReflectionsAttach;
+    juce::Slider m_numReflections;
+
+    juce::Label m_myLabel{"signature", "by Cas Huurdeman"};
+
+    juce::TooltipWindow m_tooltipWindow{nullptr, 200};
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     AudioPluginAudioProcessor& processorRef;
 
     comp::XYPad m_xyPad;
+    comp::Ears m_ears;
+    juce::TextButton  m_earsLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

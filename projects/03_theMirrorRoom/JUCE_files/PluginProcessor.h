@@ -2,6 +2,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "../reflectionManager.h"
+#include "customComp.h"
 #include "testSignal.h"
 #include "speedTest.h"
 
@@ -46,19 +47,30 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     juce::AudioProcessorValueTreeState& getApvts(){ return m_apvts; }
+    ReflectionManager*& getReflectionManager() {return m_reflectionManager; }
+
 
 private:
     //TODO - dont forget to delete; is this needed?
     ReflectionManager* m_reflectionManager;
-    TestSignal signal;
-    TestSignal signalL;
-    TestSignal signalR;
-    SpeedTest speedTest;
+    TestSignal m_sine;
+    TestSignal m_cosine;
+
 
     juce::AudioProcessorValueTreeState m_apvts;
 
     std::atomic<float>* m_xCoordinate;
     std::atomic<float>* m_yCoordinate;
+    std::atomic<float>* m_CircleOn;
+    std::atomic<float>* m_radiusX;
+    std::atomic<float>* m_radiusY;
+    std::atomic<float>* m_diagonalOrder;
+    std::atomic<float>* m_normalise;
+    std::atomic<float>* m_receiverDistance;
+
+
+    ParameterListener m_parameterListenerX;
+    ParameterListener m_parameterListenerY;
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
 

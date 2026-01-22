@@ -11,6 +11,8 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ), m_apvts(*this, nullptr, "Parameters", createParameters())
+                        ,m_parameterListenerX(getApvts().getParameter("SoundSourceX"))
+                        ,m_parameterListenerY(getApvts().getParameter("SoundSourceY"))
 {
 }
 
@@ -91,10 +93,20 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
-    //Put the raw parameter values in the variables
-    m_xCoordinate = m_apvts.getRawParameterValue("XCOORD");
-    m_yCoordinate = m_apvts.getRawParameterValue("YCOORD");
+//Put the raw parameter value pointers in the variables
+    m_xCoordinate = m_apvts.getRawParameterValue("CircleMidX");
+    m_yCoordinate = m_apvts.getRawParameterValue("CircleMidY");
 
+    m_CircleOn = m_apvts.getRawParameterValue("CircleOn");
+    m_normalise = m_apvts.getRawParameterValue("NORMALISE");
+
+    m_radiusX = m_apvts.getRawParameterValue("RADIUSX");
+    m_radiusY = m_apvts.getRawParameterValue("RADIUSY");
+
+    m_diagonalOrder = m_apvts.getRawParameterValue("REFLECTIONS");
+    m_receiverDistance = m_apvts.getRawParameterValue("RECEIVERDISTANCE");
+
+//Initialise reflectionManager
     m_reflectionManager = new ReflectionManager();
     m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
     m_reflectionManager->prepare(static_cast<int>(sampleRate), getTotalNumOutputChannels());
@@ -139,7 +151,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
 
-
     int numSamples = buffer.getNumSamples();
 
     //Comment
@@ -147,19 +158,57 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, numSamples);
     }
 
-    // //MODULATING SIGNAL TO MOVE THE SOURCE
-    // float s = signal.sine(0.5, 100);
-    // m_reflectionManager->moveSource(s * 4.9, 1.0f, 1.7f);
 
-    //Load the raw parameter values
-    const float X = m_xCoordinate->load();
-    const float Y = m_yCoordinate->load();
+
+//======================================================UI============================================================
+
+//Load the raw parameter values
+    float X = m_xCoordinate->load();
+    float Y = m_yCoordinate->load();
     const float Z = 1.7f;
 
-    //-X or it goes to the wrong side when sliding horizontally haha
-    m_reflectionManager->moveSource(-X,Y,Z);
+    float circleOn = m_CircleOn->load();
+    float normalise = m_normalise->load();
+    float radiusX = m_radiusX->load();
+    float radiusY = m_radiusY->load();
 
-    // speedTest.start();
+    float diagonalOrder = m_diagonalOrder->load();
+    float receiverDistance = m_receiverDistance->load();
+
+//Change num reflections
+    if (diagonalOrder != m_reflectionManager->getRoom().getDiagonalOrder())
+    {
+        m_reflectionManager->changeNumReflections(diagonalOrder);
+    }
+
+//Change listener distance
+     if (receiverDistance != m_reflectionManager->getRoom().getReceiverDistance())
+     {
+         m_reflectionManager->moveReceivers(receiverDistance);
+     }
+
+//Normalise the amplitude or not
+    m_reflectionManager->setNormalise(static_cast<bool>(normalise));
+
+
+//MODULATING SIGNAL TO MOVE THE SOURCE
+    int localSampleRate = getSampleRate() / numSamples;
+    float cosine = m_cosine.cosine(0.15, localSampleRate);
+    float sine = m_sine.sine(0.15, localSampleRate);
+
+//Source movement
+    float posX = X + (cosine) * radiusX * circleOn;
+    float posY = Y + (sine) * radiusY * circleOn;
+    m_reflectionManager->moveSource(-posX,-posY,Z);
+
+//Update UI
+    m_parameterListenerX.updateValue(posX);
+    m_parameterListenerY.updateValue(posY);
+
+    //-X and -Y or it goes to the wrong side when sliding horizontally haha
+    //(because of the way the UI coordinates work)
+
+
     //Buffer loop
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
@@ -167,20 +216,10 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
         //sample loop
         for (int sample = 0; sample < numSamples; ++sample) {
-            float in = input[sample];
-
-            // //only for testing
-            // if (channel == 0) {
-            //  in = signalL.sine(440, 48000);
-            // }
-            // else  in = signalR.sine(440, 48000);
-
             int numSamplesLeft = numSamples - sample;
-            output[sample] = m_reflectionManager->process(in, channel, numSamplesLeft);
+            output[sample] = m_reflectionManager->process(input[sample], channel, numSamplesLeft);
         }
     }
-    // speedTest.printSpeed();
-    // std::cout << "\n";
 }
 
 //========================= USER INTERFACE PART ==================================
@@ -221,18 +260,70 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        "XCOORD",
+        "SoundSourceX",
         "xCoord",
-        -10.0f, //TODO - this gon be a problem?
+        -10.0f,
         10.0f,
         0.0f ));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        "YCOORD",
+        "SoundSourceY",
         "yCoord",
-        -10.0f, //TODO - this gon be a problem?
+        -10.0f,
         10.0f,
-        0.0f ));
+        0.0f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+    "CircleMidX",
+    "X coordinate of circle middle",
+    -10.0f,
+    10.0f,
+    0.0f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+    "CircleMidY",
+    "Y coordinate of circle middle",
+    -10.0f,
+    10.0f,
+    -1.0f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+    "CircleOn",
+    "Circle on",
+    0));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+    "RADIUSX",
+    "Circle Radius X value",
+    0.0f,
+    10.0f,
+    4.0f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+    "RADIUSY",
+    "Circle Radius Y value",
+    0.0f,
+    10.0f,
+    4.0f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>(
+    "REFLECTIONS",
+    "Used to calculate amount of mirror rooms",
+    0,
+    20,
+    2));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+    "NORMALISE",
+    "Amplitude normalisation on",
+    0));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+     "RECEIVERDISTANCE",
+     "Distance between 'ears'",
+     0.15f,
+     19.0f,
+     0.17f));
 
     return {parameters.begin(), parameters.end()};
 }

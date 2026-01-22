@@ -20,8 +20,8 @@ ReflectionManager::~ReflectionManager()
 void ReflectionManager::prepare(int sampleRate, int numChannels) {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
-
-    m_room.prepareReceivers(numChannels);
+    // moved to room constructor
+    // m_room.changeReceivers(0.17f);
 
     createDelays();
 }
@@ -63,9 +63,18 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
 
 void ReflectionManager::createDelays()
 {
+    //clear m_buffers
+        for (int i = 0; i < m_buffers.size(); i++) {
+            delete m_buffers[i];
+            m_buffers[i] = nullptr;
+        }
+
+        m_buffers.clear();
+
     m_buffers.resize(m_numChannels);
     for (int channel = 0; channel < m_numChannels; channel++)
     {
+        //Set the max delay
         float samplesDelay = dspMath::msToSamples(m_room.getMaxDelay(), m_sampleRate);
         m_buffers[channel] = new CircularBuffer(static_cast<int>(ceil(samplesDelay)));
 
@@ -89,18 +98,17 @@ void ReflectionManager::updateDelays()
     }
 }
 
-void ReflectionManager::moveReceiver(Receiver &receiver, float X, float Y, float Z)
-{
-
-}
-
 void ReflectionManager::moveSource(float X, float Y, float Z)
 {
-    m_room.setSource(X, Y, Z);
+    //check if there's a change
+    if (m_room.getSource()[0] != X || m_room.getSource()[1] != Y || m_room.getSource()[2] != Z)
+    {
+        m_room.setSource(X, Y, Z);
 
-    m_room.calculateMirrorSources();
-    //this also calculates the reflections, so this name is a bit unclear maybe
-    m_room.updateReceivers();
-    updateDelays();
+        m_room.calculateMirrorSources();
+        //this also calculates the reflections, so this name is a bit unclear maybe
+        m_room.updateReceivers();
+        updateDelays();
+    }
 }
 

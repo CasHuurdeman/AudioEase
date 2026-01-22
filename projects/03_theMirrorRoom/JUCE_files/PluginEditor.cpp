@@ -4,25 +4,106 @@
 //==============================================================================
 AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), processorRef (p),
-        m_xyPad(processorRef.getApvts().getParameter("XCOORD"), processorRef.getApvts().getParameter("YCOORD"))
-
+        m_xyPad(processorRef.getApvts().getParameter("SoundSourceX"), processorRef.getApvts().getParameter("SoundSourceY"),
+                    processorRef.getApvts().getParameter("CircleMidX"),
+                    processorRef.getApvts().getParameter("CircleMidY")),
+        m_ears(processorRef.getApvts().getParameter("RECEIVERDISTANCE"))
 {
     juce::ignoreUnused (processorRef);
-    //Connecting the sliderattachment to the sliders
-    // m_xCoordinateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "XCOORD", m_xCoordinateSlider);
-    // m_yCoordinateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "YCOORD", m_yCoordinateSlider);
-    //
-    // m_xCoordinateSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    // m_yCoordinateSlider.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
-    // addAndMakeVisible(m_xCoordinateSlider);
-    // addAndMakeVisible(m_yCoordinateSlider);
 
+//Connecting the sliderAttachments to the sliders
+    m_circleOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "CircleOn", m_CircleOn);
+    m_normaliseAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "NORMALISE", m_normalise);
+    m_radiusXSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSX", m_radiusXSlider);
+    m_radiusYSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSY", m_radiusYSlider);
+    m_numReflectionsAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "REFLECTIONS", m_numReflections);
+
+//===============================================XYPAD=================================================
     addAndMakeVisible(m_xyPad);
 
+//===========================================Button=======================================================
+    m_CircleOn.setButtonText("Ellipse");
+    m_CircleOn.setClickingTogglesState(true);
+    m_CircleOn.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
+    m_CircleOn.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    addAndMakeVisible(m_CircleOn);
+
+
+    m_normalise.setButtonText("Normalise");
+    m_normalise.setTooltip("Normalises the amplitude of the source and all reflections with it.\nFor when you don't want your original level to change.");
+    m_normalise.setClickingTogglesState(true);
+    m_normalise.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
+    m_normalise.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    addAndMakeVisible(m_normalise);
+
+//===========================================Sliders===================================================
+    m_radiusXSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    m_radiusXSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_radiusXSlider);
+
+    m_radiusYSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    m_radiusYSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_radiusYSlider);
+
+    //NumRefelctions
+    m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_numReflections);
+
+    //Listener distance
+    addAndMakeVisible(m_ears.slider);
+    m_ears.slider.onValueChange = [this]() { repaint(); };
+
+//==========================================LABELS====================================================
+    m_radiusXLabel.setButtonText("Circle X");
+    m_radiusXLabel.setToggleState(true, juce::NotificationType::dontSendNotification);
+    m_radiusXLabel.setClickingTogglesState(true);
+    m_radiusXLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+    m_radiusXLabel.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::darkred);
+    addAndMakeVisible(m_radiusXLabel);
+
+    //LAMBDA FUNCTION
+    m_radiusXLabel.onClick = [this]() {
+        //change state of the button when clicked
+        const bool click = m_radiusXLabel.getToggleState();
+        m_radiusXLabel.setButtonText(click ? "Circle X" : "(circle width)");
+    };
+
+//RadiusYLabel
+    m_radiusYLabel.setButtonText("Circle Y");
+    m_radiusYLabel.setToggleState(true, juce::NotificationType::dontSendNotification);
+    m_radiusYLabel.setClickingTogglesState(true);
+    m_radiusYLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+    m_radiusYLabel.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::darkred);
+    addAndMakeVisible(m_radiusYLabel);
+
+    //LAMBDA FUNCTION
+    m_radiusYLabel.onClick = [this]() {
+        //change state of the button when clicked
+        const bool click = m_radiusYLabel.getToggleState();
+        m_radiusYLabel.setButtonText(click ? "Circle Y" : "(circle height)");
+    };
+
+
+//NumReflections
+    m_numReflectionsLabel.setButtonText("Num reflections");
+    m_numReflectionsLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+    m_numReflectionsLabel.setTooltip("Adds more reflections exponentially.\n (numReflections formula: -1 + (1 + 2n)^2)");
+    addAndMakeVisible(m_numReflectionsLabel);
+
+//Ears
+    m_earsLabel.setButtonText("Speaker distance");
+    m_earsLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+    addAndMakeVisible(m_earsLabel);
+
+//signature
+    m_myLabel.setFont(17.0f);
+    m_myLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_myLabel);
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 400);
+    setSize (600, 400);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -35,18 +116,50 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
+    // g.setColour (juce::Colours::midnightblue);
+    // g.setFont (17.0f);
+    // g.drawFittedText("by Cas Huurdeman", 10, getHeight() - 30, 190, 40, juce::Justification::left, 1);
+
+//========================Draw ears=========================================
     g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    // g.drawFittedText ("Where am I?\nCan you hear me?", getLocalBounds(), juce::Justification::centred, 1);
+
+    float n = 400/20;
+    float a = 3;
+
+    float x = m_ears.slider.getValue()/2 * n;
+    float y = 0.01;
+
+    float xPos =  m_xyPad.getBounds().getCentreX() + x;
+    float yPos =  m_xyPad.getBounds().getCentreY() + y;
+    g.fillEllipse(xPos - a,yPos - a, 2*a, 2*a);
+
+    xPos =  m_xyPad.getBounds().getCentreX() - x;
+    yPos =  m_xyPad.getBounds().getCentreY() + y;
+    g.fillEllipse(xPos - a,yPos - a, 2*a, 2*a);
 }
+
 
 void AudioPluginAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    // subcomponents in your editor.
 
-    // m_xCoordinateSlider.setBounds( 15, getHeight() / 2 + 20, 300, 100);
-    // m_yCoordinateSlider.setBounds(getWidth() / 2 - 80, getHeight() / 2 - 150, 100, 200);
+    m_xyPad.setBounds(200,0, 400, 400);
 
-   m_xyPad.setBounds(0,0, getWidth(), getHeight());
+    m_CircleOn.setBounds(10, 35, 80, 35);
+    m_normalise.setBounds(110, 35, 80, 35);
+
+    m_radiusYLabel.setBounds(10, 110, 100, 20);
+    m_radiusYSlider.setBounds(10, 140, 180, 20);
+
+    m_radiusXLabel.setBounds(10, 170, 100, 20);
+    m_radiusXSlider.setBounds(10, 200, 180, 20);
+
+    m_numReflectionsLabel.setBounds(10,250,100,20);
+    m_numReflections.setBounds(10, 280, 180, 20);
+
+    m_earsLabel.setBounds(10, 310, 100, 20);
+    m_ears.slider.setBounds(10, 340, 180, 20);
+
+    m_myLabel.setBounds(10, getHeight() - 30, 180, 30);
 }
