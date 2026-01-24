@@ -23,6 +23,8 @@ private:
     unique_ptr<APVTS::ButtonAttachment> m_normaliseAttach;
     juce::TextButton m_normalise;
 
+    unique_ptr<APVTS::ButtonAttachment>  m_backOffAttach;
+    juce::TextButton m_backOff;
 
     juce::TextButton  m_radiusXLabel;
     unique_ptr<APVTS::SliderAttachment> m_radiusXSliderAttach;
@@ -51,6 +53,9 @@ private:
     comp::XYPad m_xyPad;
     comp::Ears m_ears;
     juce::TextButton  m_earsLabel;
+
+    comp::CustomButton m_snapXTo0;
+    comp::CustomButton m_snapYTo0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

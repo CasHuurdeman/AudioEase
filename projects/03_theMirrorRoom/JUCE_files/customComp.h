@@ -66,6 +66,7 @@ namespace comp
         juce::RangedAudioParameter &m_rapX, &m_rapY, &m_rapCircleX, &m_rapCircleY;
         juce::ParameterAttachment attachX, attachY, attachCircleX, attachCircleY;
 
+
         juce::Rectangle<float> bounds;
         const float thick = 2.f;
 
@@ -117,6 +118,7 @@ namespace comp
           attachCircleY.endGesture();
         }
 
+
         //sets the coordinates to the mouse coordinates
         void updatePointValues(const juce::Point<float>& pos)
         {
@@ -133,10 +135,25 @@ namespace comp
       {
         juce::NormalisableRange<double> range(0.15,19, 0.005, 0.30,false);
         slider.setNormalisableRange(range);
+        slider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkred);
       }
 
       juce::Slider slider;
       juce::SliderParameterAttachment sliderAttachment;
+    };
+
+    struct CustomButton : public Comp
+    {
+      CustomButton(juce::RangedAudioParameter* rap, const std::string buttonText) :
+      buttonAttachment(*rap, [this](float) { repaint(); }, nullptr)
+      {
+        button.setButtonText(buttonText);
+        button.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::darkred);
+        button.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+      }
+
+      juce::TextButton button;
+      juce::ParameterAttachment buttonAttachment;
     };
 }
 

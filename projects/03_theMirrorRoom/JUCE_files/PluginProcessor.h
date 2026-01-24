@@ -68,6 +68,7 @@ private:
     std::atomic<float>* m_normalise;
     std::atomic<float>* m_receiverDistance;
     std::atomic<float>* m_speed;
+    std::atomic<float>* m_directBackOff;
 
 
     ParameterListener m_parameterListenerX;

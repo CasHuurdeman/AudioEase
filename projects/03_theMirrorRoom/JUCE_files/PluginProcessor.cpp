@@ -107,6 +107,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     m_receiverDistance = m_apvts.getRawParameterValue("RECEIVERDISTANCE");
 
     m_speed = m_apvts.getRawParameterValue("SPEED");
+    m_directBackOff = m_apvts.getRawParameterValue("DIRECTBACKOFF");
 
 //Initialise reflectionManager
     m_reflectionManager = new ReflectionManager();
@@ -178,6 +179,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     float receiverDistance = m_receiverDistance->load();
 
     float speed = m_speed->load();
+    bool directBackOff = static_cast<bool>(m_directBackOff->load());
 
 //Change num reflections
     if (diagonalOrder != m_reflectionManager->getRoom().getDiagonalOrder())
@@ -199,8 +201,6 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     //40 is roomsize*2
     float freq = speed/40;
 
-    float PI = 4*atan(1);
-
     int localSampleRate = getSampleRate() / numSamples;
     float cosine = m_cosine.cosine(freq, localSampleRate);
     float sine = m_sine.sine(freq, localSampleRate);
@@ -208,15 +208,21 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 //Source movement
     float posX = X + (cosine) * radiusX * circleOn;
     float posY = Y + (sine) * radiusY * circleOn;
+    //-X and -Y or it goes to the wrong side when sliding horizontally haha
+    //(because of the way the UI coordinates work)
     m_reflectionManager->moveSource(-posX,-posY,Z);
 
 //Update UI
     m_parameterListenerX.updateValue(posX);
     m_parameterListenerY.updateValue(posY);
 
-    //-X and -Y or it goes to the wrong side when sliding horizontally haha
-    //(because of the way the UI coordinates work)
-
+//BEHIND HEAD
+    if (directBackOff)
+    {
+        if (posY > 0) getReflectionManager()->turnOffDirectSound(posY*20);
+        else getReflectionManager()->turnOnDirectSound();
+    }
+    else getReflectionManager()->turnOnDirectSound();
 
     //Buffer loop
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
@@ -340,6 +346,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
      1.0f,
      10.0f,
      10.0f));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+    "DIRECTBACKOFF",
+    "Direct sound off when in the back",
+    0));
 
     return {parameters.begin(), parameters.end()};
 }

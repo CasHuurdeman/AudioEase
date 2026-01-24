@@ -42,24 +42,28 @@ void printCopy(vector<int>& v) {
 
 int main() {
 
-    SpeedTest s;
+    std::cout << true * false << std::endl;
+    std::cout << true * 8 << std::endl;
+    std::cout << false * 8 << std::endl;
 
-    s.start();
-    for (int i = 0; i < 100000; i++) {
-
-    v.clear();
-    v.resize(5,1);
-    }
-    s.printSpeed();
-
-    s.start();
-    for (int i = 0; i < 100000; i++) {
-
-        fill(v.begin(), v.end(), 1);
-    }
-    s.printSpeed();
-
-    for (int i : v){ std::cout << i << std::endl;}
+    // SpeedTest s;
+    //
+    // s.start();
+    // for (int i = 0; i < 100000; i++) {
+    //
+    // v.clear();
+    // v.resize(5,1);
+    // }
+    // s.printSpeed();
+    //
+    // s.start();
+    // for (int i = 0; i < 100000; i++) {
+    //
+    //     fill(v.begin(), v.end(), 1);
+    // }
+    // s.printSpeed();
+    //
+    // for (int i : v){ std::cout << i << std::endl;}
 
     // int m_fftSize = 511;
     //

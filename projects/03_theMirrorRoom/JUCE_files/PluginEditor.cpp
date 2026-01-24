@@ -7,7 +7,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         m_xyPad(processorRef.getApvts().getParameter("SoundSourceX"), processorRef.getApvts().getParameter("SoundSourceY"),
                     processorRef.getApvts().getParameter("CircleMidX"),
                     processorRef.getApvts().getParameter("CircleMidY")),
-        m_ears(processorRef.getApvts().getParameter("RECEIVERDISTANCE"))
+        m_ears(processorRef.getApvts().getParameter("RECEIVERDISTANCE")),
+        m_snapXTo0(processorRef.getApvts().getParameter("CircleMidX"), "Snap X to 0"),
+        m_snapYTo0(processorRef.getApvts().getParameter("CircleMidY"), "Snap Y to 0")
+
 {
     juce::ignoreUnused (processorRef);
 
@@ -17,7 +20,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_radiusXSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSX", m_radiusXSlider);
     m_radiusYSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSY", m_radiusYSlider);
     m_numReflectionsAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "REFLECTIONS", m_numReflections);
-    m_speedSliderAttach= std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SPEED", m_speedSlider);
+    m_speedSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SPEED", m_speedSlider);
+    m_backOffAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "DIRECTBACKOFF", m_backOff);
 
 //===============================================XYPAD=================================================
     addAndMakeVisible(m_xyPad);
@@ -37,6 +41,22 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_normalise.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
     addAndMakeVisible(m_normalise);
 
+    m_backOff.setButtonText("Back off");
+    m_backOff.setTooltip("Turns off the direct sound when the source is on the backside");
+    m_backOff.setClickingTogglesState(true);
+    m_backOff.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
+    m_backOff.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    addAndMakeVisible(m_backOff);
+
+    addAndMakeVisible(m_snapXTo0.button);
+    m_snapXTo0.button.onClick = [this]() {
+        m_snapXTo0.buttonAttachment.setValueAsCompleteGesture(0);
+    };
+    addAndMakeVisible(m_snapYTo0.button);
+    m_snapYTo0.button.onClick = [this]() {
+        m_snapYTo0.buttonAttachment.setValueAsCompleteGesture(0);
+    };
+
 //===========================================Sliders===================================================
     m_radiusXSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     m_radiusXSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
@@ -48,7 +68,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     //NumRefelctions
     m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
+    m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkred);
     addAndMakeVisible(m_numReflections);
 
     //Listener distance
@@ -94,13 +114,13 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
 //NumReflections
     m_numReflectionsLabel.setButtonText("Num reflections");
-    m_numReflectionsLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+    m_numReflectionsLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::steelblue);
     m_numReflectionsLabel.setTooltip("Adds more reflections exponentially.\n (numReflections formula: -1 + (1 + 2n)^2)");
     addAndMakeVisible(m_numReflectionsLabel);
 
 //Ears
     m_earsLabel.setButtonText("Speaker distance");
-    m_earsLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::darkred);
+    m_earsLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::steelblue);
     addAndMakeVisible(m_earsLabel);
 
 //speedslider
@@ -125,7 +145,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (610, 450);
+    setSize (610, 500);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -137,10 +157,6 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
-    // g.setColour (juce::Colours::midnightblue);
-    // g.setFont (17.0f);
-    // g.drawFittedText("by Cas Huurdeman", 10, getHeight() - 30, 190, 40, juce::Justification::left, 1);
 
 //========================Draw ears=========================================
     g.setColour (juce::Colours::white);
@@ -187,4 +203,9 @@ void AudioPluginAudioProcessorEditor::resized()
     m_ears.slider.setBounds(10, 390, 180, 20);
 
     m_myLabel.setBounds(10, getHeight() - 30, 180, 30);
+
+
+    m_backOff.setBounds(220, 440, 80, 35);
+    m_snapXTo0.button.setBounds(400, 440,80,35);
+    m_snapYTo0.button.setBounds(520, 440,80,35);
 }

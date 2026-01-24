@@ -112,3 +112,30 @@ void ReflectionManager::moveSource(float X, float Y, float Z)
     }
 }
 
+void ReflectionManager::turnOffDirectSound(float dimfactor)
+{
+    //because we only want to dim, not amp
+    if (dimfactor < 1) dimfactor = 1;
+
+    for(int i = 0; i < m_numChannels; i++)
+    {
+        if (m_directSoundOn) m_directSound.push_back(m_room.getReceiver(i)->getReflections()[0][1]);
+            //TODO - shouldnt be 1
+        m_room.getReceiver(i)->getReflections()[0][1] = m_directSound[i] / dimfactor;
+    }
+    m_directSoundOn = false;
+}
+
+void ReflectionManager::turnOnDirectSound()
+{
+    if (!m_directSoundOn)
+    {
+        for(int i = 0; i < m_numChannels; i++)
+        {
+            m_room.getReceiver(i)->getReflections()[0][1] = m_directSound[i];
+        }
+        m_directSound.clear();
+    }
+    m_directSoundOn = true;
+}
+

@@ -26,6 +26,8 @@ public:
   [[nodiscard]] bool getBypassStatus() const { return m_bypassOn; }
   void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
   void setNormalise(const bool normaliseOn) { m_normalise = normaliseOn; }
+  void turnOffDirectSound(float dimFactor);
+  void turnOnDirectSound();
 
   Room& getRoom() {return m_room; }
 
@@ -51,6 +53,9 @@ private:
   bool m_normalise = false;
   int m_numChannels = 0;
   int m_sampleRate = 48000;
+
+  vector<float> m_directSound;
+  bool m_directSoundOn = true;
 
   SpeedTest speedTest;
 };

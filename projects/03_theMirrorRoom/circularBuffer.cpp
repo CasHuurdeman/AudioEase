@@ -10,7 +10,7 @@
 //=========================CONSTRUCTORS AND DESTRUCTORS=====================
 CircularBuffer::CircularBuffer(int bufferSize)
 {
-  std::cout << "CircularBuffer - constructor(int bufferSize)" << std::endl;
+  // std::cout << "CircularBuffer - constructor(int bufferSize)" << std::endl;
 
 	//The plus one is so that calling write before read doesn't matter anymore, so not necessarily needed
     m_bufferSize = bufferSize;
