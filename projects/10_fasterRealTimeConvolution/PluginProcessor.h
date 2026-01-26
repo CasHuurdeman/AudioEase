@@ -50,11 +50,11 @@ public:
     vector<float>& getInputBuffer() { return m_inputBuffer; }
 
 private:
-      vector<float> m_inputBuffer;
-      vector<float> m_output;
-      vector<float> m_impulseResponseL;
-      vector<float> m_impulseResponseR;
-      vector<ConvolutionEngine> m_convolutionEngines;
+      vector<float> m_inputBuffer;    //TODO
+      vector<float> m_output;    //TODO
+      vector<float> m_impulseResponseL;    //TODO
+      vector<float> m_impulseResponseR;    //TODO
+      vector<ConvolutionEngine> m_convolutionEngines;    //TODO
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)

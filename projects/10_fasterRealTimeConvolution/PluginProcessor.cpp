@@ -95,17 +95,17 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate);
 
-    m_convolutionEngines.resize(2);
-    m_inputBuffer.resize(samplesPerBlock, 0);
+    m_convolutionEngines.resize(2);   //TODO
+    m_inputBuffer.resize(samplesPerBlock, 0);   //TODO
 
     ReadWAV read("test.wav", sourceDir);
     read.readWavFile();
-    m_impulseResponseL = read.getSamplesL();
-    m_impulseResponseR = read.getSamplesR();
+    m_impulseResponseL = read.getSamplesL();   //TODO
+    m_impulseResponseR = read.getSamplesR();   //TODO
 
 
-    m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
-    m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
+    m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);   //TODO
+    m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);   //TODO
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -164,11 +164,11 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         auto* output = buffer.getWritePointer(channel);
         const float* input = buffer.getReadPointer(channel);
 
-        memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
+        memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));    //TODO
 
-        m_output = m_convolutionEngines[channel].process(m_inputBuffer);
+        m_output = m_convolutionEngines[channel].process(m_inputBuffer);    //TODO
 
-        memcpy(output, &m_output[0], buffer.getNumSamples() * sizeof(float));
+        memcpy(output, &m_output[0], buffer.getNumSamples() * sizeof(float));    //TODO
     }
 }
 

@@ -27,12 +27,13 @@ target_sources(03_theMirrorRoom  PRIVATE
         reflectionManager.cpp
         JUCE_files/PluginEditor.cpp
         JUCE_files/PluginProcessor.cpp
+        convolution_files/convolutionEngine.cpp
 )
 
 target_compile_definitions(03_theMirrorRoom  PRIVATE
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
-        SOURCE_DIR = "${CMAKE_CURRENT_SOURCE_DIR}"
+        SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
         JUCE_IGNORE_VST3_MISMATCHED_PARAMETER_ID_WARNING=1
 #        ${target} PUBLIC JUCE_ASIO=1
 )

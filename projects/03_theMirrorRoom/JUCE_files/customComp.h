@@ -82,7 +82,7 @@ namespace comp
           g.drawLine(bounds.getX() + bounds.getWidth() * 0.5f, bounds.getY(), bounds.getX() + bounds.getWidth()* 0.5f, bounds.getBottom());
           g.drawLine(bounds.getX(), bounds.getY() + bounds.getHeight() * 0.5f, bounds.getRight(), bounds.getY() + bounds.getHeight() * 0.5f);
 
-          g.setColour(juce::Colours::red);
+          g.setColour(juce::Colours::steelblue);
           g.drawRoundedRectangle(bounds, thick, thick);
 
           float X = m_rapX.getValue();
@@ -91,6 +91,7 @@ namespace comp
           auto xPos = bounds.getX() + X * bounds.getWidth();
           auto yPos = bounds.getY() + Y * bounds.getHeight();
 
+          g.setColour(juce::Colours::darkred);
           g.fillRect(xPos - 2.f, yPos - 2.f, 5.f, 5.f);
 
         }
