@@ -2,7 +2,10 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "../reflectionManager.h"
+#include "customComp.h"
 #include "testSignal.h"
+#include "../convolution_files/convolutionEngine.h"
+#include "speedTest.h"
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
@@ -44,12 +47,48 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState& getApvts(){ return m_apvts; }
+    ReflectionManager*& getReflectionManager() {return m_reflectionManager; }
+
+
 private:
-    //TODO - dont forget to delete
+//=====================================PLUGIN==========================
+    //TODO - dont forget to delete; is this needed?
     ReflectionManager* m_reflectionManager;
-    TestSignal signal;
-    TestSignal signalL;
-    TestSignal signalR;
+    TestSignal m_sine;
+    TestSignal m_cosine;
+
+//==============================CONVOLUTION==========================
+    vector<float> m_inputBuffer;    //TODO
+    vector<float> m_output;    //TODO
+    vector<float> m_impulseResponseL;    //TODO
+    vector<float> m_impulseResponseR;    //TODO
+    vector<ConvolutionEngine> m_convolutionEngines;    //TODO
+
+    vector<float> m_earlyReflectionCutOffPoints;
+
+//====================================UI==============================
+    juce::AudioProcessorValueTreeState m_apvts;
+
+    std::atomic<float>* m_xCoordinate;
+    std::atomic<float>* m_yCoordinate;
+    std::atomic<float>* m_CircleOn;
+    std::atomic<float>* m_radiusX;
+    std::atomic<float>* m_radiusY;
+    std::atomic<float>* m_diagonalOrder;
+    std::atomic<float>* m_normalise;
+    std::atomic<float>* m_receiverDistance;
+    std::atomic<float>* m_speed;
+    std::atomic<float>* m_directBackOff;
+    std::atomic<float>* m_convolutionOn;
+    std::atomic<float>* m_earlyReflectionsOn;
+
+
+    ParameterListener m_parameterListenerX;
+    ParameterListener m_parameterListenerY;
+
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)
 };

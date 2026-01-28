@@ -8,12 +8,17 @@
 #include <iostream>
 #include "calculateDistance.h"
 
-Room::Room() {
+Room::Room(int diagonalOrder)
+{
   std::cout << "Room - constructor" << std::endl;
 
-  int diagonalOrder = 0;
-  calculateMirrorSources(diagonalOrder);
-  calculateMaxDistance(diagonalOrder);
+  m_diagonalOrder = diagonalOrder;
+  calculateMirrorSources();
+  calculateMaxDelay();
+
+  //changeReceivers--> prepareReceivers
+  //should be after calculateMirrorSources and calculateMaxDelay
+  changeReceivers(m_receiverDistance);
 }
 
 Room::~Room()
@@ -21,24 +26,35 @@ Room::~Room()
 	std::cout << "Room - destructor" << std::endl;
 }
 
-//TODO - a lot of this might need a process fuction
-void Room::prepareReceivers(int numChannels)
+void Room::changeNumReflections(int diagonalOrder)
 {
-  addReceiver(0.1f, 0.0f, 1.7f);
-  addReceiver(-0.07f, 0.0f, 1.7f);
+  m_diagonalOrder = diagonalOrder;
+  calculateMirrorSources();
+  calculateMaxDelay();
 
-//TODO - for later
-  // for (int channel = 0; channel < numChannels; channel++)
-  // {
-  //   addReceiver(0.0f, 0.0f, 0.0f);
-  // }
+  updateReceivers();
+}
+
+
+void Room::changeReceivers(float distance)
+{
+//first delete receivers
+  for (int i = 0; i < m_receivers.size(); i++) {
+    delete m_receivers[i];
+    m_receivers[i] = nullptr;
+  }
+  m_receivers.clear();
+  
+  //+0,3f to make sure they are not symetrical --> mono reverb
+  addReceiver(distance/2 + 0.3f, 0.01f, 1.7f);
+  addReceiver(-distance/2 + 0.3f, 0.0f, 1.7f);
 
   updateReceivers();
 }
 
 void Room::updateReceivers() {
   //calculate al reflections of all receivers
-  for (Receiver* receiver : m_receiverVector)
+  for (Receiver* receiver : m_receivers)
   {
     receiver->calculateReflections(m_mirrorSources, size(m_mirrorSources), m_soundSpeed);
     receiver->calculateSourceAmplitude(m_source, size(m_source));
@@ -46,17 +62,16 @@ void Room::updateReceivers() {
 }
 
 
-void Room::calculateMirrorSources(const int diagonalOrder)
+void Room::calculateMirrorSources()
 {
   //TODO - EXPLANATION!!!!!!!!!!!!!
-  // TODO - 3D
   vector arrX = {m_source[X]};
   vector arrY = {m_source[Y]};
   vector arrZ = {m_source[Z]};
 
   //calculate the different X and Y values to be used
   int a = -1;
-  for (int i = 1; i <= diagonalOrder; i++)
+  for (int i = 1; i <= m_diagonalOrder; i++)
   {
     arrX.push_back(static_cast<float>(i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
     arrX.push_back(static_cast<float>(-i) * m_roomDimensions[X] + static_cast<float>(a) * m_source[X]);
@@ -64,7 +79,6 @@ void Room::calculateMirrorSources(const int diagonalOrder)
     arrY.push_back(static_cast<float>(i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
     arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
 
-    //TODO - *0.5f good? --> think
     arrY.push_back(static_cast<float>(i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
     arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
     a *= -1;
@@ -85,10 +99,10 @@ void Room::calculateMirrorSources(const int diagonalOrder)
   }
 }
 
-void Room::calculateMaxDistance(int diagonalOrder)
+void Room::calculateMaxDelay()
 {
   // calculate max distance, not very pretty but works
-  float m = -(0.5f + static_cast<float>(diagonalOrder));
+  float m = -(0.5f + static_cast<float>(m_diagonalOrder));
   float BottomLeftMirrorCorner [] = {m * m_roomDimensions[X], m * m_roomDimensions[Y],  m * m_roomDimensions[Z]};
   float TopRightCorner [] = {0.5f * m_roomDimensions[X], 0.5f * m_roomDimensions[Y], 0.5f * m_roomDimensions[Z]};
   float maxDistance = CalculateDistance::calculateDistance(TopRightCorner, BottomLeftMirrorCorner, 3, 3);
@@ -98,29 +112,26 @@ void Room::calculateMaxDistance(int diagonalOrder)
 }
 
 
-void Room::removeReceiver(int receiverIndex)
+void Room::setSource(float X, float Y, float Z)
 {
-	if (receiverIndex < m_receiverVector.size())
-	{
-		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
-	}
-
-  delete m_receiverVector[receiverIndex];
-  m_receiverVector[receiverIndex] = nullptr;
-	m_receiverVector.erase(m_receiverVector.begin() + receiverIndex);
+  m_source[0] = X;
+  m_source[1] = Y;
+  m_source[2] = Z;
 }
 
 
 
-
-
-
-
-
-
-
-
-
+// void Room::removeReceiver(int receiverIndex)
+// {
+// 	if (receiverIndex < m_receivers.size())
+// 	{
+// 		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
+// 	}
+//
+//   delete m_receivers[receiverIndex];
+//   m_receivers[receiverIndex] = nullptr;
+// 	m_receivers.erase(m_receivers.begin() + receiverIndex);
+// }
 
 
 

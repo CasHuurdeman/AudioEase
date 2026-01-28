@@ -8,10 +8,10 @@ class dspMath{
 public:
 
   static float samplesToMs(int samples, int samplerate){
-    return ((samples*1000.0f)/samplerate);
-  };
+    return static_cast<float>(samples)*1000.0f / static_cast<float>(samplerate);
+  }
 
   static float msToSamples(float ms, unsigned int samplerate){
-    return (ms*samplerate)/1000.0f;
-  };
+    return ms * static_cast<float>(samplerate) / 1000.0f;
+  }
 };

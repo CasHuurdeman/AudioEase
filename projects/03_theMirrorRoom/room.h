@@ -15,36 +15,40 @@ using std::size;
 class Room {
 public:
     // Room() = default;
-    Room();
+    explicit Room(int diagonalOrder);
     ~Room();
 
-    //TODO - is this the way to go -> yes, maybe even remove createRoom()
-    void createWalls();
-    void calculateMirrorSources(int diagonalOrder);
-    void calculateMaxDistance(int diagonalOrder);
-    void prepareReceivers(int numChannels);
+    void calculateMirrorSources();
+    void calculateMaxDelay();
+
+    void changeReceivers(float distance);
+    void changeNumReflections(int diagonalOrder);
+
+    //============================RECEIVER===============================
+    void addReceiver(float X, float Y, float Z) { m_receivers.push_back(new Receiver(X, Y, Z)); }
+    //verwarrende naam
     void updateReceivers();
-
-    //=======================ADD/REMOVE RECEIVER===============================
-    void addReceiver(float X, float Y, float Z) { m_receiverVector.push_back(new Receiver(X, Y, Z)); }
-    void removeReceiver(int receiverIndex); //TODO - IS THIS NEEDED?
-
 
     //=============================GETTERS=====================================
     [[nodiscard]] int getNumMirrorSources() const { return size(m_mirrorSources); }
     [[nodiscard]] float getMaxDelay() const { return m_maxDelay; }
-    Receiver*& getReceiver(const int index) { return m_receiverVector[index]; } //TODO - & ????
+    Receiver*& getReceiver(const int index) { return m_receivers[index]; }
     float* getSource(){ return m_source; } //WATCH OUT!! NO WAY OF KNOWING HOW LONG THE ARRAY IS
+    int getDiagonalOrder(){ return m_diagonalOrder; }
+    float getReceiverDistance(){ return m_receiverDistance; }
     //=========================================================================
+    void setSource(float X, float Y, float Z);
 
 private:
     //EVERYTHING IS IN METERS
   float m_roomDimensions [3] = {20.0f, 20.0f, 3.0f};
+  int m_diagonalOrder = 0;
 
   float m_source[3] = {1.5f, 1.0f, 1.7f};
   vector< array<float, 3> > m_mirrorSources;
 
-  vector<Receiver*> m_receiverVector;
+  float m_receiverDistance = 0.17;
+  vector<Receiver*> m_receivers;
 
   float m_maxDelay = 0.0f;
   float m_soundSpeed = 343.0f;  //in m/s @20 deg celcius

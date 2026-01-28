@@ -2,16 +2,11 @@
 // Created by cashu on 13/11/2025.
 //
 
-// in room.cpp and receiver.cpp too
-
 #include "reflectionManager.h"
 #include <iostream>
-#include "customPrint.h"
 #include "dspMath.h"
 #include "smoothe.h"
 
-//TODO - als ik er nu twee aanroep worden dezelfde dingen ook twee keer berekend. Dit is in pricipe niet erg straks als ik met twee oren/speakers ga werken, tenzij ik dat in de class zelf wil regelen
-// --> GEEF EEN POINTER VAN ROOM MEE IN DE CONSTRUCTOR
 ReflectionManager::ReflectionManager()
 {
     std::cout << "ReflectionManager - constructor" << std::endl;
@@ -25,8 +20,8 @@ ReflectionManager::~ReflectionManager()
 void ReflectionManager::prepare(int sampleRate, int numChannels) {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
-
-    m_room.prepareReceivers(numChannels);
+    // moved to room constructor
+    // m_room.changeReceivers(0.17f);
 
     createDelays();
 }
@@ -45,18 +40,22 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
 
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
-        //INTERPOLATION
-        float prevDelay = m_buffers[channel]->getSamplesDelay()[i];
-        float targetDelay = m_buffers[channel]->getTargetSamplesDelay()[i];
-        if (prevDelay != targetDelay)
-        {
-            float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
-            m_buffers[channel]->setSamplesDelay(i,delay);
-        }
+        // INTERPOLATION
+        //TODO - Declarations out of loop? --> more efficient?
+         array<float, 2> samplesDelay = m_buffers[channel]->getSamplesDelay()[i];
+         float prevDelay = samplesDelay[0];
+         float targetDelay = samplesDelay[1];
 
-        // normalising the first reflection to input level and the rest with it
+         if (prevDelay != targetDelay)
+         {
+         float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
+         m_buffers[channel]->setSamplesDelay(i,delay);
+         }
+
+        //If m_normalise = true: normalising the first reflection to input level and the rest with it
         output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }
+
     m_buffers[channel]->write(output * m_feedback + input);
 
     return output;
@@ -64,9 +63,18 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
 
 void ReflectionManager::createDelays()
 {
+    //clear m_buffers
+        for (int i = 0; i < m_buffers.size(); i++) {
+            delete m_buffers[i];
+            m_buffers[i] = nullptr;
+        }
+
+        m_buffers.clear();
+
     m_buffers.resize(m_numChannels);
     for (int channel = 0; channel < m_numChannels; channel++)
     {
+        //Set the max delay
         float samplesDelay = dspMath::msToSamples(m_room.getMaxDelay(), m_sampleRate);
         m_buffers[channel] = new CircularBuffer(static_cast<int>(ceil(samplesDelay)));
 
@@ -90,21 +98,44 @@ void ReflectionManager::updateDelays()
     }
 }
 
-void ReflectionManager::moveReceiver(Receiver &receiver, float X, float Y, float Z)
-{
-
-}
-
 void ReflectionManager::moveSource(float X, float Y, float Z)
 {
-    //TODO - dit is wel een beetje gek, misschien met een setter doen?
-    m_room.getSource()[0] = X;
-    m_room.getSource()[1] = Y;
-    m_room.getSource()[2] = Z;
+    //check if there's a change
+    if (m_room.getSource()[0] != X || m_room.getSource()[1] != Y || m_room.getSource()[2] != Z)
+    {
+        m_room.setSource(X, Y, Z);
 
-    m_room.calculateMirrorSources(0);
-    //this also calculates the reflections, so this name is a bit unclear maybe
-    m_room.updateReceivers();
-    updateDelays();
+        m_room.calculateMirrorSources();
+        //this also calculates the reflections, so this name is a bit unclear maybe
+        m_room.updateReceivers();
+        updateDelays();
+    }
+}
+
+void ReflectionManager::turnOffDirectSound(float dimfactor)
+{
+    //because we only want to dim, not amp
+    if (dimfactor < 1) dimfactor = 1;
+
+    for(int i = 0; i < m_numChannels; i++)
+    {
+        if (m_directSoundOn) m_directSound.push_back(m_room.getReceiver(i)->getReflections()[0][1]);
+            //TODO - shouldnt be 1
+        m_room.getReceiver(i)->getReflections()[0][1] = m_directSound[i] / dimfactor;
+    }
+    m_directSoundOn = false;
+}
+
+void ReflectionManager::turnOnDirectSound()
+{
+    if (!m_directSoundOn)
+    {
+        for(int i = 0; i < m_numChannels; i++)
+        {
+            m_room.getReceiver(i)->getReflections()[0][1] = m_directSound[i];
+        }
+        m_directSound.clear();
+    }
+    m_directSoundOn = true;
 }
 

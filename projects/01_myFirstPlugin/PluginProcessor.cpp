@@ -94,6 +94,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 
     //Put the raw parameter values in the variables
     m_freq = m_apvts.getRawParameterValue("FREQUENCY");
+    m_amp = m_apvts.getRawParameterValue("AMPLITUDE");
     m_bypassed = m_apvts.getRawParameterValue("BYPASS");
 
     //Find the amount of channels and prepare the sines
@@ -208,6 +209,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         20.0f,
         20000.0f,
         220.0f ));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "AMPLITUDE",
+        "Amplitude",
+        0.0f,
+        1.0f,
+        0.4f ));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("BYPASS", "Bypass", true));
 

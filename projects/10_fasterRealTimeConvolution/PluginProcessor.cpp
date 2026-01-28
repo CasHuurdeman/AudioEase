@@ -1,5 +1,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "readWAV.h"
+
+std::string sourceDir = SOURCE_DIR;
 
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
@@ -10,7 +13,7 @@ AudioPluginAudioProcessor::AudioPluginAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), m_apvts(*this, nullptr, "Parameters", createParameters())
+                       )
 {
 }
 
@@ -90,11 +93,19 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    juce::ignoreUnused (sampleRate, samplesPerBlock);
+    juce::ignoreUnused (sampleRate);
 
-    // m_gain = m_apvts.getRawParameterValue("GAIN");
-    m_Xcoord = m_apvts.getRawParameterValue("X");
-    m_Ycoord = m_apvts.getRawParameterValue("Y");
+    m_convolutionEngines.resize(2);   //TODO
+    m_inputBuffer.resize(samplesPerBlock, 0);   //TODO
+
+    ReadWAV read("test.wav", sourceDir);
+    read.readWavFile();
+    m_impulseResponseL = read.getSamplesL();   //TODO
+    m_impulseResponseR = read.getSamplesR();   //TODO
+
+
+    m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);   //TODO
+    m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);   //TODO
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -145,18 +156,19 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         buffer.clear (i, 0, buffer.getNumSamples());
     }
 
+
+
     //with focusrite solo now works with only 1 channel (left or right)
     //so not mono to stereo yet, only mono to mono or stereo to stereo
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
-        auto* input = buffer.getReadPointer(channel);
+        const float* input = buffer.getReadPointer(channel);
 
-        float X = m_Xcoord->load();
-        float Y = m_Ycoord->load();
+        memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));    //TODO
 
-        memcpy(output, input, buffer.getNumSamples() * sizeof(float));
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        }
+        m_output = m_convolutionEngines[channel].process(m_inputBuffer);    //TODO
+
+        memcpy(output, &m_output[0], buffer.getNumSamples() * sizeof(float));    //TODO
     }
 }
 
@@ -192,31 +204,4 @@ void AudioPluginAudioProcessor::setStateInformation (const void* data, int sizeI
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new AudioPluginAudioProcessor();
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::createParameters() {
-    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
-
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        "GAIN",
-        "Gain",
-        -60.0f,
-        20.0f,
-        0.0f ));
-
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-                "X",
-                "xCoord",
-                -10.f,
-                10.f,
-                0.f));
-
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-            "Y",
-            "xCoord",
-            -10.f,
-            10.f,
-            0.f));
-
-    return {parameters.begin(), parameters.end()};
 }

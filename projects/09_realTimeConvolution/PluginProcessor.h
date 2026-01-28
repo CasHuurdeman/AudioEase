@@ -1,8 +1,9 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "sine.h"
 #include <vector>
+#include "convolutionEngine.h"
+using std::vector;
 
 //==============================================================================
 class AudioPluginAudioProcessor final : public juce::AudioProcessor
@@ -44,17 +45,15 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    juce::AudioProcessorValueTreeState& getApvts(){ return m_apvts; }
+
+    //==============================================================================
+    vector<float>& getInputBuffer() { return m_inputBuffer; }
 
 private:
-    std::vector<Sine> m_sineVector;
-    juce::AudioProcessorValueTreeState m_apvts;
-
-    std::atomic<float>* m_freq;
-    std::atomic<float>* m_amp;
-    std::atomic<float>* m_bypassed;
-
-    juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+      vector<float> m_inputBuffer;
+      vector<ConvolutionEngine> m_convolutionEngines;
+      vector<float> m_impulseResponse = {1};
+    vector<float> n_output;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessor)

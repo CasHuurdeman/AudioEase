@@ -9,6 +9,8 @@
 #include <array>
 #include <vector>
 #include <cmath>
+#include <speedTest.h>
+
 #include "readWAV.h"
 #include "writeToWAV.h"
 #include "../04_tappedDelay/circularBuffer.h"
@@ -30,14 +32,87 @@ float devide(float num, float den)
 }
 
 
+std::vector<int> v2;
+void printCopy(vector<int>& v) {
+    v2 = v;
+    std::cout << v2[3] << std::endl;
+}
+
+    // vector<int> v = {0,1,2,3,4};
+vector<std::array<float, 2>> v = {{0,0}, {-40,100}, {5.1,6}, {5,6.1}};
+
 int main() {
-    ReadWAV read("test.wav", sourceDir);
+    vector<std::array<float, 2>>::iterator maxElement = std::max_element(
+        v.begin(),
+        v.end());
 
-    read.readWavFile();
+    std::cout << maxElement[-1][0] << maxElement[0][1] << std::endl;
 
-    for (int i = 0; i < 1000; i++) {
-    std::cout << read.getSamplesL()[i] << std::endl;
-    }
+    // SpeedTest s;
+    //
+    // s.start();
+    // for (int i = 0; i < 100000; i++) {
+    //
+    // v.clear();
+    // v.resize(5,1);
+    // }
+    // s.printSpeed();
+    //
+    // s.start();
+    // for (int i = 0; i < 100000; i++) {
+    //
+    //     fill(v.begin(), v.end(), 1);
+    // }
+    // s.printSpeed();
+    //
+    // for (int i : v){ std::cout << i << std::endl;}
+
+    // int m_fftSize = 511;
+    //
+    // int a = 1;
+    // while (a < m_fftSize)
+    // {
+    //     a <<= 1;
+    // }
+    // std::cout << a << std::endl;
+
+    // std::vector<int> v1 = {1,2,3,4};
+    //
+    // printCopy(v1);
+
+
+    // std::vector<int> v1;
+    // std::vector<int> v2;
+    // SpeedTest s1;
+    //
+    // s1.start();
+    // for (int i = 0; i < 1000000; i++)
+    // {
+    //     v1.push_back(4);
+    // }
+    // for (int i = 0; i < 1000000; i++)
+    // {
+    //     v2.push_back(5);
+    // }
+    // s1.printSpeed();
+    //
+    // s1.start();
+    // for (int i = 0; i < 1000000; i++)
+    // {
+    //     v1.push_back(4);
+    //     v2.push_back(5);
+    // }
+    // s1.printSpeed();
+
+    // ReadWAV read("test.wav", sourceDir);
+    //
+    // read.readWavFile();
+    //
+    // read.getMetaData();
+
+    // for (int i = 0; i < 1000; i++) {
+    // std::cout << read.getSamplesL()[i] << std::endl;
+    // }
 
     // float smoothedValue = 4.393579;
     // for (int i = 0; i < 7; i++) {

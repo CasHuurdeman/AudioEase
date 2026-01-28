@@ -17,8 +17,7 @@ public:
 
   void prepare(int sampleRate, int numChannels);
   float process(float input, int channel, int numSamplesLeft);
-  float renderReflections(int channel);
-  // void updateDelays??
+  // float renderReflections(float distance);
 
   void createDelays();
   void updateDelays();
@@ -27,13 +26,26 @@ public:
   [[nodiscard]] bool getBypassStatus() const { return m_bypassOn; }
   void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
   void setNormalise(const bool normaliseOn) { m_normalise = normaliseOn; }
+  void turnOffDirectSound(float dimFactor);
+  void turnOnDirectSound();
+
+  Room& getRoom() {return m_room; }
 
   //UI
-  void moveReceiver(Receiver &receiver, float X, float Y, float Z);
   void moveSource(float X, float Y, float Z);
+  void moveReceivers(float distance)
+  {
+    m_room.changeReceivers(distance);
+    updateDelays();
+  }
+  void changeNumReflections(int diagonalOrder)
+  {
+    m_room.changeNumReflections(diagonalOrder);
+    createDelays();
+  }
 
 private:
-  Room m_room;
+  Room m_room{2};
   vector<CircularBuffer*> m_buffers;
 
   float m_feedback = 0.0f;
@@ -41,6 +53,9 @@ private:
   bool m_normalise = false;
   int m_numChannels = 0;
   int m_sampleRate = 48000;
+
+  vector<float> m_directSound;
+  bool m_directSoundOn = true;
 
   SpeedTest speedTest;
 };

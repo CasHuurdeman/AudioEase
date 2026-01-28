@@ -6,13 +6,14 @@
 // #include "../03_theMirrorRoom/reflectionManager.h"
 #include <algorithm>
 
-#include "pulse.h"
+#include "testSignal.h"
 #include "writeToFile.h"
 #include "writeToWAV.h"
 #include "readWAV.h"
 #include <iostream>
 #include <cmath>
 #include "../03_theMirrorRoom/reflectionManager.h"
+// #include "../05_delay/delay.h"
 #include "speedTest.h"
 
 int sampleRate = 48000;
@@ -21,8 +22,10 @@ int main()
 {
     std::string sourceDir = SOURCE_DIR;
 
-    Pulse pulse;
+    TestSignal pulse;
+    TestSignal pulse2;
     ReflectionManager reflectionManager;
+    // Delay delay{static_cast<float>(sampleRate), 0};
     SpeedTest speed_test;
 
     WriteToFile fileWriter{sourceDir};
@@ -30,17 +33,22 @@ int main()
 
 
 
-     reflectionManager.prepare(sampleRate, 1);
+     reflectionManager.prepare(sampleRate, 2);
 
-    speed_test.start();
-     for (int i = 0; i < sampleRate; i++)
+    // speed_test.start();
+     for (int i = 0; i < sampleRate *5; i++)
      {
-         float signal = reflectionManager.process(pulse.givePulse(), 0);
-         // float signal = pulse.giveNyquist();
-         fileWriter.writeToFile(signal);
-         // wavWriter.write(signal,signal);
+         int numSamplesLeft = sampleRate - i;
+         // float signalL = reflectionManager.process(pulse.givePulse(), 0, numSamplesLeft);
+         // float signalR = reflectionManager.process(pulse2.givePulse(), 1, numSamplesLeft);
+
+         // float signal = delay.process(pulse.givePulse());
+         float signal = pulse.givePulse();
+         // fileWriter.writeToFile(signal);
+
+         wavWriter.write(signal,signal);
      }
-    speed_test.printSpeed();
+    // speed_test.printSpeed();
 
      return 0;
 }

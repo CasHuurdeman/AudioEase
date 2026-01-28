@@ -17,18 +17,23 @@ public:
     Receiver(float X, float Y, float Z);
     ~Receiver();
 
-    //FIXME - I DONT NEED TO KNOW EVERY REFLECTION EVERY TIME I MOVE, JUST THE ONES THAT GET TO THE RECEIVER IN THAT SPECIFIC MOMENT
+    //TODO - I DONT NEED TO KNOW EVERY REFLECTION EVERY TIME I MOVE, JUST THE ONES THAT GET TO THE RECEIVER IN THAT SPECIFIC MOMENT
     void calculateReflections(vector< array<float, 3> > mirrorSources,
         int numMirrorSources, float soundSpeed);
     void calculateSourceAmplitude(float source[], size_t arrayLength);
 
     //================================GETTERS================================================
     float getSourceAmplitude() const { return m_sourceAmplitude; }
-    vector< array<float, 2> >& getReflections() { return m_reflections;}
+    // m_reflections[i][0] = delayTime in ms;
+    // m_reflections[i][1] = amplitude;
+    vector< array<float, 2> >& getReflections() { return m_reflections; }
     int getNumReflections() const { return static_cast<int>(m_reflections.size()); }
 
+    float getXCoordinate() { return m_coordinates[0]; }
+    float getYCoordinate() { return m_coordinates[1]; }
+
+
     //UI
-    void setCoordinates(float X, float Y, float Z);
 
 private:
     float m_coordinates[3] {0.0f, 0.0f, 0.0f};
