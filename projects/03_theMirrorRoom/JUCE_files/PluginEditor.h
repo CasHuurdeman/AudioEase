@@ -43,14 +43,15 @@ private:
     juce::Slider m_radiusYSlider;
 
     juce::TextButton  m_numReflectionsLabel;
-    unique_ptr<APVTS::SliderAttachment> m_numReflectionsAttach;
-    juce::Slider m_numReflections;
+    unique_ptr<APVTS::ComboBoxAttachment> m_numReflectionsAttach;
+    juce::ComboBox m_numReflections;
 
     juce::TextButton  m_speedLabel;
     unique_ptr<APVTS::SliderAttachment> m_speedSliderAttach;
     juce::Slider m_speedSlider;
 
     juce::Label m_myLabel{"signature", "by Cas Huurdeman"};
+    juce::Label m_roomSize{"roomSize", "Room size: 20x20x3"};
 
     juce::TooltipWindow m_tooltipWindow{nullptr, 200};
 

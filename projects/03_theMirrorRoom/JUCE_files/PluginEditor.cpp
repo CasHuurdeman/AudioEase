@@ -19,7 +19,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     // m_normaliseAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "NORMALISE", m_normalise);
     m_radiusXSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSX", m_radiusXSlider);
     m_radiusYSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSY", m_radiusYSlider);
-    m_numReflectionsAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "REFLECTIONS", m_numReflections);
+    m_numReflectionsAttach = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(processorRef.getApvts(), "REFLECTIONS", m_numReflections);
     m_speedSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SPEED", m_speedSlider);
     m_backOffAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "DIRECTBACKOFF", m_backOff);
     m_convolutionOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "CONVOLUTIONON", m_convolutionOn);
@@ -65,7 +65,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     addAndMakeVisible(m_snapXTo0.button);
     m_snapXTo0.button.onClick = [this]() {
-        m_snapXTo0.buttonAttachment.setValueAsCompleteGesture(0);
+        m_snapXTo0.buttonAttachment.setValueAsCompleteGesture(0.3f); //why 0.3f? --> look in room.changereceivers()
     };
     addAndMakeVisible(m_snapYTo0.button);
     m_snapYTo0.button.onClick = [this]() {
@@ -82,8 +82,12 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible(m_radiusYSlider);
 
     //NumRefelctions
-    m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
-    m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkred);
+    //TODO - I dont like the combobox
+    // m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
+    // m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkred);
+    juce::StringArray choices = {"0", "52", "248", "684", "1456", "2660"};
+    m_numReflections.addItemList(choices, 1);
+    m_numReflections.setSelectedId(3);
     addAndMakeVisible(m_numReflections);
 
     //Listener distance
@@ -153,6 +157,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         m_speedLabel.setButtonText(click ? "Speed" : "Sorry, a bit buggy");
     };
 
+//RoomSize Label
+    m_roomSize.setColour(juce::Label::ColourIds::textColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_roomSize);
+
 //signature
     m_myLabel.setFont(17.0f);
     m_myLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::steelblue);
@@ -176,7 +184,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 //========================Draw ears=========================================
     g.setColour (juce::Colours::white);
 
-    float n = 400/20;
+    float n = 400/20; //TODO - hardcoded, should be tied to roomSize
     float a = 3;
 
     float x = m_ears.slider.getValue()/2 * n;
@@ -200,6 +208,7 @@ void AudioPluginAudioProcessorEditor::resized()
     m_xyPad.setBounds(200,25, 400, 400);
 
     m_CircleOn.setBounds(10, 30, 80, 35);
+    m_backOff.setBounds(110, 30, 80, 35);
     // m_normalise.setBounds(110, 30, 80, 35);
 
     m_speedLabel.setBounds(10, 95, 100, 20);
@@ -211,18 +220,19 @@ void AudioPluginAudioProcessorEditor::resized()
     m_radiusXLabel.setBounds(10, 215, 100, 20);
     m_radiusXSlider.setBounds(10, 245, 180, 20);
 
-    m_numReflectionsLabel.setBounds(10,300,100,20);
-    m_numReflections.setBounds(10, 330, 180, 20);
+    m_earsLabel.setBounds(10,300,100,20);
+    m_ears.slider.setBounds(10, 330, 180, 20);
 
-    m_earsLabel.setBounds(10, 360, 100, 20);
-    m_ears.slider.setBounds(10, 390, 180, 20);
+    m_numReflectionsLabel.setBounds(10, 360, 100, 20);
+    m_numReflections.setBounds(20, 390, 80, 20);
 
     m_myLabel.setBounds(10, getHeight() - 30, 180, 30);
+    m_roomSize.setBounds(600 - 110, 400, 100, 20);
 
 
-    m_earlyReflectionsOn.setBounds(110, 400, 80, 35);
-    m_backOff.setBounds(210, 440, 80, 35);
+    m_earlyReflectionsOn.setBounds(210, 440, 80, 35);
     m_convolutionOn.setBounds(310, 440, 80, 35);
     m_snapXTo0.button.setBounds(410, 440,80,35);
     m_snapYTo0.button.setBounds(510, 440,80,35);
+
 }

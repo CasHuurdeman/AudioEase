@@ -127,6 +127,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 
 //=========================================================
     m_reflectionManager->changeNumReflections(30);
+    m_reflectionManager->moveSource(0.3f, -1, 1.7f);
 
     TestSignal pulse1;
     TestSignal pulse2;
@@ -151,11 +152,6 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // //========================================CONVOLUTION===============================================
     m_convolutionEngines.resize(2);
     m_inputBuffer.resize(samplesPerBlock, 0);
-
-    // ReadWAV read("test2.wav", sourceDir);
-    // read.readWavFile();
-    // m_impulseResponseL = read.getSamplesL();   //TODO
-    // m_impulseResponseR = read.getSamplesR();   //TODO
 
     m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
     m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
@@ -229,6 +225,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     float radiusX = m_radiusX->load();
     float radiusY = m_radiusY->load();
 
+        //just gets the index, but that exactly what we want now
     float diagonalOrder = m_diagonalOrder->load();
     float receiverDistance = m_receiverDistance->load();
 
@@ -266,7 +263,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
 
 //MODULATING SIGNAL TO MOVE THE SOURCE
-    //40 is roomsize*2
+    //TODO - 40 is roomsize*2
     float freq = speed/40;
 
     int localSampleRate = getSampleRate() / numSamples;
@@ -396,20 +393,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
     "Circle Radius X value",
     0.0f,
     10.0f,
-    4.0f));
+    2.0f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
     "RADIUSY",
     "Circle Radius Y value",
     0.0f,
     10.0f,
-    4.0f));
+    2.0f));
 
-    parameters.push_back(std::make_unique<juce::AudioParameterInt>(
+    juce::StringArray choices = {"0", "52", "248", "684", "1456", "2660"};
+    parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
     "REFLECTIONS",
-    "Used to calculate amount of mirror rooms",
-    0,
-    5,
+    "Sets the amount of reflections calculated",
+    choices,
     2));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -428,7 +425,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
      "SPEED",
      "Speed of source in m/s",
      1.0f,
-     10.0f,
+     5.0f,
      10.0f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
