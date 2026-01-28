@@ -15,12 +15,14 @@ public:
   WriteToWAV(const std::string& name, const std::string& sourcePath, int sampleRate, int numChannels = 2);
   ~WriteToWAV();
 
-  void writeAsBytes(std::ofstream &file, auto value, int byteSize);
-  void writeSample(std::ofstream &file, float value);
   void write(float channel1, float channel2);
 
 
 private:
+  void writeAsBytes(std::ofstream &file, auto value, int byteSize);
+  void writeSample(std::ofstream &file, float value);
+
+
   std::ofstream m_wav;
   long long startAudio = 0;
   long long endAudio = 0;

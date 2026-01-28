@@ -1,6 +1,12 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "dspMath.h"
+#include "readWAV.h"
+std::string sourceDir = SOURCE_DIR;
+
+#include "writeToWAV.h"
+
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
      : AudioProcessor (BusesProperties()
@@ -93,6 +99,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
 
+//============================UI================================
 //Put the raw parameter value pointers in the variables
     m_xCoordinate = m_apvts.getRawParameterValue("CircleMidX");
     m_yCoordinate = m_apvts.getRawParameterValue("CircleMidY");
@@ -109,10 +116,57 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     m_speed = m_apvts.getRawParameterValue("SPEED");
     m_directBackOff = m_apvts.getRawParameterValue("DIRECTBACKOFF");
 
+    m_convolutionOn = m_apvts.getRawParameterValue("CONVOLUTIONON");
+    m_earlyReflectionsOn = m_apvts.getRawParameterValue("EARLYREFLECTIONS");
+
+//========================================PLUGIN========================================
 //Initialise reflectionManager
     m_reflectionManager = new ReflectionManager();
     m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
     m_reflectionManager->prepare(static_cast<int>(sampleRate), getTotalNumOutputChannels());
+
+//=========================================================
+    m_reflectionManager->changeNumReflections(30);
+
+    TestSignal pulse1;
+    TestSignal pulse2;
+
+    //Max delay (not perfectly, but thats less important than speed):
+    int size = m_reflectionManager->getRoom().getReceiver(0)->getReflections().size();
+    int maxSamplesDelay = dspMath::msToSamples(m_reflectionManager->getRoom().getReceiver(0)->getReflections()[size - 1][0], sampleRate);
+
+    m_impulseResponseL.resize(maxSamplesDelay);
+    m_impulseResponseR.resize(maxSamplesDelay);
+
+    for (int i = 0; i < maxSamplesDelay; i++)
+    {
+        int numSamplesLeft = static_cast<int>(sampleRate) - i;
+        float signalL = m_reflectionManager->process(pulse1.givePulse(), 0, numSamplesLeft);
+        float signalR = m_reflectionManager->process(pulse2.givePulse(), 1, numSamplesLeft);
+
+        m_impulseResponseL[i] = signalL;
+        m_impulseResponseR[i]= signalR;
+    }
+
+    // //========================================CONVOLUTION===============================================
+    m_convolutionEngines.resize(2);
+    m_inputBuffer.resize(samplesPerBlock, 0);
+
+    // ReadWAV read("test2.wav", sourceDir);
+    // read.readWavFile();
+    // m_impulseResponseL = read.getSamplesL();   //TODO
+    // m_impulseResponseR = read.getSamplesR();   //TODO
+
+    m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
+    m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
+
+//TODO - is this needed?
+//DELETE EARLY REFLECTIONS OUT OF IR
+    // for (int i = 0; i < m_convolutionEngines.size(); i++)
+    // {
+    //     int numSamplesToCut = dspMath::msToSamples(m_reflectionManager->getRoom().getMaxDelay(), getSampleRate());
+    //     m_convolutionEngines[i].cutEarlyReflections(numSamplesToCut);
+    // }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -180,11 +234,25 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 
     float speed = m_speed->load();
     bool directBackOff = static_cast<bool>(m_directBackOff->load());
+    bool convolutionOn = static_cast<bool>(m_convolutionOn->load());
+
+    bool earlyReflectionsOn = static_cast<bool>(m_earlyReflectionsOn->load());
+
 
 //Change num reflections
     if (diagonalOrder != m_reflectionManager->getRoom().getDiagonalOrder())
     {
         m_reflectionManager->changeNumReflections(diagonalOrder);
+
+        for (int i = 0; i < m_convolutionEngines.size(); i++)
+        {
+            auto maxDelay = std::max_element(
+                m_reflectionManager->getRoom().getReceiver(i)->getReflections().begin(),
+                m_reflectionManager->getRoom().getReceiver(i)->getReflections().end());
+
+            int numSamplesToCut = static_cast<int>(dspMath::msToSamples(maxDelay[0][0], getSampleRate()));
+            m_convolutionEngines[i].cutEarlyReflections(numSamplesToCut);
+        }
     }
 
 //Change listener distance
@@ -224,16 +292,32 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     }
     else getReflectionManager()->turnOnDirectSound();
 
+
     //Buffer loop
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
         auto* input = buffer.getReadPointer(channel);
 
-        //sample loop
-        for (int sample = 0; sample < numSamples; ++sample) {
-            int numSamplesLeft = numSamples - sample;
-            output[sample] = m_reflectionManager->process(input[sample], channel, numSamplesLeft);
+        memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
+
+        //CONVOLUTION ON/OFF
+        if (convolutionOn) m_output = m_convolutionEngines[channel].process(m_inputBuffer);
+        else
+        {
+        m_output.clear();
+        m_output.resize(buffer.getNumSamples(), 0);
         }
+
+        // sample loop
+         for (int sample = 0; sample < numSamples; ++sample) {
+             if (earlyReflectionsOn)
+             {
+                int numSamplesLeft = numSamples - sample;
+                m_output[sample] += m_reflectionManager->process(input[sample], channel, numSamplesLeft);
+             }
+         }
+
+        memcpy(output, &m_output[0], buffer.getNumSamples() * sizeof(float));
     }
 }
 
@@ -325,7 +409,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
     "REFLECTIONS",
     "Used to calculate amount of mirror rooms",
     0,
-    20,
+    5,
     2));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -351,6 +435,16 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
     "DIRECTBACKOFF",
     "Direct sound off when in the back",
     0));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+    "CONVOLUTIONON",
+    "Convolution on",
+    0));
+
+        parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+    "EARLYREFLECTIONS",
+    "Early reflections on",
+    1));
 
     return {parameters.begin(), parameters.end()};
 }

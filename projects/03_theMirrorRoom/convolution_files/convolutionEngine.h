@@ -12,22 +12,29 @@ public:
   ConvolutionEngine();
   ~ConvolutionEngine();
 
-  void prepare(int inputBufferSize, vector<float>& impulseResponse); //TODO - use reference or no?
+  void prepare(const int inputBufferSize, vector<float>& impulseResponse); //TODO - use reference or no?
   vector<float> process(vector<float>& input);
+
+  void cutEarlyReflections(int numSamples);
+
+private:
   void convolve();
+  void fftIR();
 
   //little circular buffer inside of the function
   void writeToBufferAndFFT(vector<float>& input);
   vector<float>& read();
   void wrap(int& head);
 
-private:
+
   int m_readHeadInput = 0;
   int m_writeHead = 0;
   vector<float> m_inputBuffer;
 
   int m_readHeadIR = 0;
-  vector<float> m_impulseResponse;
+  vector<float> m_impulseResponseFFT;
+  vector<float> m_IR;
+  vector<float> m_savedEarlyReflections;
 
   vector<float> m_overlappingBuffer;
 

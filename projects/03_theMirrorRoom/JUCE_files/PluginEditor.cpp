@@ -16,13 +16,15 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
 //Connecting the sliderAttachments to the sliders
     m_circleOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "CircleOn", m_CircleOn);
-    m_normaliseAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "NORMALISE", m_normalise);
+    // m_normaliseAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "NORMALISE", m_normalise);
     m_radiusXSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSX", m_radiusXSlider);
     m_radiusYSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "RADIUSY", m_radiusYSlider);
     m_numReflectionsAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "REFLECTIONS", m_numReflections);
     m_speedSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SPEED", m_speedSlider);
     m_backOffAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "DIRECTBACKOFF", m_backOff);
+    m_convolutionOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "CONVOLUTIONON", m_convolutionOn);
 
+    m_earlyReflectionsOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "EARLYREFLECTIONS", m_earlyReflectionsOn);
 //===============================================XYPAD=================================================
     addAndMakeVisible(m_xyPad);
 
@@ -34,12 +36,12 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible(m_CircleOn);
 
 
-    m_normalise.setButtonText("Normalise");
-    m_normalise.setTooltip("Normalises the amplitude of the source and all reflections with it.\nFor when you don't want your original level to change.");
-    m_normalise.setClickingTogglesState(true);
-    m_normalise.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
-    m_normalise.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
-    addAndMakeVisible(m_normalise);
+    // m_normalise.setButtonText("Normalise");
+    // m_normalise.setTooltip("Normalises the amplitude of the source and all reflections with it.\nFor when you don't want your original level to change.");
+    // m_normalise.setClickingTogglesState(true);
+    // m_normalise.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
+    // m_normalise.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    // addAndMakeVisible(m_normalise);
 
     m_backOff.setButtonText("Back off");
     m_backOff.setTooltip("Turns off the direct sound when the source is on the backside");
@@ -47,6 +49,19 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_backOff.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
     m_backOff.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
     addAndMakeVisible(m_backOff);
+
+    m_convolutionOn.setButtonText("Convolution");
+    m_convolutionOn.setClickingTogglesState(true);
+    m_convolutionOn.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
+    m_convolutionOn.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    addAndMakeVisible(m_convolutionOn);
+
+    m_earlyReflectionsOn.setButtonText("Early Reflections");
+    m_earlyReflectionsOn.setClickingTogglesState(true);
+    m_earlyReflectionsOn.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
+    m_earlyReflectionsOn.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    addAndMakeVisible(m_earlyReflectionsOn);
+
 
     addAndMakeVisible(m_snapXTo0.button);
     m_snapXTo0.button.onClick = [this]() {
@@ -67,7 +82,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible(m_radiusYSlider);
 
     //NumRefelctions
-    m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
     m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkred);
     addAndMakeVisible(m_numReflections);
 
@@ -185,7 +200,7 @@ void AudioPluginAudioProcessorEditor::resized()
     m_xyPad.setBounds(200,25, 400, 400);
 
     m_CircleOn.setBounds(10, 30, 80, 35);
-    m_normalise.setBounds(110, 30, 80, 35);
+    // m_normalise.setBounds(110, 30, 80, 35);
 
     m_speedLabel.setBounds(10, 95, 100, 20);
     m_speedSlider.setBounds(10, 125, 180, 20);
@@ -205,7 +220,9 @@ void AudioPluginAudioProcessorEditor::resized()
     m_myLabel.setBounds(10, getHeight() - 30, 180, 30);
 
 
-    m_backOff.setBounds(220, 440, 80, 35);
-    m_snapXTo0.button.setBounds(400, 440,80,35);
-    m_snapYTo0.button.setBounds(520, 440,80,35);
+    m_earlyReflectionsOn.setBounds(110, 400, 80, 35);
+    m_backOff.setBounds(210, 440, 80, 35);
+    m_convolutionOn.setBounds(310, 440, 80, 35);
+    m_snapXTo0.button.setBounds(410, 440,80,35);
+    m_snapYTo0.button.setBounds(510, 440,80,35);
 }

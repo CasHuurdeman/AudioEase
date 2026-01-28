@@ -19,9 +19,13 @@ public:
 
     float givePulse()
     {
+        if(count == 0)
+        {
+            count++;
+            return 1.0f;
+        }
+        //else
         count++;
-
-        if(count == 0) return 1.0f;
         return 0.0f;
     }
 

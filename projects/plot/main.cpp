@@ -39,14 +39,14 @@ int main()
      for (int i = 0; i < sampleRate *5; i++)
      {
          int numSamplesLeft = sampleRate - i;
-         float signalL = reflectionManager.process(pulse.givePulse(), 0, numSamplesLeft);
-         float signalR = reflectionManager.process(pulse2.givePulse(), 1, numSamplesLeft);
+         // float signalL = reflectionManager.process(pulse.givePulse(), 0, numSamplesLeft);
+         // float signalR = reflectionManager.process(pulse2.givePulse(), 1, numSamplesLeft);
 
          // float signal = delay.process(pulse.givePulse());
-         // float signal = pulse.giveDC();
+         float signal = pulse.givePulse();
          // fileWriter.writeToFile(signal);
 
-         wavWriter.write(signalL,signalR);
+         wavWriter.write(signal,signal);
      }
     // speed_test.printSpeed();
 

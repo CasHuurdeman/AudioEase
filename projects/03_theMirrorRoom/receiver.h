@@ -24,9 +24,9 @@ public:
 
     //================================GETTERS================================================
     float getSourceAmplitude() const { return m_sourceAmplitude; }
-    // m_reflections[i][0] = delayTime;
+    // m_reflections[i][0] = delayTime in ms;
     // m_reflections[i][1] = amplitude;
-    vector< array<float, 2> >& getReflections() { return m_reflections;}
+    vector< array<float, 2> >& getReflections() { return m_reflections; }
     int getNumReflections() const { return static_cast<int>(m_reflections.size()); }
 
     float getXCoordinate() { return m_coordinates[0]; }

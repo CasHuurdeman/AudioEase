@@ -20,8 +20,9 @@ ConvolutionEngine::~ConvolutionEngine()
   std::cout << "ConvolutionEngine - destructor" << std::endl;
 }
 
-void ConvolutionEngine::prepare(int inputBufferSize, vector<float>& impulseResponse)
+void ConvolutionEngine::prepare(const int inputBufferSize, vector<float>& impulseResponse)
 {
+  m_IR = impulseResponse;
 
 //find fftSize
   m_dataBlockSize = inputBufferSize;
@@ -38,28 +39,21 @@ void ConvolutionEngine::prepare(int inputBufferSize, vector<float>& impulseRespo
 //In how many buffers do I want to cut the fft
 // --> I dont need to physically cut it up, because all the fft's are in place
 
-  //size of m_impulseResponse needs to be a multiple of m_fftSize
-  m_IRSize = impulseResponse.size();
+  //size of m_impulseResponseFFT needs to be a multiple of m_fftSize
+  m_IRSize = m_IR.size();
   //x is how many times m_fftSize fits in impulseResponse
   float numIRs = static_cast<float>(m_IRSize)/static_cast<float>(m_dataBlockSize);
   m_numIRs = ceil(numIRs);
   m_IRSize = m_numIRs * m_fftSize;
 
   //Make sure that impulseResponse will be broken up nicely in parts of m_dataBlockSize
-  while (impulseResponse.size() < m_numIRs * m_dataBlockSize)
+  while (m_IR.size() < m_numIRs * m_dataBlockSize)
   {
-    impulseResponse.push_back(0);
+    m_IR.push_back(0);
   }
 
-  m_impulseResponse.resize(m_IRSize, 0);
-
-  for(int i = 0; i < m_numIRs; i++)
-  {
-    int x = i * m_fftSize;
-    int y = i * m_dataBlockSize;
-    memcpy(&m_impulseResponse[x], &impulseResponse[y], m_dataBlockSize * sizeof(float));
-    realfft_packed(&m_impulseResponse[x], m_fftSize);
-  }
+  //=====================
+  fftIR();
 
   //Initialise all buffers
   m_inputBuffer.resize(m_IRSize, 0);
@@ -118,18 +112,18 @@ void ConvolutionEngine::convolve()
 {
 
   //0 Hz
-  m_overlappingBuffer[0] += m_inputBuffer[m_readHeadInput] * m_impulseResponse[m_readHeadIR];
+  m_overlappingBuffer[0] += m_inputBuffer[m_readHeadInput] * m_impulseResponseFFT[m_readHeadIR];
   //[0 Hz, Nyquist]
   for (int i = 2; i < m_fftSize; i+=2) {
     std::complex z1(m_inputBuffer[m_readHeadInput +i], m_inputBuffer[m_readHeadInput + i+1]);
-    std::complex z2(m_impulseResponse[m_readHeadIR + i], m_impulseResponse[m_readHeadIR + i+1]);
+    std::complex z2(m_impulseResponseFFT[m_readHeadIR + i], m_impulseResponseFFT[m_readHeadIR + i+1]);
 
     std::complex z = z1*z2;
     m_overlappingBuffer[i] += real(z);
     m_overlappingBuffer[i+1] += imag(z);
   }
   //Nyquist
-  m_overlappingBuffer[1] += m_inputBuffer[m_readHeadInput + 1] * m_impulseResponse[m_readHeadIR + 1];
+  m_overlappingBuffer[1] += m_inputBuffer[m_readHeadInput + 1] * m_impulseResponseFFT[m_readHeadIR + 1];
 
 
 //To see which part to convolve
@@ -164,3 +158,40 @@ void ConvolutionEngine::wrap(int& head)
   if (head >= m_IRSize) head -= m_IRSize;
   else if (head < 0) head += m_IRSize;
 }
+
+//TODO - can be optimised
+void ConvolutionEngine::cutEarlyReflections(int numSamples)
+{
+//Put reflections back before cutting
+  int size = m_savedEarlyReflections.size();
+  if (size > 0)
+  {
+    memcpy(&m_IR[0], &m_savedEarlyReflections[0], size * sizeof(float));
+    m_savedEarlyReflections.clear();
+  }
+
+
+//cut reflections
+  for (int i = 0; i < numSamples; i++)
+  {
+    m_savedEarlyReflections.push_back(m_IR[i]);
+    m_IR[i] = 0;
+  }
+
+  fftIR();
+}
+
+void ConvolutionEngine::fftIR() {
+  m_impulseResponseFFT.clear();
+  m_impulseResponseFFT.resize(m_IRSize, 0);
+
+  for(int i = 0; i < m_numIRs; i++)
+  {
+    int x = i * m_fftSize;
+    int y = i * m_dataBlockSize;
+    memcpy(&m_impulseResponseFFT[x], &m_IR[y], m_dataBlockSize * sizeof(float));
+
+    realfft_packed(&m_impulseResponseFFT[x], m_fftSize);
+  }
+}
+

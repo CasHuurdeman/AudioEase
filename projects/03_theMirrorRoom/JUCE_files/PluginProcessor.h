@@ -4,6 +4,7 @@
 #include "../reflectionManager.h"
 #include "customComp.h"
 #include "testSignal.h"
+#include "../convolution_files/convolutionEngine.h"
 #include "speedTest.h"
 
 //==============================================================================
@@ -51,12 +52,22 @@ public:
 
 
 private:
+//=====================================PLUGIN==========================
     //TODO - dont forget to delete; is this needed?
     ReflectionManager* m_reflectionManager;
     TestSignal m_sine;
     TestSignal m_cosine;
 
+//==============================CONVOLUTION==========================
+    vector<float> m_inputBuffer;    //TODO
+    vector<float> m_output;    //TODO
+    vector<float> m_impulseResponseL;    //TODO
+    vector<float> m_impulseResponseR;    //TODO
+    vector<ConvolutionEngine> m_convolutionEngines;    //TODO
 
+    vector<float> m_earlyReflectionCutOffPoints;
+
+//====================================UI==============================
     juce::AudioProcessorValueTreeState m_apvts;
 
     std::atomic<float>* m_xCoordinate;
@@ -69,6 +80,8 @@ private:
     std::atomic<float>* m_receiverDistance;
     std::atomic<float>* m_speed;
     std::atomic<float>* m_directBackOff;
+    std::atomic<float>* m_convolutionOn;
+    std::atomic<float>* m_earlyReflectionsOn;
 
 
     ParameterListener m_parameterListenerX;

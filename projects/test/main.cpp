@@ -38,13 +38,15 @@ void printCopy(vector<int>& v) {
     std::cout << v2[3] << std::endl;
 }
 
-    vector<int> v = {0,1,2,3,4};
+    // vector<int> v = {0,1,2,3,4};
+vector<std::array<float, 2>> v = {{0,0}, {-40,100}, {5.1,6}, {5,6.1}};
 
 int main() {
+    vector<std::array<float, 2>>::iterator maxElement = std::max_element(
+        v.begin(),
+        v.end());
 
-    std::cout << true * false << std::endl;
-    std::cout << true * 8 << std::endl;
-    std::cout << false * 8 << std::endl;
+    std::cout << maxElement[-1][0] << maxElement[0][1] << std::endl;
 
     // SpeedTest s;
     //

@@ -20,8 +20,16 @@ private:
     unique_ptr<APVTS::ButtonAttachment> m_circleOnAttach;
     juce::TextButton m_CircleOn;
 
-    unique_ptr<APVTS::ButtonAttachment> m_normaliseAttach;
-    juce::TextButton m_normalise;
+    //TODO - for now I dont like normalise, maybe after fix later
+    // unique_ptr<APVTS::ButtonAttachment> m_normaliseAttach;
+    // juce::TextButton m_normalise;
+
+    unique_ptr<APVTS::ButtonAttachment> m_convolutionOnAttach;
+    juce::TextButton m_convolutionOn;
+
+    unique_ptr<APVTS::ButtonAttachment> m_earlyReflectionsOnAttach;
+    juce::TextButton m_earlyReflectionsOn;
+
 
     unique_ptr<APVTS::ButtonAttachment>  m_backOffAttach;
     juce::TextButton m_backOff;
