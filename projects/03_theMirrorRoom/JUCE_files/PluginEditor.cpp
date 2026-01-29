@@ -65,7 +65,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     addAndMakeVisible(m_snapXTo0.button);
     m_snapXTo0.button.onClick = [this]() {
-        m_snapXTo0.buttonAttachment.setValueAsCompleteGesture(0.3f); //why 0.3f? --> look in room.changereceivers()
+        //TODO - find what this value should be
+        m_snapXTo0.buttonAttachment.setValueAsCompleteGesture(0); //why 0.3f? --> look in room.changereceivers()
     };
     addAndMakeVisible(m_snapYTo0.button);
     m_snapYTo0.button.onClick = [this]() {
@@ -82,9 +83,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     addAndMakeVisible(m_radiusYSlider);
 
     //NumRefelctions
-    //TODO - I dont like the combobox
     // m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
     // m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkred);
+    // addAndMakeVisible(m_numReflections);
+    //TODO - I dont like the combobox
     juce::StringArray choices = {"0", "52", "248", "684", "1456", "2660"};
     m_numReflections.addItemList(choices, 1);
     m_numReflections.setSelectedId(3);

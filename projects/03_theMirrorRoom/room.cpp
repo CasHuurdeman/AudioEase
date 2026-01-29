@@ -45,7 +45,7 @@ void Room::changeReceivers(float distance)
   }
   m_receivers.clear();
   
-  //+0,3f to make sure they are not symetrical --> mono reverb
+  //+0.3f to make sure they are not symetrical --> mono reverb
   addReceiver(distance/2 + 0.3f, 0.01f, 1.7f);
   addReceiver(-distance/2 + 0.3f, 0.0f, 1.7f);
 

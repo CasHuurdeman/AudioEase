@@ -127,7 +127,8 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 
 //=========================================================
     m_reflectionManager->changeNumReflections(30);
-    m_reflectionManager->moveSource(0.3f, -1, 1.7f);
+    //Does this fuck it up?
+    // m_reflectionManager->moveSource(0.3f, -1, 1.7f);
 
     TestSignal pulse1;
     TestSignal pulse2;
@@ -259,8 +260,8 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
      }
 
 //Normalise the amplitude or not
-    m_reflectionManager->setNormalise(static_cast<bool>(normalise));
-
+    // m_reflectionManager->setNormalise(static_cast<bool>(normalise));
+    m_reflectionManager->setNormalise(false);
 
 //MODULATING SIGNAL TO MOVE THE SOURCE
     //TODO - 40 is roomsize*2
@@ -425,8 +426,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
      "SPEED",
      "Speed of source in m/s",
      1.0f,
-     5.0f,
-     10.0f));
+     10.0f,
+     5.0f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
     "DIRECTBACKOFF",

@@ -34,8 +34,8 @@ void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, con
         if (distance < 0.5) distance = 0.5; //TODO - this works but how can I do this nicely
 
         //amplitude according to Richard Moore (Elements of computer music p370)
-        float amplitude = 1 / pow(distance, 1.5f);
-        float delayTime = distance / soundSpeed * 1000;
+        float amplitude = 1.0f / distance;
+        float delayTime = distance / soundSpeed * 1000.0f;
 
         m_reflections[i][0] = delayTime;
         m_reflections[i][1] = amplitude;
