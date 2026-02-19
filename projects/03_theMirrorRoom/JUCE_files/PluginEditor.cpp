@@ -9,7 +9,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
                     processorRef.getApvts().getParameter("CircleMidY")),
         m_ears(processorRef.getApvts().getParameter("RECEIVERDISTANCE")),
         m_snapXTo0(processorRef.getApvts().getParameter("CircleMidX"), "Snap X to 0"),
-        m_snapYTo0(processorRef.getApvts().getParameter("CircleMidY"), "Snap Y to 0")
+        m_snapYTo1(processorRef.getApvts().getParameter("CircleMidY"), "Snap Y to 0")
 
 {
     juce::ignoreUnused (processorRef);
@@ -68,9 +68,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         //TODO - find what this value should be
         m_snapXTo0.buttonAttachment.setValueAsCompleteGesture(0); //why 0.3f? --> look in room.changereceivers()
     };
-    addAndMakeVisible(m_snapYTo0.button);
-    m_snapYTo0.button.onClick = [this]() {
-        m_snapYTo0.buttonAttachment.setValueAsCompleteGesture(0);
+    addAndMakeVisible(m_snapYTo1.button);
+    m_snapYTo1.button.onClick = [this]() {
+        m_snapYTo1.buttonAttachment.setValueAsCompleteGesture(-1);
     };
 
 //===========================================Sliders===================================================
@@ -82,10 +82,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_radiusYSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
     addAndMakeVisible(m_radiusYSlider);
 
-    //NumRefelctions
-    // m_numReflections.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
-    // m_numReflections.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::darkred);
-    // addAndMakeVisible(m_numReflections);
+
     //TODO - I dont like the combobox
     juce::StringArray choices = {"0", "52", "248", "684", "1456", "2660"};
     m_numReflections.addItemList(choices, 1);
@@ -186,7 +183,7 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 //========================Draw ears=========================================
     g.setColour (juce::Colours::white);
 
-    float n = 400/20; //TODO - hardcoded, should be tied to roomSize
+    float n = 400/20;  //TODO - roomsize //TODO - 400 is also hardcoded, maybe smth with denormalise? idk
     float a = 3;
 
     float x = m_ears.slider.getValue()/2 * n;
@@ -235,6 +232,6 @@ void AudioPluginAudioProcessorEditor::resized()
     m_earlyReflectionsOn.setBounds(210, 440, 80, 35);
     m_convolutionOn.setBounds(310, 440, 80, 35);
     m_snapXTo0.button.setBounds(410, 440,80,35);
-    m_snapYTo0.button.setBounds(510, 440,80,35);
+    m_snapYTo1.button.setBounds(510, 440,80,35);
 
 }

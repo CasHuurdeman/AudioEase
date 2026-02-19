@@ -21,6 +21,7 @@ private:
     juce::TextButton m_CircleOn;
 
     //TODO - for now I dont like normalise, maybe after fix later
+
     // unique_ptr<APVTS::ButtonAttachment> m_normaliseAttach;
     // juce::TextButton m_normalise;
 
@@ -46,12 +47,16 @@ private:
     unique_ptr<APVTS::ComboBoxAttachment> m_numReflectionsAttach;
     juce::ComboBox m_numReflections;
 
+    juce::Label m_roomSizeLabel{"roomSize", "Room size: 20x20x3"}; //TODO - roomsize
+    unique_ptr<APVTS::ComboBoxAttachment> m_roomSizeAttach;
+    juce::ComboBox m_roomSize;
+
+
     juce::TextButton  m_speedLabel;
     unique_ptr<APVTS::SliderAttachment> m_speedSliderAttach;
     juce::Slider m_speedSlider;
 
     juce::Label m_myLabel{"signature", "by Cas Huurdeman"};
-    juce::Label m_roomSize{"roomSize", "Room size: 20x20x3"};
 
     juce::TooltipWindow m_tooltipWindow{nullptr, 200};
 
@@ -64,7 +69,7 @@ private:
     juce::TextButton  m_earsLabel;
 
     comp::CustomButton m_snapXTo0;
-    comp::CustomButton m_snapYTo0;
+    comp::CustomButton m_snapYTo1;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

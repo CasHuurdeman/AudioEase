@@ -20,10 +20,21 @@ Receiver::~Receiver()
 }
 
 
-void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, const int numMirrorSources, const float soundSpeed)
+void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int numMirrorSources, const float soundSpeed)
 {
+    // //TODO - debug
+    // //Z-as op 0
+    // vector<std::array<float, 3>> v;
+    // for (int i = 0; i < numMirrorSources; i++) {
+    //     if (mirrorSources[i][2] == 0.f) v.push_back(mirrorSources[i]);
+    // }
+    // mirrorSources.clear();
+    // mirrorSources = v;
+    // numMirrorSources = v.size();
+
     //does this take a lot of time?
     m_reflections.resize(numMirrorSources);
+    m_sourceAmplitudes.resize(numMirrorSources);
     for (int i = 0; i < numMirrorSources; i++)
     {
         //Calculate distance from receiver to mirrorSources
@@ -37,20 +48,14 @@ void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, con
         float amplitude = 1.0f / distance;
         float delayTime = distance / soundSpeed * 1000.0f;
 
+        m_sourceAmplitudes[i] = m_reflections[i][1];
         m_reflections[i][0] = delayTime;
         m_reflections[i][1] = amplitude;
     }
 }
 
-void Receiver::calculateSourceAmplitude(float source[], size_t arrayLength) {
-    float sourceDistance = CalculateDistance::calculateDistance(source, m_coordinates, arrayLength, std::size(m_coordinates));
-    if (sourceDistance < 0.5) sourceDistance = 0.5; //TODO - this works but how can I do this nicely
-    m_sourceAmplitude = 1 / pow(sourceDistance, 1.5f);
+void Receiver::setSourceAmplitude(int i, float amp)
+{
+    if (amp > 2) std::cout << "Receiver::setMirrorSourcesAmplitude; ERROR - amplitude exceeds 2" << std::endl;
+    else m_sourceAmplitudes[i] = amp;
 }
-
-// void Receiver::setCoordinates(float X, float Y, float Z) {
-//     m_coordinates[0] = X;
-//     m_coordinates[1] = Y;
-//     m_coordinates[2] = Z;
-//     //calc reflections and source amplitude
-// }

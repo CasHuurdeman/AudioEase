@@ -125,45 +125,45 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     m_reflectionManager->setNormalise(false); //TODO - here may be more, because I need to calculate some more if I change this
     m_reflectionManager->prepare(static_cast<int>(sampleRate), getTotalNumOutputChannels());
 
-//=========================================================
-    m_reflectionManager->changeNumReflections(30);
-    //Does this fuck it up?
-    // m_reflectionManager->moveSource(0.3f, -1, 1.7f);
+// ============================CONVOLUTION PREPARATION=============================
+     // m_reflectionManager->changeNumReflections(20);
+     // //Does this fuck it up?
+     // // m_reflectionManager->moveSource(0.3f, -1, 1.7f);
+     //
+     // TestSignal pulse1;
+     // TestSignal pulse2;
+     //
+     // //Max delay (not perfectly, but thats less important than speed):
+     // int size = m_reflectionManager->getRoom().getReceiver(0)->getReflections().size();
+     // int maxSamplesDelay = dspMath::msToSamples(m_reflectionManager->getRoom().getReceiver(0)->getReflections()[size - 1][0], sampleRate);
+     //
+     // m_impulseResponseL.resize(maxSamplesDelay);
+     // m_impulseResponseR.resize(maxSamplesDelay);
+     //
+     // for (int i = 0; i < maxSamplesDelay; i++)
+     // {
+     //     int numSamplesLeft = static_cast<int>(sampleRate) - i;
+     //     float signalL = m_reflectionManager->process(pulse1.givePulse(), 0, numSamplesLeft);
+     //     float signalR = m_reflectionManager->process(pulse2.givePulse(), 1, numSamplesLeft);
+     //
+     //     m_impulseResponseL[i] = signalL;
+     //     m_impulseResponseR[i]= signalR;
+     // }
+     //
+     // // //========================================CONVOLUTION===============================================
+     // m_convolutionEngines.resize(2);
+     // m_inputBuffer.resize(samplesPerBlock, 0);
+     //
+     // m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
+     // m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
 
-    TestSignal pulse1;
-    TestSignal pulse2;
-
-    //Max delay (not perfectly, but thats less important than speed):
-    int size = m_reflectionManager->getRoom().getReceiver(0)->getReflections().size();
-    int maxSamplesDelay = dspMath::msToSamples(m_reflectionManager->getRoom().getReceiver(0)->getReflections()[size - 1][0], sampleRate);
-
-    m_impulseResponseL.resize(maxSamplesDelay);
-    m_impulseResponseR.resize(maxSamplesDelay);
-
-    for (int i = 0; i < maxSamplesDelay; i++)
-    {
-        int numSamplesLeft = static_cast<int>(sampleRate) - i;
-        float signalL = m_reflectionManager->process(pulse1.givePulse(), 0, numSamplesLeft);
-        float signalR = m_reflectionManager->process(pulse2.givePulse(), 1, numSamplesLeft);
-
-        m_impulseResponseL[i] = signalL;
-        m_impulseResponseR[i]= signalR;
-    }
-
-    // //========================================CONVOLUTION===============================================
-    m_convolutionEngines.resize(2);
-    m_inputBuffer.resize(samplesPerBlock, 0);
-
-    m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
-    m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
-
-//TODO - is this needed?
-//DELETE EARLY REFLECTIONS OUT OF IR
-    // for (int i = 0; i < m_convolutionEngines.size(); i++)
-    // {
-    //     int numSamplesToCut = dspMath::msToSamples(m_reflectionManager->getRoom().getMaxDelay(), getSampleRate());
-    //     m_convolutionEngines[i].cutEarlyReflections(numSamplesToCut);
-    // }
+// TODO - is this needed?
+// DELETE EARLY REFLECTIONS OUT OF IR
+//      for (int i = 0; i < m_convolutionEngines.size(); i++)
+//      {
+//          int numSamplesToCut = dspMath::msToSamples(m_reflectionManager->getRoom().getMaxDelay(), getSampleRate());
+//          m_convolutionEngines[i].cutEarlyReflections(numSamplesToCut);
+//      }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -217,24 +217,25 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 //======================================================UI============================================================
 
 //Load the raw parameter values
-    float X = m_xCoordinate->load();
-    float Y = m_yCoordinate->load();
-    const float Z = 1.7f;
+    //TODO - 0.3 offset
+    const float X = m_xCoordinate->load();
+    const float Y = m_yCoordinate->load();
+    constexpr float Z = 0.f;
 
-    float circleOn = m_CircleOn->load();
-    float normalise = m_normalise->load();
-    float radiusX = m_radiusX->load();
-    float radiusY = m_radiusY->load();
+    const float circleOn = m_CircleOn->load();
+    const float normalise = m_normalise->load();
+    const float radiusX = m_radiusX->load();
+    const float radiusY = m_radiusY->load();
 
         //just gets the index, but that exactly what we want now
-    float diagonalOrder = m_diagonalOrder->load();
-    float receiverDistance = m_receiverDistance->load();
+    const int diagonalOrder = static_cast<int>(m_diagonalOrder->load());
+    const float receiverDistance = m_receiverDistance->load();
 
-    float speed = m_speed->load();
-    bool directBackOff = static_cast<bool>(m_directBackOff->load());
-    bool convolutionOn = static_cast<bool>(m_convolutionOn->load());
+    const float speed = m_speed->load();
+    const bool directBackOff = static_cast<bool>(m_directBackOff->load());
+    const bool convolutionOn = static_cast<bool>(m_convolutionOn->load());
 
-    bool earlyReflectionsOn = static_cast<bool>(m_earlyReflectionsOn->load());
+    const bool earlyReflectionsOn = static_cast<bool>(m_earlyReflectionsOn->load());
 
 
 //Change num reflections
@@ -248,7 +249,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
                 m_reflectionManager->getRoom().getReceiver(i)->getReflections().begin(),
                 m_reflectionManager->getRoom().getReceiver(i)->getReflections().end());
 
-            int numSamplesToCut = static_cast<int>(dspMath::msToSamples(maxDelay[0][0], getSampleRate()));
+            const int numSamplesToCut = static_cast<int>(dspMath::msToSamples(maxDelay[0][0], getSampleRate()));
             m_convolutionEngines[i].cutEarlyReflections(numSamplesToCut);
         }
     }
@@ -260,20 +261,19 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
      }
 
 //Normalise the amplitude or not
-    // m_reflectionManager->setNormalise(static_cast<bool>(normalise));
-    m_reflectionManager->setNormalise(false);
+    m_reflectionManager->setNormalise(static_cast<bool>(normalise));
 
 //MODULATING SIGNAL TO MOVE THE SOURCE
     //TODO - 40 is roomsize*2
-    float freq = speed/40;
+    const float freq = speed/40;
 
-    int localSampleRate = getSampleRate() / numSamples;
-    float cosine = m_cosine.cosine(freq, localSampleRate);
-    float sine = m_sine.sine(freq, localSampleRate);
+    const int localSampleRate = static_cast<int>(getSampleRate()) / numSamples;
+    const float cosine = m_cosine.cosine(freq, localSampleRate);
+    const float sine = m_sine.sine(freq, localSampleRate);
 
 //Source movement
-    float posX = X + (cosine) * radiusX * circleOn;
-    float posY = Y + (sine) * radiusY * circleOn;
+    const float posX = X + (cosine) * radiusX * circleOn;
+    const float posY = Y + (sine) * radiusY * circleOn;
     //-X and -Y or it goes to the wrong side when sliding horizontally haha
     //(because of the way the UI coordinates work)
     m_reflectionManager->moveSource(-posX,-posY,Z);
@@ -296,15 +296,15 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         auto* output = buffer.getWritePointer(channel);
         auto* input = buffer.getReadPointer(channel);
 
-        memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
-
-        //CONVOLUTION ON/OFF
-        if (convolutionOn) m_output = m_convolutionEngines[channel].process(m_inputBuffer);
-        else
-        {
+        // memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
+        //
+        // //CONVOLUTION ON/OFF
+        // if (convolutionOn) m_output = m_convolutionEngines[channel].process(m_inputBuffer);
+        // else
+        // {
         m_output.clear();
         m_output.resize(buffer.getNumSamples(), 0);
-        }
+        // }
 
         // sample loop
          for (int sample = 0; sample < numSamples; ++sample) {
@@ -361,28 +361,28 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         "xCoord",
         -10.0f,
         10.0f,
-        0.0f ));
+        0.0f )); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         "SoundSourceY",
         "yCoord",
         -10.0f,
         10.0f,
-        0.0f));
+        0.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
     "CircleMidX",
     "X coordinate of circle middle",
     -10.0f,
     10.0f,
-    0.0f));
+    0.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
     "CircleMidY",
     "Y coordinate of circle middle",
     -10.0f,
     10.0f,
-    -1.0f));
+    -1.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
     "CircleOn",
@@ -394,14 +394,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
     "Circle Radius X value",
     0.0f,
     10.0f,
-    2.0f));
+    2.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
     "RADIUSY",
     "Circle Radius Y value",
     0.0f,
     10.0f,
-    2.0f));
+    2.0f)); //TODO - roomsize
 
     juce::StringArray choices = {"0", "52", "248", "684", "1456", "2660"};
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
@@ -420,7 +420,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
      "Distance between 'ears'",
      0.15f,
      19.0f,
-     0.17f));
+     0.17f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
      "SPEED",

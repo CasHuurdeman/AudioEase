@@ -27,7 +27,7 @@ public:
     //============================RECEIVER===============================
     void addReceiver(float X, float Y, float Z) { m_receivers.push_back(new Receiver(X, Y, Z)); }
     //verwarrende naam
-    void updateReceivers();
+    void calcReflectionsForAllReceivers();
 
     //=============================GETTERS=====================================
     [[nodiscard]] int getNumMirrorSources() const { return size(m_mirrorSources); }
@@ -38,13 +38,15 @@ public:
     float getReceiverDistance(){ return m_receiverDistance; }
     //=========================================================================
     void setSource(float X, float Y, float Z);
+    void setRoomDimensions(float X, float Y, float Z);
+    void setZaxisOn(bool ZaxisOn) { m_ZaxisOn = ZaxisOn; }
 
 private:
     //EVERYTHING IS IN METERS
-  float m_roomDimensions [3] = {20.0f, 20.0f, 3.0f};
+  float m_roomDimensions [3] = {20.0f, 20.0f, 3.0f};  //TODO - roomsize
   int m_diagonalOrder = 0;
 
-  float m_source[3] = {1.5f, 1.0f, 1.7f};
+  float m_source[3] = {0.0f, 1.0f, 0.f};
   vector< array<float, 3> > m_mirrorSources;
 
   float m_receiverDistance = 0.17;
@@ -52,6 +54,8 @@ private:
 
   float m_maxDelay = 0.0f;
   float m_soundSpeed = 343.0f;  //in m/s @20 deg celcius
+
+  bool m_ZaxisOn = false;
 
   enum m_coordinateIndex { X = 0, Y = 1, Z = 2 };
 };

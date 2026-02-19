@@ -20,8 +20,6 @@ ReflectionManager::~ReflectionManager()
 void ReflectionManager::prepare(int sampleRate, int numChannels) {
     m_numChannels = numChannels;
     m_sampleRate = sampleRate;
-    // moved to room constructor
-    // m_room.changeReceivers(0.17f);
 
     createDelays();
 }
@@ -36,7 +34,7 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
     float output = 0;
 
     float normalise = 1;
-    if (m_normalise)    normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude();
+    if (m_normalise)    normalise = 1 / m_room.getReceiver(channel)->getSourceAmplitude()[0];
 
     for(int i = 0; i < m_room.getReceiver(channel)->getNumReflections(); i++)
     {
@@ -50,10 +48,16 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
          {
          float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
          m_buffers[channel]->setSamplesDelay(i,delay);
+
+         float prevAmp = m_room.getReceiver(channel)->getSourceAmplitude()[i];
+         float targetAmp = m_room.getReceiver(channel)->getReflections()[i][1];
+
+         float amp = Smoothe::smootheValue(prevAmp, targetAmp, numSamplesLeft);
+         m_room.getReceiver(channel)->setSourceAmplitude(i, amp);
          }
 
         //If m_normalise = true: normalising the first reflection to input level and the rest with it
-        output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
+        output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getSourceAmplitude()[i] * normalise;
     }
 
     m_buffers[channel]->write(output * m_feedback + input);
@@ -104,13 +108,16 @@ void ReflectionManager::moveSource(float X, float Y, float Z)
     if (m_room.getSource()[0] != X || m_room.getSource()[1] != Y || m_room.getSource()[2] != Z)
     {
         m_room.setSource(X, Y, Z);
-
-        m_room.calculateMirrorSources();
-        //this also calculates the reflections, so this name is a bit unclear maybe
-        m_room.updateReceivers();
-        updateDelays();
+        reloadRoom();
     }
 }
+
+void ReflectionManager::changeRoomDimensions(float X, float Y, float Z)
+{
+    m_room.setRoomDimensions(X,Y,Z);
+    reloadRoom();
+}
+
 
 void ReflectionManager::turnOffDirectSound(float dimfactor)
 {
@@ -120,7 +127,6 @@ void ReflectionManager::turnOffDirectSound(float dimfactor)
     for(int i = 0; i < m_numChannels; i++)
     {
         if (m_directSoundOn) m_directSound.push_back(m_room.getReceiver(i)->getReflections()[0][1]);
-            //TODO - shouldnt be 1
         m_room.getReceiver(i)->getReflections()[0][1] = m_directSound[i] / dimfactor;
     }
     m_directSoundOn = false;
@@ -137,5 +143,18 @@ void ReflectionManager::turnOnDirectSound()
         m_directSound.clear();
     }
     m_directSoundOn = true;
+}
+
+void ReflectionManager::turnOnZaxis(bool ZaxisOn)
+{
+    m_room.setZaxisOn(ZaxisOn);
+    reloadRoom();
+}
+
+void ReflectionManager::reloadRoom()
+{
+    m_room.calculateMirrorSources();
+    m_room.calcReflectionsForAllReceivers();
+    updateDelays();
 }
 
