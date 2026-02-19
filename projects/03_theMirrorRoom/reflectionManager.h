@@ -17,21 +17,23 @@ public:
 
   void prepare(int sampleRate, int numChannels);
   float process(float input, int channel, int numSamplesLeft);
-  // float renderReflections(float distance);
 
   void createDelays();
   void updateDelays();
+  //needs to be called when anything inside of the room changes
+  void reloadRoom();
 
   //=========================GETTERS AND SETTERS======================================
   [[nodiscard]] bool getBypassStatus() const { return m_bypassOn; }
   void setBypass(const bool bypassOn) { m_bypassOn = bypassOn; }
   void setNormalise(const bool normaliseOn) { m_normalise = normaliseOn; }
-  void turnOffDirectSound(float dimFactor);
-  void turnOnDirectSound();
 
   Room& getRoom() {return m_room; }
 
   //UI
+  void turnOffDirectSound(float dimFactor);
+  void turnOnDirectSound();
+
   void moveSource(float X, float Y, float Z);
   void moveReceivers(float distance)
   {
@@ -43,9 +45,11 @@ public:
     m_room.changeNumReflections(diagonalOrder);
     createDelays();
   }
+  void changeRoomDimensions(float X, float Y, float Z);
+  void turnOnZaxis( bool ZaxisOn);
 
 private:
-  Room m_room{2};
+  Room m_room{1};
   vector<CircularBuffer*> m_buffers;
 
   float m_feedback = 0.0f;
@@ -56,7 +60,5 @@ private:
 
   vector<float> m_directSound;
   bool m_directSoundOn = true;
-
-  SpeedTest speedTest;
 };
 

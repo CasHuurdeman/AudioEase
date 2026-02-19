@@ -3,6 +3,7 @@
 //
 // including code from https://www.youtube.com/watch?v=mYBr-Yb70Z4
 //
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <complex>
@@ -17,6 +18,7 @@
 #include "binFile.h"
 #include "interpolation.h"
 #include "smoothe.h"
+#include "calculateDistance.h"
 
 std::string sourceDir = SOURCE_DIR;
 
@@ -38,15 +40,69 @@ void printCopy(vector<int>& v) {
     std::cout << v2[3] << std::endl;
 }
 
-    // vector<int> v = {0,1,2,3,4};
-vector<std::array<float, 2>> v = {{0,0}, {-40,100}, {5.1,6}, {5,6.1}};
+    vector<int> v = {0,1,2,3,4};
 
 int main() {
-    vector<std::array<float, 2>>::iterator maxElement = std::max_element(
-        v.begin(),
-        v.end());
 
-    std::cout << maxElement[-1][0] << maxElement[0][1] << std::endl;
+    v.resize(3);
+
+    for (int i = 0; i < v.size(); i++)
+    {
+    std::cout << v[i] << std::endl;
+    }
+
+// vector<std::array<float, 2>> v = {{0,0}, {-40,100}, {5.1,6}, {5,6.1}};
+    // v.erase(v.begin() + 2);
+
+
+    // CalculateDistance calc;
+    // vector<std::array<float, 2>> v;
+    // std::array receiver = {1.0f, 0.f};
+    //
+    // std::vector<float> distances;
+    //
+    // v.push_back({0,1});
+    // v.push_back({0,19});
+    // v.push_back({0,-21});
+    // v.push_back({20,1});
+    // v.push_back({20,19});
+    // v.push_back({20,-21});
+    // v.push_back({-20,1});
+    // v.push_back({-20,19});
+    // v.push_back({-20,-21});
+    //
+    //
+    //
+    // std::cout << "Distance: " << std::endl;
+    // for (std::array<float, 2> arr : v)
+    // {
+    //     distances.push_back(calc.calculateDistance(arr.data(), receiver.data(), 3,3));
+    // }
+    // std::sort(distances.begin(), distances.end());
+    // for (int i = 0; i < distances.size(); i++)
+    // {
+    //     std::cout << distances[i] << std::endl;
+    // }
+    //
+    // std::cout << "dB: " << std::endl;
+    // for (float val : distances)
+    // {
+    //     std::cout << 20*log10(1/val) << std::endl;
+    // }
+    //
+    // std::cout << "Samples: " << std::endl;
+    // for (float val : distances)
+    // {
+    //     std::cout << val/343*48000 << std::endl;
+    // }
+
+
+
+    // vector<std::array<float, 2>>::iterator maxElement = std::max_element(
+    //     v.begin(),
+    //     v.end());
+    //
+    // std::cout << maxElement[-1][0] << maxElement[0][1] << std::endl;
 
     // SpeedTest s;
     //
@@ -109,9 +165,9 @@ int main() {
     // read.readWavFile();
     //
     // read.getMetaData();
-
-    // for (int i = 0; i < 1000; i++) {
-    // std::cout << read.getSamplesL()[i] << std::endl;
+    //
+    // for (int i = 0; i < 24000; i++) {
+    // std::cout << "Sample " << i << ": " << read.getSamplesL()[i] << std::endl;
     // }
 
     // float smoothedValue = 4.393579;

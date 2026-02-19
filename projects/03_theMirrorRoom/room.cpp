@@ -32,7 +32,7 @@ void Room::changeNumReflections(int diagonalOrder)
   calculateMirrorSources();
   calculateMaxDelay();
 
-  updateReceivers();
+  calcReflectionsForAllReceivers();
 }
 
 
@@ -45,19 +45,18 @@ void Room::changeReceivers(float distance)
   }
   m_receivers.clear();
   
-  //+0,3f to make sure they are not symetrical --> mono reverb
-  addReceiver(distance/2 + 0.3f, 0.01f, 1.7f);
-  addReceiver(-distance/2 + 0.3f, 0.0f, 1.7f);
+  //TODO - make assymmetrical : +0.3f to make sure they are not symetrical --> mono reverb
+  addReceiver(distance/2, 0.01f, 0.f);
+  addReceiver(-distance/2, 0.01f, 0.f);
 
-  updateReceivers();
+  calcReflectionsForAllReceivers();
 }
 
-void Room::updateReceivers() {
+void Room::calcReflectionsForAllReceivers() {
   //calculate al reflections of all receivers
   for (Receiver* receiver : m_receivers)
   {
-    receiver->calculateReflections(m_mirrorSources, size(m_mirrorSources), m_soundSpeed);
-    receiver->calculateSourceAmplitude(m_source, size(m_source));
+    receiver->calculateReflections(m_mirrorSources, m_mirrorSources.size(), m_soundSpeed);
   }
 }
 
@@ -79,10 +78,12 @@ void Room::calculateMirrorSources()
     arrY.push_back(static_cast<float>(i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
     arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Y] + static_cast<float>(a) * m_source[Y]);
 
-    arrY.push_back(static_cast<float>(i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
-    arrY.push_back(static_cast<float>(-i) * m_roomDimensions[Z] + static_cast<float>(a) * 0.5f * m_source[Z]);
+    arrZ.push_back(static_cast<float>(i) * m_roomDimensions[Z] + static_cast<float>(a) * m_source[Z]);
+    arrZ.push_back(static_cast<float>(-i) * m_roomDimensions[Z] + static_cast<float>(a) * m_source[Z]);
     a *= -1;
   }
+
+  if(!m_ZaxisOn) arrZ.resize(1);
 
   //THIS IS IMPORTANT WHEN UPDATING THE MIRRORSOURCES, ELSE THEY GET PILED UP ON TOP OF THE EXISTING ONES
   m_mirrorSources.clear();
@@ -119,58 +120,28 @@ void Room::setSource(float X, float Y, float Z)
   m_source[2] = Z;
 }
 
+void Room::setRoomDimensions(float X, float Y, float Z)
+{
+  m_roomDimensions[0] = X;
+  m_roomDimensions[1] = Y;
+  m_roomDimensions[2] = Z;
+}
 
-
-// void Room::removeReceiver(int receiverIndex)
-// {
-// 	if (receiverIndex < m_receivers.size())
-// 	{
-// 		std::cout << "Room::removeReceiver; Error: This index doest exist" << std::endl;
-// 	}
-//
-//   delete m_receivers[receiverIndex];
-//   m_receivers[receiverIndex] = nullptr;
-// 	m_receivers.erase(m_receivers.begin() + receiverIndex);
-// }
-
-
-
-
-
-
-
-//TODO - createRoom() has no need now
-//
-// ADD ENUM: topL = 0, topR, bottomR, bottomL,
-//
-// void Room::createRoom()
-// {
-//   //Array with coordinates of the corners
-//   std::array< std::array<float,2> ,4> m_roomCorners;
-//   //topLeft
-//   m_roomCorners[topL] =  {-m_roomDimensions[X]/2.0f, m_roomDimensions[Y]/2.0f};
-//   //topRight
-//   m_roomCorners[topR] =  {m_roomDimensions[X]/2.0f, m_roomDimensions[Y]/2.0f};
-//   //bottomRight
-//   m_roomCorners[bottomR] =  {m_roomDimensions[X]/2.0f, -m_roomDimensions[Y]/2.0f};
-//   //bottomLeft
-//   m_roomCorners[bottomL] =  {-m_roomDimensions[X]/2.0f, -m_roomDimensions[Y]/2.0f};
-// }
 
 // // Print coordinates
-// int size = 4;
+// int size = m_mirrorSources.size();
 // std::cout << "{";
 // for (int i = 0; i < size; i++)
 // {
 //   std::cout << "{";
 //
-//   for (int j = 0; j < 2; j++)
+//   for (int j = 0; j < 3; j++)
 //   {
 //     std::cout << m_mirrorSources[i][j];
-//     if (j==0){std::cout << ", ";}
+//     if (j!= 2){std::cout << ", ";}
 //   }
 //
-//   if (i != size - 1){std::cout << "}, ";}
+//   if (i != size - 1){std::cout << "},\n ";}
 //   else std::cout << "}";
 // }
 // std::cout << "}\n" << std::endl;

@@ -17,17 +17,18 @@ public:
     Receiver(float X, float Y, float Z);
     ~Receiver();
 
-    //TODO - I DONT NEED TO KNOW EVERY REFLECTION EVERY TIME I MOVE, JUST THE ONES THAT GET TO THE RECEIVER IN THAT SPECIFIC MOMENT
     void calculateReflections(vector< array<float, 3> > mirrorSources,
         int numMirrorSources, float soundSpeed);
-    void calculateSourceAmplitude(float source[], size_t arrayLength);
 
     //================================GETTERS================================================
-    float getSourceAmplitude() const { return m_sourceAmplitude; }
-    // m_reflections[i][0] = delayTime in ms;
-    // m_reflections[i][1] = amplitude;
+    // m_reflections[i][0] = target? delayTime in ms;
+    // m_reflections[i][1] = target amplitude;
     vector< array<float, 2> >& getReflections() { return m_reflections; }
-    int getNumReflections() const { return static_cast<int>(m_reflections.size()); }
+
+    //returns the amplitude
+    vector<float>& getSourceAmplitude(){ return m_sourceAmplitudes; }
+    void setSourceAmplitude(int i, float amp);
+    int getNumReflections() const { return static_cast<int>( m_reflections.size()); }
 
     float getXCoordinate() { return m_coordinates[0]; }
     float getYCoordinate() { return m_coordinates[1]; }
@@ -38,7 +39,6 @@ public:
 private:
     float m_coordinates[3] {0.0f, 0.0f, 0.0f};
     vector< array< float, 2> > m_reflections;
-
-    float m_sourceAmplitude = 0.0f;
+    vector<float> m_sourceAmplitudes;
 };
 

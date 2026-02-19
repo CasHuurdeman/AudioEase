@@ -17,10 +17,12 @@ public:
 private:
     typedef juce::AudioProcessorValueTreeState APVTS;
 
+//=====================================BUTTONS==================================
     unique_ptr<APVTS::ButtonAttachment> m_circleOnAttach;
     juce::TextButton m_CircleOn;
 
     //TODO - for now I dont like normalise, maybe after fix later
+
     // unique_ptr<APVTS::ButtonAttachment> m_normaliseAttach;
     // juce::TextButton m_normalise;
 
@@ -34,6 +36,10 @@ private:
     unique_ptr<APVTS::ButtonAttachment>  m_backOffAttach;
     juce::TextButton m_backOff;
 
+    unique_ptr<APVTS::ButtonAttachment>  m_ZaxisOnAttach;
+    juce::TextButton m_ZaxisOn;
+
+//=====================================SLIDERS============================================
     juce::TextButton  m_radiusXLabel;
     unique_ptr<APVTS::SliderAttachment> m_radiusXSliderAttach;
     juce::Slider m_radiusXSlider;
@@ -46,12 +52,21 @@ private:
     unique_ptr<APVTS::ComboBoxAttachment> m_numReflectionsAttach;
     juce::ComboBox m_numReflections;
 
+    juce::Label m_roomSizeLabel{"roomSize", "Room size: 20x20x3"}; //TODO - roomsize
+    unique_ptr<APVTS::ComboBoxAttachment> m_roomSizeAttach;
+    juce::ComboBox m_roomSize;
+
+
     juce::TextButton  m_speedLabel;
     unique_ptr<APVTS::SliderAttachment> m_speedSliderAttach;
     juce::Slider m_speedSlider;
 
+    juce::TextButton  m_heightSliderLabel;
+    unique_ptr<APVTS::SliderAttachment> m_heightSliderAttach;
+    juce::Slider m_heightSlider;
+
+//========================================OTHER======================================
     juce::Label m_myLabel{"signature", "by Cas Huurdeman"};
-    juce::Label m_roomSize{"roomSize", "Room size: 20x20x3"};
 
     juce::TooltipWindow m_tooltipWindow{nullptr, 200};
 
@@ -59,12 +74,13 @@ private:
     // access the processor object that created it.
     AudioPluginAudioProcessor& processorRef;
 
+//=========================================CUSTOM=====================================
     comp::XYPad m_xyPad;
     comp::Ears m_ears;
     juce::TextButton  m_earsLabel;
 
     comp::CustomButton m_snapXTo0;
-    comp::CustomButton m_snapYTo0;
+    comp::CustomButton m_snapYTo1;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };
