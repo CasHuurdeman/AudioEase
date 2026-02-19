@@ -103,6 +103,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 //Put the raw parameter value pointers in the variables
     m_xCoordinate = m_apvts.getRawParameterValue("CircleMidX");
     m_yCoordinate = m_apvts.getRawParameterValue("CircleMidY");
+    m_zCoordinate = m_apvts.getRawParameterValue("SoundSourceZ");
 
     m_CircleOn = m_apvts.getRawParameterValue("CircleOn");
     m_normalise = m_apvts.getRawParameterValue("NORMALISE");
@@ -118,6 +119,8 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 
     m_convolutionOn = m_apvts.getRawParameterValue("CONVOLUTIONON");
     m_earlyReflectionsOn = m_apvts.getRawParameterValue("EARLYREFLECTIONS");
+
+    m_ZaxisOn = m_apvts.getRawParameterValue("ZAXISON");
 
 //========================================PLUGIN========================================
 //Initialise reflectionManager
@@ -220,7 +223,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     //TODO - 0.3 offset
     const float X = m_xCoordinate->load();
     const float Y = m_yCoordinate->load();
-    constexpr float Z = 0.f;
+    const float Z = m_zCoordinate->load();
 
     const float circleOn = m_CircleOn->load();
     const float normalise = m_normalise->load();
@@ -236,6 +239,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     const bool convolutionOn = static_cast<bool>(m_convolutionOn->load());
 
     const bool earlyReflectionsOn = static_cast<bool>(m_earlyReflectionsOn->load());
+    const bool ZaxisOn = static_cast<bool>(m_ZaxisOn->load());
 
 
 //Change num reflections
@@ -289,6 +293,9 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
         else getReflectionManager()->turnOnDirectSound();
     }
     else getReflectionManager()->turnOnDirectSound();
+
+//Z-AXIS ON/OFF
+    m_reflectionManager->turnOnZaxis(ZaxisOn);
 
 
     //Buffer loop
@@ -371,78 +378,90 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         0.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-    "CircleMidX",
-    "X coordinate of circle middle",
-    -10.0f,
-    10.0f,
-    0.0f)); //TODO - roomsize
+        "SoundSourceZ",
+        "height difference from middle of the room",
+        -1.5f,
+        1.5f,
+        0.3f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-    "CircleMidY",
-    "Y coordinate of circle middle",
-    -10.0f,
-    10.0f,
-    -1.0f)); //TODO - roomsize
+        "CircleMidX",
+        "X coordinate of circle middle",
+        -10.0f,
+        10.0f,
+        0.0f)); //TODO - roomsize
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "CircleMidY",
+        "Y coordinate of circle middle",
+        -10.0f,
+        10.0f,
+        -1.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
-    "CircleOn",
-    "Circle on",
-    0));
+        "CircleOn",
+        "Circle on",
+        0));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-    "RADIUSX",
-    "Circle Radius X value",
-    0.0f,
-    10.0f,
-    2.0f)); //TODO - roomsize
+        "RADIUSX",
+        "Circle Radius X value",
+        0.0f,
+        10.0f,
+        2.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-    "RADIUSY",
-    "Circle Radius Y value",
-    0.0f,
-    10.0f,
-    2.0f)); //TODO - roomsize
+        "RADIUSY",
+        "Circle Radius Y value",
+        0.0f,
+        10.0f,
+        2.0f)); //TODO - roomsize
 
     juce::StringArray choices = {"0", "52", "248", "684", "1456", "2660"};
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
-    "REFLECTIONS",
-    "Sets the amount of reflections calculated",
-    choices,
-    2));
+        "REFLECTIONS",
+        "Sets the amount of reflections calculated",
+        choices,
+        2));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
-    "NORMALISE",
-    "Amplitude normalisation on",
-    0));
+        "NORMALISE",
+        "Amplitude normalisation on",
+        0));
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-     "RECEIVERDISTANCE",
-     "Distance between 'ears'",
-     0.15f,
-     19.0f,
-     0.17f)); //TODO - roomsize
+        "RECEIVERDISTANCE",
+        "Distance between 'ears'",
+        0.15f,
+        19.0f,
+        0.17f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-     "SPEED",
-     "Speed of source in m/s",
-     1.0f,
-     10.0f,
-     5.0f));
+        "SPEED",
+        "Speed of source in m/s",
+        1.0f,
+        10.0f,
+        5.0f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
-    "DIRECTBACKOFF",
-    "Direct sound off when in the back",
-    0));
+        "DIRECTBACKOFF",
+        "Direct sound off when in the back",
+        0));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
-    "CONVOLUTIONON",
-    "Convolution on",
-    0));
+        "CONVOLUTIONON",
+        "Convolution on",
+        0));
 
-        parameters.push_back(std::make_unique<juce::AudioParameterBool>(
-    "EARLYREFLECTIONS",
-    "Early reflections on",
-    1));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+        "EARLYREFLECTIONS",
+        "Early reflections on",
+        1));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>(
+        "ZAXISON",
+        "3D sound on",
+        false));
 
     return {parameters.begin(), parameters.end()};
 }

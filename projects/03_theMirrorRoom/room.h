@@ -36,6 +36,7 @@ public:
     float* getSource(){ return m_source; } //WATCH OUT!! NO WAY OF KNOWING HOW LONG THE ARRAY IS
     int getDiagonalOrder(){ return m_diagonalOrder; }
     float getReceiverDistance(){ return m_receiverDistance; }
+    bool getZaxisOn(){ return m_ZaxisOn; }
     //=========================================================================
     void setSource(float X, float Y, float Z);
     void setRoomDimensions(float X, float Y, float Z);

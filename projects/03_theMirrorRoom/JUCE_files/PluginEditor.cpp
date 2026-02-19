@@ -9,7 +9,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
                     processorRef.getApvts().getParameter("CircleMidY")),
         m_ears(processorRef.getApvts().getParameter("RECEIVERDISTANCE")),
         m_snapXTo0(processorRef.getApvts().getParameter("CircleMidX"), "Snap X to 0"),
-        m_snapYTo1(processorRef.getApvts().getParameter("CircleMidY"), "Snap Y to 0")
+        m_snapYTo1(processorRef.getApvts().getParameter("CircleMidY"), "Snap Y to 1")
 
 {
     juce::ignoreUnused (processorRef);
@@ -23,6 +23,9 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_speedSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SPEED", m_speedSlider);
     m_backOffAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "DIRECTBACKOFF", m_backOff);
     m_convolutionOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "CONVOLUTIONON", m_convolutionOn);
+    m_ZaxisOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "ZAXISON", m_ZaxisOn);
+    m_heightSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SoundSourceZ", m_heightSlider);
+
 
     m_earlyReflectionsOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "EARLYREFLECTIONS", m_earlyReflectionsOn);
 //===============================================XYPAD=================================================
@@ -73,6 +76,12 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         m_snapYTo1.buttonAttachment.setValueAsCompleteGesture(-1);
     };
 
+    m_ZaxisOn.setButtonText("3D-sound");
+    m_ZaxisOn.setClickingTogglesState(true);
+    m_ZaxisOn.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::green);
+    m_ZaxisOn.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::red);
+    addAndMakeVisible(m_ZaxisOn);
+
 //===========================================Sliders===================================================
     m_radiusXSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     m_radiusXSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
@@ -98,6 +107,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_speedSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
     addAndMakeVisible(m_speedSlider);
 
+    //height slider
+    m_heightSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    m_heightSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_heightSlider);
 
 //==========================================LABELS====================================================
     m_radiusXLabel.setButtonText("Circle X");
@@ -156,6 +169,13 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         m_speedLabel.setButtonText(click ? "Speed" : "Sorry, a bit buggy");
     };
 
+//hightSLider label
+    m_heightSliderLabel.setButtonText("Height");
+    m_heightSliderLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::steelblue);
+    m_heightSliderLabel.setTooltip("0 means in the middle of the room, so at 1.5 meters"); //TODO - roomsize
+    addAndMakeVisible(m_heightSliderLabel);
+
+
 //RoomSize Label
     m_roomSize.setColour(juce::Label::ColourIds::textColourId, juce::Colours::steelblue);
     addAndMakeVisible(m_roomSize);
@@ -167,7 +187,7 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (610, 500);
+    setSize (610, 600);
 }
 
 AudioPluginAudioProcessorEditor::~AudioPluginAudioProcessorEditor()
@@ -225,6 +245,8 @@ void AudioPluginAudioProcessorEditor::resized()
     m_numReflectionsLabel.setBounds(10, 360, 100, 20);
     m_numReflections.setBounds(20, 390, 80, 20);
 
+    m_ZaxisOn.setBounds(10, 430, 100, 20);
+
     m_myLabel.setBounds(10, getHeight() - 30, 180, 30);
     m_roomSize.setBounds(600 - 110, 400, 100, 20);
 
@@ -233,5 +255,8 @@ void AudioPluginAudioProcessorEditor::resized()
     m_convolutionOn.setBounds(310, 440, 80, 35);
     m_snapXTo0.button.setBounds(410, 440,80,35);
     m_snapYTo1.button.setBounds(510, 440,80,35);
+
+    m_heightSliderLabel.setBounds(210, 500, 80, 30);
+    m_heightSlider.setBounds(300, 505, 180, 20);
 
 }

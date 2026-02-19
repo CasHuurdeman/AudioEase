@@ -44,13 +44,13 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
          float prevDelay = samplesDelay[0];
          float targetDelay = samplesDelay[1];
 
-         if (prevDelay != targetDelay)
+        float prevAmp = m_room.getReceiver(channel)->getSourceAmplitude()[i];
+        float targetAmp = m_room.getReceiver(channel)->getReflections()[i][1];
+
+         if (prevDelay != targetDelay || prevAmp != targetAmp)
          {
          float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
          m_buffers[channel]->setSamplesDelay(i,delay);
-
-         float prevAmp = m_room.getReceiver(channel)->getSourceAmplitude()[i];
-         float targetAmp = m_room.getReceiver(channel)->getReflections()[i][1];
 
          float amp = Smoothe::smootheValue(prevAmp, targetAmp, numSamplesLeft);
          m_room.getReceiver(channel)->setSourceAmplitude(i, amp);
@@ -115,7 +115,9 @@ void ReflectionManager::moveSource(float X, float Y, float Z)
 void ReflectionManager::changeRoomDimensions(float X, float Y, float Z)
 {
     m_room.setRoomDimensions(X,Y,Z);
-    reloadRoom();
+    m_room.calculateMirrorSources();
+    m_room.calcReflectionsForAllReceivers();
+    createDelays();
 }
 
 
@@ -147,8 +149,14 @@ void ReflectionManager::turnOnDirectSound()
 
 void ReflectionManager::turnOnZaxis(bool ZaxisOn)
 {
-    m_room.setZaxisOn(ZaxisOn);
-    reloadRoom();
+    if (ZaxisOn != m_room.getZaxisOn())
+    {
+        m_room.setZaxisOn(ZaxisOn);
+        // reloadRoom(); --> cant use because updateDelays is not right
+        m_room.calculateMirrorSources();
+        m_room.calcReflectionsForAllReceivers();
+        createDelays();
+    }
 }
 
 void ReflectionManager::reloadRoom()

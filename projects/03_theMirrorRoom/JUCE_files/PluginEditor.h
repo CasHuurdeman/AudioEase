@@ -17,6 +17,7 @@ public:
 private:
     typedef juce::AudioProcessorValueTreeState APVTS;
 
+//=====================================BUTTONS==================================
     unique_ptr<APVTS::ButtonAttachment> m_circleOnAttach;
     juce::TextButton m_CircleOn;
 
@@ -35,6 +36,10 @@ private:
     unique_ptr<APVTS::ButtonAttachment>  m_backOffAttach;
     juce::TextButton m_backOff;
 
+    unique_ptr<APVTS::ButtonAttachment>  m_ZaxisOnAttach;
+    juce::TextButton m_ZaxisOn;
+
+//=====================================SLIDERS============================================
     juce::TextButton  m_radiusXLabel;
     unique_ptr<APVTS::SliderAttachment> m_radiusXSliderAttach;
     juce::Slider m_radiusXSlider;
@@ -56,6 +61,11 @@ private:
     unique_ptr<APVTS::SliderAttachment> m_speedSliderAttach;
     juce::Slider m_speedSlider;
 
+    juce::TextButton  m_heightSliderLabel;
+    unique_ptr<APVTS::SliderAttachment> m_heightSliderAttach;
+    juce::Slider m_heightSlider;
+
+//========================================OTHER======================================
     juce::Label m_myLabel{"signature", "by Cas Huurdeman"};
 
     juce::TooltipWindow m_tooltipWindow{nullptr, 200};
@@ -64,6 +74,7 @@ private:
     // access the processor object that created it.
     AudioPluginAudioProcessor& processorRef;
 
+//=========================================CUSTOM=====================================
     comp::XYPad m_xyPad;
     comp::Ears m_ears;
     juce::TextButton  m_earsLabel;
