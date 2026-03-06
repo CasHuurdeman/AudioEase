@@ -6,6 +6,7 @@
 std::string sourceDir = SOURCE_DIR;
 
 #include "writeToWAV.h"
+#include "readWAV.h"
 
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
@@ -103,7 +104,6 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
 //Put the raw parameter value pointers in the variables
     m_xCoordinate = m_apvts.getRawParameterValue("CircleMidX");
     m_yCoordinate = m_apvts.getRawParameterValue("CircleMidY");
-    m_zCoordinate = m_apvts.getRawParameterValue("SoundSourceZ");
 
     m_CircleOn = m_apvts.getRawParameterValue("CircleOn");
     m_normalise = m_apvts.getRawParameterValue("NORMALISE");
@@ -118,6 +118,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     m_directBackOff = m_apvts.getRawParameterValue("DIRECTBACKOFF");
 
     m_convolutionOn = m_apvts.getRawParameterValue("CONVOLUTIONON");
+    m_convolutionAmp = m_apvts.getRawParameterValue("CONVOLUTIONAMP");
     m_earlyReflectionsOn = m_apvts.getRawParameterValue("EARLYREFLECTIONS");
 
     m_ZaxisOn = m_apvts.getRawParameterValue("ZAXISON");
@@ -153,20 +154,27 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
      //     m_impulseResponseR[i]= signalR;
      // }
      //
-     // // //========================================CONVOLUTION===============================================
-     // m_convolutionEngines.resize(2);
-     // m_inputBuffer.resize(samplesPerBlock, 0);
-     //
-     // m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
-     // m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
+
+//==============================================READFROMWAV=================================================
+     ReadWAV read("Central Space m2q.C.wav", sourceDir);
+     read.readWavFile();
+     m_impulseResponseL = read.getSamplesL();
+     m_impulseResponseR = read.getSamplesR();
+     // //========================================CONVOLUTION===============================================
+
+     m_convolutionEngines.resize(2);
+     m_inputBuffer.resize(samplesPerBlock, 0);
+
+     m_convolutionEngines[0].prepare(samplesPerBlock, m_impulseResponseL);
+     m_convolutionEngines[1].prepare(samplesPerBlock, m_impulseResponseR);
 
 // TODO - is this needed?
 // DELETE EARLY REFLECTIONS OUT OF IR
-//      for (int i = 0; i < m_convolutionEngines.size(); i++)
-//      {
-//          int numSamplesToCut = dspMath::msToSamples(m_reflectionManager->getRoom().getMaxDelay(), getSampleRate());
-//          m_convolutionEngines[i].cutEarlyReflections(numSamplesToCut);
-//      }
+     for (int i = 0; i < m_convolutionEngines.size(); i++)
+     {
+         int numSamplesToCut = dspMath::msToSamples(m_reflectionManager->getRoom().getMaxDelay(), getSampleRate());
+         m_convolutionEngines[i].cutEarlyReflections(numSamplesToCut);
+     }
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -223,7 +231,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     //TODO - 0.3 offset
     const float X = m_xCoordinate->load();
     const float Y = m_yCoordinate->load();
-    const float Z = m_zCoordinate->load();
+    constexpr float Z = -0.56;
 
     const float circleOn = m_CircleOn->load();
     const float normalise = m_normalise->load();
@@ -237,6 +245,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
     const float speed = m_speed->load();
     const bool directBackOff = static_cast<bool>(m_directBackOff->load());
     const bool convolutionOn = static_cast<bool>(m_convolutionOn->load());
+    const float convolutionAmp = m_convolutionAmp->load();
 
     const bool earlyReflectionsOn = static_cast<bool>(m_earlyReflectionsOn->load());
     const bool ZaxisOn = static_cast<bool>(m_ZaxisOn->load());
@@ -289,7 +298,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 //BEHIND HEAD
     if (directBackOff)
     {
-        if (posY > 0) getReflectionManager()->turnOffDirectSound(posY*20);
+        if (posY > 0) getReflectionManager()->turnOffDirectSound(posY*5);
         else getReflectionManager()->turnOnDirectSound();
     }
     else getReflectionManager()->turnOnDirectSound();
@@ -297,21 +306,30 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, 
 //Z-AXIS ON/OFF
     m_reflectionManager->turnOnZaxis(ZaxisOn);
 
+//convolution amp
+    if (m_convolutionEngines[0].getConvolutionAmp() != convolutionAmp)
+    {
+        //TODO - 2!!!
+        for (int i = 0; i < 2; i++)
+        {
+            m_convolutionEngines[i].setConvolutionAmp(convolutionAmp);
+        }
+    }
 
     //Buffer loop
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
         auto* output = buffer.getWritePointer(channel);
         auto* input = buffer.getReadPointer(channel);
 
-        // memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
-        //
-        // //CONVOLUTION ON/OFF
-        // if (convolutionOn) m_output = m_convolutionEngines[channel].process(m_inputBuffer);
-        // else
-        // {
+        memcpy(&m_inputBuffer[0], input, buffer.getNumSamples() * sizeof(float));
+
+        // CONVOLUTION ON/OFF
+         if (convolutionOn) m_output = m_convolutionEngines[channel].process(m_inputBuffer);
+         else
+         {
         m_output.clear();
         m_output.resize(buffer.getNumSamples(), 0);
-        // }
+        }
 
         // sample loop
          for (int sample = 0; sample < numSamples; ++sample) {
@@ -366,36 +384,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         "SoundSourceX",
         "xCoord",
-        -10.0f,
-        10.0f,
+        -5.0f,
+        5.0f,
         0.0f )); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         "SoundSourceY",
         "yCoord",
-        -10.0f,
-        10.0f,
+        -5.0f,
+        5.0f,
         0.0f)); //TODO - roomsize
-
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
-        "SoundSourceZ",
-        "height difference from middle of the room",
-        -1.5f,
-        1.5f,
-        0.3f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         "CircleMidX",
         "X coordinate of circle middle",
-        -10.0f,
-        10.0f,
+        -5.0f,
+        5.0f,
         0.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         "CircleMidY",
         "Y coordinate of circle middle",
-        -10.0f,
-        10.0f,
+        -5.0f,
+        5.0f,
         -1.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
@@ -407,15 +418,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         "RADIUSX",
         "Circle Radius X value",
         0.0f,
-        10.0f,
-        2.0f)); //TODO - roomsize
+        5.0f,
+        1.0f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         "RADIUSY",
         "Circle Radius Y value",
         0.0f,
-        10.0f,
-        2.0f)); //TODO - roomsize
+        5.0f,
+        1.0f)); //TODO - roomsize
 
     juce::StringArray choices = {"0", "52", "248", "684", "1456", "2660"};
     parameters.push_back(std::make_unique<juce::AudioParameterChoice>(
@@ -433,8 +444,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         "RECEIVERDISTANCE",
         "Distance between 'ears'",
         0.15f,
-        19.0f,
-        0.17f)); //TODO - roomsize
+        9.7f,
+        0.20f)); //TODO - roomsize
 
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
         "SPEED",
@@ -452,6 +463,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout AudioPluginAudioProcessor::c
         "CONVOLUTIONON",
         "Convolution on",
         0));
+
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>(
+        "CONVOLUTIONAMP",
+        "Convolution amplitude",
+        0.0f,
+        .10f,
+        0.05f));
 
     parameters.push_back(std::make_unique<juce::AudioParameterBool>(
         "EARLYREFLECTIONS",

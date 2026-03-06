@@ -10,9 +10,20 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     juce::ignoreUnused (processorRef);
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    addAndMakeVisible(m_Label);
-    addAndMakeVisible(m_slider.slider);
-    addAndMakeVisible(m_xyPad);
+
+
+    // addAndMakeVisible(m_Label);
+    // addAndMakeVisible(m_slider.slider);
+    // addAndMakeVisible(m_xyPad);
+
+
+
+    juce::File img{"laminateFloor.png"};
+    auto floorImage = juce::ImageCache::getFromFile(img);
+    juce::Image myImage = juce::ImageFileFormat::loadFrom(juce::File("laminateFloor.png"));
+        m_imageComponent.setImage(floorImage, juce::RectanglePlacement::onlyReduceInSize);
+
+    addAndMakeVisible(m_imageComponent);
 
     setSize (400, 400);
 }
@@ -29,15 +40,16 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (15.0f);
-    g.drawFittedText ("Nothing happens", getLocalBounds(), juce::Justification::centred, 1);
+    // g.drawFittedText ("Nothing happens", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void AudioPluginAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    m_Label.setBounds(0, 0, 100, 20);
-    m_xyPad.setBounds(0, 0, 200, 200);
-    m_slider.slider.setBounds(0,0, getWidth()/4, getHeight());
+    // m_Label.setBounds(0, 0, 100, 20);
+    // m_xyPad.setBounds(0, 0, 200, 200);
+    m_imageComponent.setBounds(200, 200, 200, 200);
+    // m_slider.slider.setBounds(0,0, getWidth()/4, getHeight());
 
 }

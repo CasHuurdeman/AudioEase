@@ -72,7 +72,6 @@ private:
 
     std::atomic<float>* m_xCoordinate;
     std::atomic<float>* m_yCoordinate;
-    std::atomic<float>* m_zCoordinate;
     std::atomic<float>* m_CircleOn;
     std::atomic<float>* m_radiusX;
     std::atomic<float>* m_radiusY;
@@ -82,6 +81,7 @@ private:
     std::atomic<float>* m_speed;
     std::atomic<float>* m_directBackOff;
     std::atomic<float>* m_convolutionOn;
+    std::atomic<float>* m_convolutionAmp;
     std::atomic<float>* m_earlyReflectionsOn;
     std::atomic<float>* m_ZaxisOn;
 

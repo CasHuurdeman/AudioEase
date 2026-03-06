@@ -44,10 +44,9 @@ void Room::changeReceivers(float distance)
     m_receivers[i] = nullptr;
   }
   m_receivers.clear();
-  
-  //TODO - make assymmetrical : +0.3f to make sure they are not symetrical --> mono reverb
-  addReceiver(distance/2.0f, 0.01f, 0.5f);
-  addReceiver(-distance/2.0f, 0.01f, 0.5f);
+
+  addReceiver(0.35356, 0.35f, 0.0f);
+  addReceiver(-0.34372f, 0.4573f, 0.0f);
 
   calcReflectionsForAllReceivers();
 }
@@ -84,12 +83,6 @@ void Room::calculateMirrorSources()
   }
 
   if(!m_ZaxisOn) arrZ.resize(1);
-
-  // NO MONO VERB
-   for (int i = 1; i < arrX.size(); i++)
-   {
-     arrX[i] += 0.3f;
-   }
 
   //THIS IS IMPORTANT WHEN UPDATING THE MIRRORSOURCES, ELSE THEY GET PILED UP ON TOP OF THE EXISTING ONES
   m_mirrorSources.clear();

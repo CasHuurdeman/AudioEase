@@ -52,7 +52,11 @@ private:
     unique_ptr<APVTS::ComboBoxAttachment> m_numReflectionsAttach;
     juce::ComboBox m_numReflections;
 
-    juce::Label m_roomSizeLabel{"roomSize", "Room size: 20x20x3"}; //TODO - roomsize
+    juce::TextButton m_convolutionAmpLabel;
+    unique_ptr<APVTS::SliderAttachment> m_convolutionAmpAttach;
+    juce::Slider m_convolutionAmpSlider;
+
+    juce::Label m_roomSizeLabel{"roomSize", "Room size: 10x10x5"}; //TODO - roomsize
     unique_ptr<APVTS::ComboBoxAttachment> m_roomSizeAttach;
     juce::ComboBox m_roomSize;
 
@@ -60,10 +64,6 @@ private:
     juce::TextButton  m_speedLabel;
     unique_ptr<APVTS::SliderAttachment> m_speedSliderAttach;
     juce::Slider m_speedSlider;
-
-    juce::TextButton  m_heightSliderLabel;
-    unique_ptr<APVTS::SliderAttachment> m_heightSliderAttach;
-    juce::Slider m_heightSlider;
 
 //========================================OTHER======================================
     juce::Label m_myLabel{"signature", "by Cas Huurdeman"};
@@ -81,6 +81,8 @@ private:
 
     comp::CustomButton m_snapXTo0;
     comp::CustomButton m_snapYTo1;
+
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

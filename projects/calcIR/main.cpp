@@ -7,14 +7,11 @@
 #include <algorithm>
 
 #include "testSignal.h"
-#include "writeToFile.h"
 #include "writeToWAV.h"
 #include "readWAV.h"
+#include "writeToFile.h"
 #include <iostream>
-#include <cmath>
-#include "../03_theMirrorRoom/reflectionManager.h"
-// #include "../05_delay/delay.h"
-#include "speedTest.h"
+#include "files/reflectionManager.h"
 
 int sampleRate = 48000;
 
@@ -25,31 +22,30 @@ int main()
     TestSignal pulse;
     TestSignal pulse2;
     ReflectionManager reflectionManager;
-    // Delay delay{static_cast<float>(sampleRate), 0};
-    SpeedTest speed_test;
 
     WriteToFile fileWriter{sourceDir};
-    WriteToWAV wavWriter{"impulse_response", sourceDir, sampleRate};
+    WriteToWAV wavWriter{"impulse_response2D", sourceDir, sampleRate};
 
 
     reflectionManager.prepare(sampleRate, 2);
-    reflectionManager.changeNumReflections(15);
-    reflectionManager.turnOnZaxis(true);
+    reflectionManager.changeNumReflections(30);
+    reflectionManager.turnOnZaxis(false);
 
-    int size = sampleRate ;
+    int size = sampleRate * 2.5f;
      for (int i = 0; i < size; i++)
      {
          int numSamplesLeft = sampleRate - i;
          float signalL = reflectionManager.process(pulse.givePulse(), 0, numSamplesLeft);
          float signalR = reflectionManager.process(pulse2.givePulse(), 1, numSamplesLeft);
 
-         // float signal = delay.process(pulse.givePulse());
-         // float signal = pulse.givePulse();
-         // fileWriter.writeToFile(signal);
 
          if (i == size/10) std::cout << "10%..." << std::endl;
-         if (i == size/2) std::cout << "halfway there" << std::endl;
+         if (i == size/2)
+         {
+             std::cout << "halfway there" << std::endl;
+         }
 
+         fileWriter.writeToFile(signalL);
          wavWriter.write(signalL,signalR);
      }
 

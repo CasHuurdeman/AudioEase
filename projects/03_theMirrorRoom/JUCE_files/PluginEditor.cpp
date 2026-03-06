@@ -6,7 +6,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     : AudioProcessorEditor (&p), processorRef (p),
         m_xyPad(processorRef.getApvts().getParameter("SoundSourceX"), processorRef.getApvts().getParameter("SoundSourceY"),
                     processorRef.getApvts().getParameter("CircleMidX"),
-                    processorRef.getApvts().getParameter("CircleMidY")),
+                    processorRef.getApvts().getParameter("CircleMidY"),
+                    processorRef.getApvts().getParameter("RECEIVERDISTANCE")),
         m_ears(processorRef.getApvts().getParameter("RECEIVERDISTANCE")),
         m_snapXTo0(processorRef.getApvts().getParameter("CircleMidX"), "Snap X to 0"),
         m_snapYTo1(processorRef.getApvts().getParameter("CircleMidY"), "Snap Y to 1")
@@ -23,9 +24,8 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_speedSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SPEED", m_speedSlider);
     m_backOffAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "DIRECTBACKOFF", m_backOff);
     m_convolutionOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "CONVOLUTIONON", m_convolutionOn);
+    m_convolutionAmpAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "CONVOLUTIONAMP", m_convolutionAmpSlider);
     m_ZaxisOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "ZAXISON", m_ZaxisOn);
-    m_heightSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(processorRef.getApvts(), "SoundSourceZ", m_heightSlider);
-
 
     m_earlyReflectionsOnAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(processorRef.getApvts(), "EARLYREFLECTIONS", m_earlyReflectionsOn);
 //===============================================XYPAD=================================================
@@ -107,10 +107,10 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
     m_speedSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
     addAndMakeVisible(m_speedSlider);
 
-    //height slider
-    m_heightSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    m_heightSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
-    addAndMakeVisible(m_heightSlider);
+    m_convolutionAmpSlider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    m_convolutionAmpSlider.setColour(juce::Slider::ColourIds::thumbColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_convolutionAmpSlider);
+
 
 //==========================================LABELS====================================================
     m_radiusXLabel.setButtonText("Circle X");
@@ -169,16 +169,14 @@ AudioPluginAudioProcessorEditor::AudioPluginAudioProcessorEditor (AudioPluginAud
         m_speedLabel.setButtonText(click ? "Speed" : "Sorry, a bit buggy");
     };
 
-//hightSLider label
-    m_heightSliderLabel.setButtonText("Height");
-    m_heightSliderLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::steelblue);
-    m_heightSliderLabel.setTooltip("0 means in the middle of the room, so at 1.5 meters"); //TODO - roomsize
-    addAndMakeVisible(m_heightSliderLabel);
-
+//CONVOLUTIONAMP label
+    m_convolutionAmpLabel.setButtonText("Convolution amplitude");
+    m_convolutionAmpLabel.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::steelblue);
+    addAndMakeVisible(m_convolutionAmpLabel);
 
 //RoomSize Label
-    m_roomSize.setColour(juce::Label::ColourIds::textColourId, juce::Colours::steelblue);
-    addAndMakeVisible(m_roomSize);
+    m_roomSizeLabel.setColour(juce::Label::ColourIds::textColourId, juce::Colours::white);
+    addAndMakeVisible(m_roomSizeLabel);
 
 //signature
     m_myLabel.setFont(17.0f);
@@ -201,21 +199,21 @@ void AudioPluginAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
 //========================Draw ears=========================================
-    g.setColour (juce::Colours::white);
-
-    float n = 400/20;  //TODO - roomsize //TODO - 400 is also hardcoded, maybe smth with denormalise? idk
-    float a = 3;
-
-    float x = m_ears.slider.getValue()/2 * n;
-    float y = 0.01;
-
-    float xPos =  m_xyPad.getBounds().getCentreX() + x;
-    float yPos =  m_xyPad.getBounds().getCentreY() + y;
-    g.fillEllipse(xPos - a,yPos - a, 2*a, 2*a);
-
-    xPos =  m_xyPad.getBounds().getCentreX() - x;
-    yPos =  m_xyPad.getBounds().getCentreY() + y;
-    g.fillEllipse(xPos - a,yPos - a, 2*a, 2*a);
+    // g.setColour (juce::Colours::white);
+    //
+    // float n = 400/10;  //TODO - roomsize //TODO - 400 is also hardcoded, maybe smth with denormalise? idk
+    // float a = 3;
+    //
+    // float x = m_ears.slider.getValue()/2 * n;
+    // float y = 0.01;
+    //
+    // float xPos =  m_xyPad.getBounds().getCentreX() + x;
+    // float yPos =  m_xyPad.getBounds().getCentreY() + y;
+    // g.fillEllipse(xPos - a,yPos - a, 2*a, 2*a);
+    //
+    // xPos =  m_xyPad.getBounds().getCentreX() - x;
+    // yPos =  m_xyPad.getBounds().getCentreY() + y;
+    // g.fillEllipse(xPos - a,yPos - a, 2*a, 2*a);
 }
 
 
@@ -248,7 +246,7 @@ void AudioPluginAudioProcessorEditor::resized()
     m_ZaxisOn.setBounds(10, 430, 100, 20);
 
     m_myLabel.setBounds(10, getHeight() - 30, 180, 30);
-    m_roomSize.setBounds(600 - 110, 400, 100, 20);
+    m_roomSizeLabel.setBounds(600 - 110, 400, 100, 20);
 
 
     m_earlyReflectionsOn.setBounds(210, 440, 80, 35);
@@ -256,7 +254,6 @@ void AudioPluginAudioProcessorEditor::resized()
     m_snapXTo0.button.setBounds(410, 440,80,35);
     m_snapYTo1.button.setBounds(510, 440,80,35);
 
-    m_heightSliderLabel.setBounds(210, 500, 80, 30);
-    m_heightSlider.setBounds(300, 505, 180, 20);
-
+    m_convolutionAmpLabel.setBounds(210, 510, 80, 40);
+    m_convolutionAmpSlider.setBounds(310, 520, 180, 20);
 }

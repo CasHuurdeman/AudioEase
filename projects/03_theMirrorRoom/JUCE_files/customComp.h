@@ -47,8 +47,8 @@ namespace comp
     struct XYPad : public Comp
     {
         XYPad(juce::RangedAudioParameter* rapX, juce::RangedAudioParameter* rapY,
-          juce::RangedAudioParameter* rapCircleX, juce::RangedAudioParameter* rapCircleY) :
-          Comp(), m_rapX(*rapX), m_rapY(*rapY), m_rapCircleX(*rapCircleX), m_rapCircleY(*rapCircleY),
+          juce::RangedAudioParameter* rapCircleX, juce::RangedAudioParameter* rapCircleY, juce::RangedAudioParameter* rapEars) :
+          Comp(), m_rapX(*rapX), m_rapY(*rapY), m_rapCircleX(*rapCircleX), m_rapCircleY(*rapCircleY), m_rapEars(*rapEars),
           attachX(m_rapX, [this](float) { repaint(); }, nullptr),
           attachY(m_rapY, [this](float) { repaint(); }, nullptr),
           attachCircleX(m_rapCircleX, [this](float) { repaint(); }, nullptr),
@@ -63,7 +63,7 @@ namespace comp
 
 
     protected:
-        juce::RangedAudioParameter &m_rapX, &m_rapY, &m_rapCircleX, &m_rapCircleY;
+        juce::RangedAudioParameter &m_rapX, &m_rapY, &m_rapCircleX, &m_rapCircleY, &m_rapEars;
         juce::ParameterAttachment attachX, attachY, attachCircleX, attachCircleY;
 
 
@@ -75,9 +75,38 @@ namespace comp
           bounds = getLocalBounds().toFloat().reduced(thick);
         }
 
+
+
         void paint(juce::Graphics& g) override
         {
-          g.setColour(juce::Colour(0x22ffffff));
+
+//==========================================LAMINATE BACKGROUND================================================
+           g.setColour(juce::Colour(0xffffffff));
+           g.fillRoundedRectangle(bounds, thick);
+           g.setColour(juce::Colour(0xc880471c));
+           g.fillRoundedRectangle(bounds, thick);
+
+           //"grid to show how big it is"
+           for (int i = 0; i < 50; i++)
+           {
+             g.setColour(juce::Colour(0x882e4543));
+             float thickness = 0.02;
+             float x = bounds.getX() + bounds.getWidth() * thickness*static_cast<float>(i);
+             g.drawLine(x, bounds.getY(), x, bounds.getBottom());
+
+
+             g.setColour(juce::Colour(0x992e1503));
+             for (int j = 0; j < 5; j++)
+             {
+               float length = 0.2f * static_cast<float>(j) + static_cast<float>(i) * 0.0756778;
+               while(length > 1) length -= 1;
+               g.drawLine(x, bounds.getY() + bounds.getHeight() * length,
+                 x + bounds.getWidth() * thickness, bounds.getY() + bounds.getHeight() * length);
+             }
+           }
+
+  //======================================================GRID=========================================================
+          g.setColour(juce::Colours::steelblue);
 
           g.drawLine(bounds.getX() + bounds.getWidth() * 0.5f, bounds.getY(), bounds.getX() + bounds.getWidth()* 0.5f, bounds.getBottom());
           g.drawLine(bounds.getX(), bounds.getY() + bounds.getHeight() * 0.5f, bounds.getRight(), bounds.getY() + bounds.getHeight() * 0.5f);
@@ -85,18 +114,43 @@ namespace comp
           g.setColour(juce::Colours::steelblue);
           g.drawRoundedRectangle(bounds, thick, thick);
 
-          float X = m_rapX.getValue();
-          float Y = m_rapY.getValue();
 
-          auto xPos = bounds.getX() + X * bounds.getWidth();
-          auto yPos = bounds.getY() + Y * bounds.getHeight();
+
+//===============================================================RECEIVER=====================================================
+          float xPos,yPos, X, Y;
+
+
+          g.setColour (juce::Colours::white);
+
+          float n = bounds.getWidth()/10;  //TODO - roomsize
+          float radius = 3; //what is a?
+
+          X = m_rapEars.convertFrom0to1(m_rapEars.getValue())/2.0f * n;
+          Y = 0;
+
+          xPos =  bounds.getCentreX() + X;
+          yPos =  bounds.getCentreY() + Y;
+          g.fillEllipse(xPos - radius,yPos - radius, 2*radius, 2*radius);
+
+          xPos =  bounds.getCentreX() - X;
+          yPos =  bounds.getCentreY() + Y;
+          g.fillEllipse(xPos - radius,yPos - radius, 2*radius, 2*radius);
+
+
+//====================================================SOURCE=================================================
+          float sourceSize = bounds.getWidth()/10 * 0.2;
+
+          X = m_rapX.getValue();
+          Y = m_rapY.getValue();
+
+          xPos = bounds.getX() + X * bounds.getWidth();
+          yPos = bounds.getY() + Y * bounds.getHeight();
 
           g.setColour(juce::Colours::darkred);
-          g.fillRect(xPos - 2.f, yPos - 2.f, 5.f, 5.f);
-
+          g.fillRect(xPos - sourceSize/2, yPos - sourceSize/2, sourceSize, sourceSize);
         }
 
-      //mouseDown --> on click
+
         void mouseDown(const juce::MouseEvent& event) override
         {
           attachCircleX.beginGesture();
@@ -110,7 +164,7 @@ namespace comp
           updatePointValues(event.position);
         }
 
-      //mouseUp --> on click release
+
         void mouseUp(const juce::MouseEvent& event) override
         {
           updatePointValues(event.position);
@@ -127,6 +181,9 @@ namespace comp
           attachCircleY.setValueAsPartOfGesture(m_rapY.convertFrom0to1(pos.y / bounds.getHeight()));
         }
     };
+
+
+
 
     struct Ears : public Comp
     {

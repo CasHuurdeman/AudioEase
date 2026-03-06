@@ -10,7 +10,9 @@
 #include <array>
 #include <vector>
 #include <cmath>
+#include <dspMath.h>
 #include <speedTest.h>
+#include "writeToFile.h"
 
 #include "readWAV.h"
 #include "writeToWAV.h"
@@ -40,61 +42,105 @@ void printCopy(vector<int>& v) {
     std::cout << v2[3] << std::endl;
 }
 
-    vector<int> v = {0,1,2,3,4};
+    // vector<int> v = {0,1,2,3,4};
 
 int main() {
 
-    v.resize(3);
-
-    for (int i = 0; i < v.size(); i++)
-    {
-    std::cout << v[i] << std::endl;
-    }
+    // v.resize(3);
+    //
+    // for (int i = 0; i < v.size(); i++)
+    // {
+    // std::cout << v[i] << std::endl;
+    // }
 
 // vector<std::array<float, 2>> v = {{0,0}, {-40,100}, {5.1,6}, {5,6.1}};
-    // v.erase(v.begin() + 2);
+//     v.erase(v.begin() + 2);
 
 
-    // CalculateDistance calc;
-    // vector<std::array<float, 2>> v;
-    // std::array receiver = {1.0f, 0.f};
+    CalculateDistance calc;
+    WriteToFile file(sourceDir);
+    vector<std::array<float, 3>> v;
+    std::array receiver = {0.0f, 0.f, 0.0f};
+
+    std::vector<float> distances;
+
+    std::vector<float> arrX = {0, 20, -20, 40, -40};
+    std::vector<float> arrY = {1, 19, -21, 41, -39};
+    std::vector<float> arrZ = {0.5, 2.5, -3.5, 6.5, -5.5};
+
+    for (float& x : arrX)
+    {
+        for (float& y : arrY)
+        {
+            for (float& z : arrZ)
+            {
+                v.push_back({x, y, z});
+            }
+        }
+    }
+
+    // v.push_back({0,1, 0.5});
+    // v.push_back({0,1, 2.5});
+    // v.push_back({0,1, -3.5});
     //
-    // std::vector<float> distances;
+    // v.push_back({0,19, 0.5});
+    // v.push_back({0,19, 2.5});
+    // v.push_back({0,19, -3.5});
     //
-    // v.push_back({0,1});
-    // v.push_back({0,19});
-    // v.push_back({0,-21});
-    // v.push_back({20,1});
-    // v.push_back({20,19});
-    // v.push_back({20,-21});
-    // v.push_back({-20,1});
-    // v.push_back({-20,19});
-    // v.push_back({-20,-21});
+    // v.push_back({0,-21, 0.5});
+    // v.push_back({0,-21, 2.5});
+    // v.push_back({0,-21, -3.5});
+    //
+    // v.push_back({20,1, 0.5});
+    // v.push_back({20,1, 2.5});
+    // v.push_back({20,1, -3.5});
+    //
+    // v.push_back({20,19, 0.5});
+    // v.push_back({20,19, 2.5});
+    // v.push_back({20,19, -3.5});
+    //
+    // v.push_back({20,-21, 0.5});
+    // v.push_back({20,-21, 2.5});
+    // v.push_back({20,-21, -3.5});
+    //
+    // v.push_back({-20,1, 0.5});
+    // v.push_back({-20,1, 2.5});
+    // v.push_back({-20,1, -3.5});
+    //
+    // v.push_back({-20,19, 0.5});
+    // v.push_back({-20,19, 2.5});
+    // v.push_back({-20,19, -3.5});
     //
     //
-    //
-    // std::cout << "Distance: " << std::endl;
-    // for (std::array<float, 2> arr : v)
-    // {
-    //     distances.push_back(calc.calculateDistance(arr.data(), receiver.data(), 3,3));
-    // }
-    // std::sort(distances.begin(), distances.end());
-    // for (int i = 0; i < distances.size(); i++)
-    // {
-    //     std::cout << distances[i] << std::endl;
-    // }
-    //
-    // std::cout << "dB: " << std::endl;
-    // for (float val : distances)
-    // {
-    //     std::cout << 20*log10(1/val) << std::endl;
-    // }
-    //
-    // std::cout << "Samples: " << std::endl;
-    // for (float val : distances)
-    // {
-    //     std::cout << val/343*48000 << std::endl;
-    // }
+    // v.push_back({-20,-21, 0.5});
+    // v.push_back({-20,-21, 2.5});
+    // v.push_back({-20,-21, -3.5});
+
+
+
+    std::cout << "Amplitude: " << std::endl;
+    for (std::array<float, 3> arr : v)
+    {
+        distances.push_back(calc.calculateDistance(arr.data(), receiver.data(), 3,3));
+    }
+    std::sort(distances.begin(), distances.end());
+    for (int i = 0; i < distances.size(); i++)
+    {
+        std::cout << 1/distances[i] << std::endl;
+    }
+
+    std::cout << "dB: " << std::endl;
+    for (float val : distances)
+    {
+        std::cout << 20*log10(1/val) + 1 << std::endl;
+    }
+
+    std::cout << "msDelay: " << std::endl;
+    for (float val : distances)
+    {
+        std::cout << dspMath::samplesToMs(val/343*48000, 48000) << std::endl;
+        file.writeToFile(val/343*48000);
+    }
 
 
 

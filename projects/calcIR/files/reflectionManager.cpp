@@ -24,7 +24,6 @@ void ReflectionManager::prepare(int sampleRate, int numChannels) {
     createDelays();
 }
 
-//TODO - dit moet sneller
 float ReflectionManager::process(float input, int channel, int numSamplesLeft)
 {
     //========================BYPASS===================================
@@ -40,24 +39,13 @@ float ReflectionManager::process(float input, int channel, int numSamplesLeft)
     {
         // INTERPOLATION
          array<float, 2> samplesDelay = m_buffers[channel]->getSamplesDelay()[i];
+
          float prevDelay = samplesDelay[0];
          float targetDelay = samplesDelay[1];
+         m_buffers[channel]->setSamplesDelay(i,targetDelay);
 
-         float prevAmp = m_room.getReceiver(channel)->getSourceAmplitude()[i];
-         float targetAmp = m_room.getReceiver(channel)->getReflections()[i][1];
-
-         if (prevDelay != targetDelay || prevAmp != targetAmp)
-         {
-         float delay = Smoothe::smootheValue(prevDelay, targetDelay, numSamplesLeft);
-         m_buffers[channel]->setSamplesDelay(i,delay);
-
-         float amp = Smoothe::smootheValue(prevAmp, targetAmp, numSamplesLeft);
-         m_room.getReceiver(channel)->setSourceAmplitude(i, amp);
-         }
 
         //If m_normalise = true: normalising the first reflection to input level and the rest with it
-        //TODO - whats up with this interpolation
-        // output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getSourceAmplitude()[i] * normalise;
         output += m_buffers[channel]->read(i) * m_room.getReceiver(channel)->getReflections()[i][1] * normalise;
     }
 

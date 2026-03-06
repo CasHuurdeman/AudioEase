@@ -22,6 +22,8 @@ private:
     comp::XYPad m_xyPad;
     SpecialSlider m_slider;
 
+    juce::ImageComponent m_imageComponent;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AudioPluginAudioProcessorEditor)
 };

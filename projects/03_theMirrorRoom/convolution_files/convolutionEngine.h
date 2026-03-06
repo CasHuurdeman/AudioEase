@@ -17,6 +17,9 @@ public:
 
   void cutEarlyReflections(int numSamples);
 
+  void setConvolutionAmp( float convolutionAmp) { m_convolutionAmp = convolutionAmp; }
+  float getConvolutionAmp() { return m_convolutionAmp; }
+
 private:
   void convolve();
   void fftIR();
@@ -43,5 +46,6 @@ private:
   int m_numIRs = 0;
 
   int m_IRSize = 0;
+  float m_convolutionAmp = 0.5;
 };
 

@@ -20,7 +20,8 @@ Receiver::~Receiver()
 }
 
 
-void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int numMirrorSources, const float soundSpeed) {
+void Receiver::calculateReflections(vector< array<float, 3> > mirrorSources, int numMirrorSources, const float soundSpeed)
+{
     //does this take a lot of time?
     m_reflections.resize(numMirrorSources);
     m_sourceAmplitudes.resize(numMirrorSources);

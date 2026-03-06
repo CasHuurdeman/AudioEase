@@ -44,10 +44,10 @@ public:
 
 private:
     //EVERYTHING IS IN METERS
-  float m_roomDimensions [3] = {10.0f, 10.0f, 5.0f};  //TODO - roomsize
+  float m_roomDimensions [3] = {10.0f, 10.0f, 3.0f};  //TODO - roomsize
   int m_diagonalOrder = 0;
 
-  float m_source[3] = {0.0f, 1.0f, 0.f};
+  float m_source[3] = {0.3262f, 0.586f, 0.5f};
   vector< array<float, 3> > m_mirrorSources;
 
   float m_receiverDistance = 0.17;

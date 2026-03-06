@@ -98,7 +98,7 @@ void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPer
     m_convolutionEngines.resize(2);   //TODO
     m_inputBuffer.resize(samplesPerBlock, 0);   //TODO
 
-    ReadWAV read("test.wav", sourceDir);
+    ReadWAV read("impulse_response.wav", sourceDir);
     read.readWavFile();
     m_impulseResponseL = read.getSamplesL();   //TODO
     m_impulseResponseR = read.getSamplesR();   //TODO

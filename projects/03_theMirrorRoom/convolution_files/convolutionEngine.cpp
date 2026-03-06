@@ -72,7 +72,7 @@ vector<float> ConvolutionEngine::process(vector<float>& input)
   // Copy  and normalise the reverbtail of the previous convolution to the outputbuffer
    for (int i = 0; i < m_dataBlockSize; i++)
    {
-     outputBuffer[i] = m_overlappingBuffer[m_dataBlockSize + i] * m_fftSize;
+     outputBuffer[i] = m_overlappingBuffer[m_dataBlockSize + i] * m_fftSize * m_convolutionAmp;
    }
   m_overlappingBuffer.clear();
   m_overlappingBuffer.resize(m_fftSize, 0);
@@ -100,7 +100,7 @@ vector<float> ConvolutionEngine::process(vector<float>& input)
   //Normalising and overlap-add
   for (int i = 0; i < m_dataBlockSize; i++)
   {
-    outputBuffer[i] += m_overlappingBuffer[i] * m_fftSize;
+    outputBuffer[i] += m_overlappingBuffer[i] * m_fftSize * m_convolutionAmp; //TODO - hier kun je aan amplitude zitten
   }
 
   return outputBuffer;
